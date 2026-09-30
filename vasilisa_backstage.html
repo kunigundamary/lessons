@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backstage: Right Now and Rules</title>
+<style>
+
+:root{
+  --ivory:#FFF8EE; --paper:#FFFFFF; --rose:#F6B8C8; --rose-soft:#FDE6EC;
+  --velvet:#8C2F55; --velvet-dark:#5E1C38; --sky:#8EC5E8; --sky-soft:#E3F2FB;
+  --sun:#FFD66B; --grass:#6DBB72; --grass-soft:#E4F5E5; --coral:#FF8A70; --coral-soft:#FFE6E0;
+  --ink:#4A3428; --muted:#8A7163;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);
+  font-family:'Nunito','Comfortaa','Trebuchet MS','Segoe UI',sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:'Comfortaa','Nunito','Trebuchet MS',sans-serif;line-height:1.2;margin:0 0 .4em}
+button{font-family:inherit;font-size:1rem;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--velvet);outline-offset:2px}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 110%,#FFE9B8 0%,#F9D2DC 45%,#E9A8BE 100%);
+  padding:48px 20px 36px;text-align:center;border-bottom:10px solid var(--velvet-dark)}
+.stage:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;
+  background:repeating-radial-gradient(circle at 20px -6px,var(--velvet) 0 22px,transparent 23px) 0 0/40px 34px, var(--velvet-dark);}
+.curtain{position:absolute;top:0;bottom:0;width:52%;z-index:3;
+  background:repeating-linear-gradient(90deg,var(--velvet) 0 18px,var(--velvet-dark) 18px 24px,var(--velvet) 24px 44px);
+  transition:transform 1.6s cubic-bezier(.6,.05,.3,1)}
+.curtain.l{left:0}.curtain.r{right:0}
+.stage.open .curtain.l{transform:translateX(-88%)}
+.stage.open .curtain.r{transform:translateX(88%)}
+.stage-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.swan{font-size:64px;display:inline-block;transform-origin:50% 90%}
+.stage.open .swan{animation:bow 1.2s 1.4s ease-in-out 1}
+@keyframes bow{0%,100%{transform:rotate(0)}40%{transform:rotate(-14deg) translateY(4px)}}
+.stage h1{font-size:clamp(1.8rem,5vw,2.8rem);color:var(--velvet-dark)}
+.stage p{margin:.2em 0;color:var(--velvet-dark)}
+.stars{display:inline-block;margin-top:10px;background:var(--paper);border-radius:999px;padding:6px 18px;font-weight:800;
+  box-shadow:0 3px 0 var(--velvet-dark)}
+@media (prefers-reduced-motion:reduce){.curtain{transition:none}.stage.open .swan{animation:none}}
+
+/* ---------- programme (tabs) ---------- */
+.programme{position:sticky;top:0;z-index:10;background:var(--velvet-dark);padding:8px 10px;
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.programme button{flex:0 0 auto;border:0;border-radius:14px;padding:8px 14px;background:transparent;color:#FBE3EA;
+  font-weight:700;white-space:nowrap}
+.programme button small{display:block;font-weight:600;opacity:.75;font-size:.72rem}
+.programme button.active{background:var(--rose);color:var(--velvet-dark)}
+
+main{max-width:880px;margin:0 auto;padding:22px 16px 60px}
+section{display:none}
+section.active{display:block}
+.act-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.act-title .num{font-family:'Comfortaa',sans-serif;font-weight:800;color:var(--velvet);font-size:.95rem;
+  border:2px solid var(--velvet);border-radius:10px;padding:2px 10px}
+.task{color:var(--muted);margin:0 0 16px}
+.card{background:var(--paper);border-radius:22px;padding:20px;margin:16px 0;border:2px solid #F3E3D6}
+.odette{display:flex;gap:12px;align-items:flex-start;background:var(--rose-soft);border-radius:18px;padding:12px 16px;margin:12px 0}
+.odette .ava{font-size:34px;line-height:1}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:10px 18px;font-weight:800;min-height:44px}
+.btn.check{background:var(--grass);color:#fff}
+.btn.reset{background:#EFE3D8;color:var(--ink)}
+.btn.again{background:var(--sky);color:#123}
+.btn.say{background:var(--sun);color:var(--ink)}
+.btn.main{background:var(--velvet);color:#fff}
+.result{margin-top:12px;font-weight:800;min-height:1.5em}
+.speak{border:0;background:var(--sun);border-radius:10px;padding:2px 8px;margin-left:6px;font-size:.9rem}
+
+/* quiz */
+.q{margin:14px 0}
+.q p{margin:0 0 8px;font-weight:700}
+.opt{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:8px 14px;min-height:44px}
+.opt.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.opt.ok{border-color:var(--grass);background:var(--grass-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* pairs */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pairs .col{display:flex;flex-direction:column;gap:8px}
+.tile{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:10px;min-height:48px;font-weight:700}
+.tile.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.tile.done{border-color:var(--grass);background:var(--grass-soft);color:#2F6B33;cursor:default}
+.tile.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* clock */
+.clockwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:center}
+.clockwrap svg{width:200px;height:200px}
+.timeopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:260px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.rules div{background:var(--sky-soft);border-radius:14px;padding:10px;text-align:center}
+.rules b{display:block;font-size:1.1rem}
+
+/* reading */
+.story p{margin:0 0 .8em}
+.story{background:#FFFDF8;border-left:6px solid var(--rose);border-radius:0 18px 18px 0;padding:16px 18px}
+.tf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #EADBCD}
+.tf .row{flex:0 0 auto}
+.me-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;padding:6px 0}
+input[type=text],select{font-family:inherit;font-size:1rem;border:2px solid #E8D8CB;border-radius:12px;padding:8px 10px;background:#fff;min-height:44px;width:100%}
+input.ok{border-color:var(--grass);background:var(--grass-soft)}
+input.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* grammar */
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-grid div{background:var(--sky-soft);border-radius:16px;padding:12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;text-align:center;font-weight:700}
+.scale div{border-radius:12px;padding:8px 4px;font-size:.9rem}
+.gap-item{padding:8px 0;border-bottom:1px dashed #EADBCD}
+.builder .line{min-height:52px;border:2px dashed var(--rose);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;background:#FFFDF8}
+.builder .bank{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:0;border-radius:12px;padding:8px 12px;background:var(--sky-soft);font-weight:700;min-height:40px}
+.line .chip{background:var(--rose-soft)}
+.builder.ok .line{border-color:var(--grass);background:var(--grass-soft)}
+.builder.bad .line{border-color:var(--coral);background:var(--coral-soft)}
+.inline-in{width:auto!important;min-width:110px;display:inline-block;min-height:38px;padding:4px 8px}
+
+/* day builder */
+.act-row{display:grid;grid-template-columns:34px 1.4fr 1fr 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.act-row input[type=checkbox]{width:24px;height:24px}
+.free{color:var(--muted);font-size:.9rem}
+.fixed-mark{font-size:.8rem;background:var(--sky-soft);border-radius:8px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.out{background:#FFFDF8;border-radius:18px;padding:16px;border:2px solid var(--rose);min-height:60px;white-space:pre-wrap}
+
+/* interview */
+.mic{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.mic .card{margin:0;display:flex;flex-direction:column;gap:8px}
+.mic .help{color:var(--muted);font-size:.95rem}
+.mic .card.done{border-color:var(--grass);background:var(--grass-soft)}
+
+/* finale */
+.links a{color:var(--velvet);font-weight:800}
+.links li{margin:0 0 12px}
+.poster{margin-top:14px;text-align:center;border-radius:22px;padding:26px 18px;
+  background:radial-gradient(circle at 50% 0,#FFF3C4,#F9D2DC 60%,#E9A8BE);font-family:'Comfortaa',sans-serif;font-size:1.3rem;font-weight:800;color:var(--velvet-dark);display:none}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.check-item input{width:26px;height:26px;flex:0 0 auto;margin-top:2px}
+.bar{height:16px;background:#F1E4D8;border-radius:10px;overflow:hidden;margin-top:12px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .4s}
+
+@media (max-width:620px){
+  body{font-size:17px}
+  .rule-grid,.me-row{grid-template-columns:1fr}
+  .act-row{grid-template-columns:30px 1fr;}
+  .act-row select{grid-column:2}
+  .act-row .free{grid-column:2}
+  .timeopts{grid-template-columns:1fr;min-width:0;width:100%}
+  .tf{flex-direction:column;align-items:flex-start}
+}
+
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.now{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.scene{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.scene .card{margin:0}
+.scene .emo{font-size:40px;line-height:1}
+.story .pc,.story .ps,.story .md{border-radius:6px;transition:background .3s}
+.story.show .pc{background:var(--rose)}
+.story.show .ps{background:#BFE0F5}
+.story.show .md{background:var(--sun)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:.9rem}
+.legend span{border-radius:8px;padding:2px 8px}
+.gloss{font-size:.95rem;color:var(--muted);margin-top:10px}
+.sign{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.sign .emo{font-size:34px;text-align:center}
+.clockbox{text-align:center}
+.bigtime{font-family:'Comfortaa',sans-serif;font-size:2.4rem;font-weight:800;color:var(--velvet)}
+.bq{font-size:1.25rem;font-weight:800;margin:14px 0}
+.bopts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2px solid #E8D8CB;border-radius:14px;padding:12px;background:#FFFDF8;line-height:1.5}
+.plan li{margin-bottom:4px}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="stage" id="stage">
+  <div class="curtain l"></div><div class="curtain r"></div>
+  <div class="stage-inner">
+    <div class="swan" aria-hidden="true">🦢</div>
+    <h1>Backstage</h1>
+    <p>Right now and the rules of the Academy</p>
+    <div class="stars">⭐ <span id="starCount">0</span> stars</div>
+  </div>
+</header>
+
+<nav class="programme" id="programme" aria-label="Lesson programme">
+  <button data-go="a1" class="active"><small>Act 1</small>Every day or now?</button>
+  <button data-go="a2"><small>Act 2</small>-ing</button>
+  <button data-go="a3"><small>Act 3</small>In the studio</button>
+  <button data-go="a4"><small>Act 4</small>Emily's message</button>
+  <button data-go="a5"><small>Act 5</small>Rules</button>
+  <button data-go="a6"><small>Act 6</small>Beat the clock</button>
+  <button data-go="a7"><small>Act 7</small>Video call</button>
+  <button data-go="a8"><small>Finale</small>Write back</button>
+</nav>
+
+<main>
+
+<!-- ============ ACT 1 ============ -->
+<section id="a1" class="active">
+  <div class="act-title"><span class="num">Act 1</span><h2>🔁 Every day or right now?</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Hello again, Vasilisa! Last time you told me about your day. Today we go backstage: what is happening <b>right now</b>, and what are the <b>rules</b>?</div></div>
+  <div class="rule-grid">
+    <div><b>🔁 Every day: Present Simple</b><br>I <b>have</b> ballet class every day.<br>She usually <b>gets up</b> at seven.</div>
+    <div style="background:var(--rose-soft)"><b>📸 Right now: Present Continuous</b><br>Look! I <b>am dancing</b>.<br>She <b>is stretching</b> at the moment.</div>
+  </div>
+  <div class="card">
+    <p class="task" style="margin:0">Разложи слова-подсказки по двум корзинам. Нажми на слово, потом на корзину. Ошиблась? Нажми на слово в корзине, и оно вернется.</p>
+    <div class="builder"><div class="bank" id="sigBank" style="margin-top:12px"></div></div>
+    <div class="basket-wrap">
+      <button class="basket" id="bSimple" type="button"><h4>🔁 Every day</h4><div class="chips"></div></button>
+      <button class="basket now" id="bCont" type="button"><h4>📸 Right now</h4><div class="chips"></div></button>
+    </div>
+    <div class="btns"><button class="btn check" id="sigCheck">Проверить</button><button class="btn reset" id="sigReset">Сбросить</button></div>
+    <div class="result" id="sigRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 2 ============ -->
+<section id="a2">
+  <div class="act-title"><span class="num">Act 2</span><h2>✏️ How to make -ing</h2></div>
+  <p class="task">Present Continuous: am / is / are + глагол с окончанием -ing. Но у -ing есть свои хитрости.</p>
+  <div class="rules">
+    <div><b>+ ing</b>stretch → stretching</div>
+    <div><b>e исчезает</b>dance → dancing</div>
+    <div><b>двойная буква</b>sit → sitting</div>
+  </div>
+  <div class="card">
+    <h3>Write the -ing form</h3>
+    <div id="ingList"></div>
+    <div class="btns"><button class="btn check" id="ingCheck">Проверить</button><button class="btn reset" id="ingReset">Сбросить</button></div>
+    <div class="result" id="ingRes"></div>
+  </div>
+  <div class="card">
+    <h3>I am, she is, they are</h3>
+    <div class="rule-grid">
+      <div>I <b>am</b> (I'm) dancing.<br>She <b>is</b> (she's) dancing.<br>They <b>are</b> (they're) dancing.</div>
+      <div>I'm <b>not</b> dancing.<br>She <b>isn't</b> dancing.<br><b>Is</b> she dancing? Yes, she <b>is</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACT 3 ============ -->
+<section id="a3">
+  <div class="act-title"><span class="num">Act 3</span><h2>📸 In the studio right now</h2></div>
+  <p class="task">Ты заглядываешь в балетный зал. Впиши, что делает каждый: am / is / are + глагол с -ing.</p>
+  <div class="scene" id="scene"></div>
+  <div class="btns"><button class="btn check" id="sceneCheck">Проверить</button><button class="btn reset" id="sceneReset">Сбросить</button></div>
+  <div class="result" id="sceneRes"></div>
+  <div class="card">
+    <h3>Yes or no?</h3>
+    <p class="task">Посмотри на картинки выше и выбери короткий ответ.</p>
+    <div id="shortList"></div>
+    <div class="btns"><button class="btn check" id="shortCheck">Проверить</button><button class="btn reset" id="shortReset">Сбросить</button></div>
+    <div class="result" id="shortRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 4 ============ -->
+<section id="a4">
+  <div class="act-title"><span class="num">Act 4</span><h2>💌 A message from Emily</h2></div>
+  <p class="task">Эмили, девочка из балетной школы в Лондоне, пишет тебе прямо из-за кулис. Прочитай письмо. Потом нажми «Покажи глаголы».</p>
+  <div class="card">
+    <div class="story" id="story">
+      <p>Hi Vasilisa!</p>
+      <p>I<span class="pc">'m writing</span> to you from backstage! Usually on Saturdays I <span class="ps">have</span> ballet class in the morning, and in the afternoon I <span class="ps">go</span> home. But today is different: we <span class="pc">are performing</span> The Nutcracker!</p>
+      <p>Right now the older students <span class="pc">are dancing</span> on stage. I<span class="pc">'m sitting</span> in the dressing room and I<span class="pc">'m waiting</span> for my turn. My friend Lily <span class="pc">is doing</span> her make-up, and our teacher <span class="pc">is checking</span> our costumes. I'm very nervous!</p>
+      <p>Backstage there are a lot of rules. We <span class="md">must</span> be very quiet. We <span class="md">mustn't</span> touch the props, and we <span class="md">mustn't</span> eat in our costumes. We <span class="md">have to</span> be ready fifteen minutes before our dance. We <span class="md">don't have to</span> stay after the show, so I can go home with my mum.</p>
+      <p>Oh! The music <span class="pc">is starting</span>. I <span class="md">have to</span> go!</p>
+      <p>Write back soon and tell me: what are you doing now? What rules do you have at your Academy?</p>
+      <p>Love,<br>Emily</p>
+    </div>
+    <div class="gloss">backstage: за кулисами · dressing room: гримерка · turn: очередь · nervous: волнуюсь · make-up: грим · props: реквизит</div>
+    <div class="btns"><button class="btn main" id="showVerbs">Покажи глаголы</button><button class="btn say" id="storySay">🔊 Послушать</button><button class="btn reset" id="storyStop">⏹ Стоп</button></div>
+    <div class="legend"><span style="background:#BFE0F5">every day</span><span style="background:var(--rose)">right now</span><span style="background:var(--sun)">rules</span></div>
+  </div>
+  <div class="card">
+    <h3>True or False?</h3>
+    <div id="tfList"></div>
+    <div class="btns"><button class="btn check" id="tfCheck">Проверить</button><button class="btn reset" id="tfReset">Сбросить</button></div>
+    <div class="result" id="tfRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 5 ============ -->
+<section id="a5">
+  <div class="act-title"><span class="num">Act 5</span><h2>📜 Rules: must, mustn't, have to</h2></div>
+  <div class="rule-grid">
+    <div><b>✅ must / have to</b><br>надо, обязательно<br>You <b>must</b> be on time.<br>We <b>have to</b> wear a bun.</div>
+    <div style="background:var(--coral-soft)"><b>🚫 mustn't</b><br>нельзя!<br>You <b>mustn't</b> run in the corridor.</div>
+  </div>
+  <div class="card" style="background:var(--grass-soft)">
+    <b>😌 don't have to</b> = не обязательно, можно не делать. Это совсем не то же самое, что mustn't!<br>
+    It's Sunday. I <b>don't have to</b> get up early. (можно поспать)<br>
+    I <b>mustn't</b> be late for class. (нельзя опаздывать)<br>
+    <span class="task">А про нее и про него: she <b>has to</b>, she <b>doesn't have to</b>. У must окончания нет: she <b>must</b>.</span>
+  </div>
+  <div class="card">
+    <h3>1. Emily's school rules</h3>
+    <p class="task">Посмотри на знак и выбери must, mustn't или don't have to.</p>
+    <div id="signList"></div>
+    <div class="btns"><button class="btn check" id="signCheck">Проверить</button><button class="btn reset" id="signReset">Сбросить</button></div>
+    <div class="result" id="signRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Has to or have to?</h3>
+    <div id="hasList"></div>
+    <div class="btns"><button class="btn check" id="hasCheck">Проверить</button><button class="btn reset" id="hasReset">Сбросить</button></div>
+    <div class="result" id="hasRes"></div>
+  </div>
+  <div class="card">
+    <h3>3. My Academy rules</h3>
+    <p class="task">А какие правила у тебя в Академии? Допиши и скажи вслух. Здесь нет одного правильного ответа, это твоя жизнь, а учитель поможет с ошибками.</p>
+    <div id="myRules"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 6 ============ -->
+<section id="a6">
+  <div class="act-title"><span class="num">Act 6</span><h2>⏱ Beat the clock</h2></div>
+  <p class="task">Все темы вместе. У тебя 60 секунд: выбирай правильный вариант как можно быстрее. Рекорд сохраняется, попробуй его побить!</p>
+  <div class="card clockbox">
+    <div class="bigtime" id="bTime">60</div>
+    <div id="bScore" style="font-weight:800">Score: 0 · Record: <span id="bBest">0</span></div>
+    <div class="bq" id="bQ">Ready?</div>
+    <div class="bopts" id="bOpts"></div>
+    <div class="btns" style="justify-content:center"><button class="btn main" id="bStart">Start!</button></div>
+    <div class="result" id="bRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 7 ============ -->
+<section id="a7">
+  <div class="act-title"><span class="num">Act 7</span><h2>📱 Video call with Emily</h2></div>
+  <p class="task">Представь, что Эмили позвонила тебе по видео. Учитель задает вопрос (или нажми 🔊), ты отвечаешь целым предложением. Ответила, нажимай «Готово».</p>
+  <div class="mic" id="mic"></div>
+  <div class="odette"><div class="ava">🦢</div><div><b>Swap!</b> Теперь ты спрашиваешь учителя: <b>What are you doing this evening?</b>, <b>Do you have to work on Saturdays?</b> Придумай еще один вопрос сама.</div></div>
+  <div class="result" id="micRes"></div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="a8">
+  <div class="act-title"><span class="num">Finale</span><h2>✉️ Write back to Emily</h2></div>
+  <div class="card">
+    <p class="task" style="margin-top:0">Ответь Эмили на ее письмо. Это домашнее задание. Постарайся написать от 60 до 80 слов.</p>
+    <ol class="plan">
+      <li>Поздоровайся и поблагодари за письмо.</li>
+      <li>Расскажи, что ты делаешь прямо сейчас и что делают люди рядом.</li>
+      <li>Расскажи, что ты обычно делаешь по субботам.</li>
+      <li>Напиши три правила твоей Академии: must, mustn't, have to.</li>
+      <li>Задай Эмили один вопрос и попрощайся.</li>
+    </ol>
+    <textarea id="letter" placeholder="Hi Emily,&#10;Thanks for your message! Right now I'm..."></textarea>
+    <div id="wc" style="font-weight:800;margin-top:6px">0 words</div>
+    <div class="btns">
+      <button class="btn check" id="shareLetter">Отправить учителю</button>
+      <button class="btn reset" id="copyLetter">Скопировать</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🏠 Homework</h3>
+    <div id="hwList"></div>
+    <div class="bar"><div id="hwBar"></div></div>
+  </div>
+  <div class="result" id="finalRes" style="text-align:center;font-size:1.2rem"></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+function $(id){return document.getElementById(id)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function norm(s){
+  s=' '+(s||'').toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g,' ').trim().replace(/[.!?]+$/,'')+' ';
+  s=s.replace(/'m /g,' am ').replace(/'s /g,' is ').replace(/'re /g,' are ');
+  s=s.replace(/n't /g,' not ').replace(/ ca not /g,' can not ');
+  return s.replace(/\s+/g,' ').trim();
+}
+var canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+function speak(text){ if(!canSpeak) return; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=0.9;
+  var v=window.speechSynthesis.getVoices().filter(function(x){return /^en(-|_)GB/i.test(x.lang)})[0]; if(v)u.voice=v; window.speechSynthesis.speak(u);}catch(e){} }
+function stopSpeak(){ if(canSpeak){ try{window.speechSynthesis.cancel()}catch(e){} } }
+function save(k,v){try{localStorage.setItem('backstage_'+k,JSON.stringify(v))}catch(e){}}
+function load(k){try{return JSON.parse(localStorage.getItem('backstage_'+k))}catch(e){return null}}
+
+var best={};
+function setStars(block,n){ if(!(block in best)||n>best[block]){best[block]=n} var t=0;for(var k in best)t+=best[k]; $('starCount').textContent=t; updateFinal(); }
+function starWord(n){var a=n%10,b=n%100;if(a===1&&b!==11)return 'звезда';if(a>=2&&a<=4&&(b<12||b>14))return 'звезды';return 'звезд'}
+function updateFinal(){var t=0;for(var k in best)t+=best[k];$('finalRes').textContent=t?('За урок у тебя '+t+' '+starWord(t)+'. Bravo, Vasilisa! 🌹'):''}
+
+window.addEventListener('load',function(){ setTimeout(function(){ $('stage').classList.add('open') },300) });
+var tabs=document.querySelectorAll('.programme button');
+tabs.forEach(function(b){ b.addEventListener('click',function(){
+  tabs.forEach(function(x){x.classList.remove('active')}); b.classList.add('active');
+  document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
+  $(b.dataset.go).classList.add('active'); stopSpeak(); stopClock();
+  window.scrollTo({top:$('stage').offsetHeight,behavior:'smooth'});
+})});
+
+/* generic: select-based gap list */
+function selectList(boxId,items,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    items.forEach(function(c,i){var d=document.createElement('div');d.className=c.emo?'sign':'gap-item';
+      var opts=c.o.slice();var sel='<select class="inline-in" aria-label="Выбери вариант"><option value="">...</option>'+opts.map(function(o){return '<option value="'+o+'">'+o+'</option>'}).join('')+'</select>';
+      var txt=c.q.replace('___',sel);
+      d.innerHTML=c.emo?('<div class="emo">'+c.emo+'</div><div>'+txt+'</div>'):((i+1)+'. '+txt);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' select').forEach(function(sel,i){sel.classList.remove('ok','bad');
+      if(!sel.value){empty++;return} if(sel.value===items[i].a){sel.classList.add('ok');s++}else sel.classList.add('bad')});
+    $(resId).textContent=(empty?'Осталось выбрать '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+/* generic: text-input gap list */
+function inputList(boxId,items,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    items.forEach(function(c,i){var d=document.createElement('div');d.className='gap-item';
+      d.innerHTML=(i+1)+'. '+c.q.replace('___','<input type="text" class="inline-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ответ">');box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' input').forEach(function(inp,i){inp.classList.remove('ok','bad');
+      var v=norm(inp.value);if(!v){empty++;return}
+      if(items[i].a.map(norm).indexOf(v)>-1){inp.classList.add('ok');s++}else inp.classList.add('bad')});
+    $(resId).textContent=(empty?'Осталось заполнить '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+
+/* ---------- ACT 1 baskets ---------- */
+var signals=[['every day','s'],['usually','s'],['always','s'],['on Mondays','s'],['never','s'],
+  ['now','c'],['right now','c'],['at the moment','c'],['Look!','c'],['Listen!','c']];
+var sigSel=null;
+function buildSig(){
+  $('sigRes').textContent='';sigSel=null;var bank=$('sigBank');bank.innerHTML='';
+  document.querySelectorAll('.basket .chips').forEach(function(c){c.innerHTML=''});
+  shuffle(signals).forEach(function(w){var c=document.createElement('button');c.type='button';c.className='chip';c.textContent=w[0];c.dataset.k=w[1];
+    c.onclick=function(e){e.stopPropagation();c.classList.remove('ok','bad');
+      if(c.parentNode!==bank){
+        if(sigSel){sigSel.classList.remove('sel');c.parentNode.appendChild(sigSel);sigSel=null;return}
+        bank.appendChild(c);return}
+      document.querySelectorAll('#sigBank .chip').forEach(function(x){x.classList.remove('sel')});c.classList.add('sel');sigSel=c;};
+    bank.appendChild(c)});
+}
+[['bSimple','s'],['bCont','c']].forEach(function(p){$(p[0]).onclick=function(){ if(!sigSel)return; sigSel.classList.remove('sel');$(p[0]).querySelector('.chips').appendChild(sigSel);sigSel=null; }});
+$('sigCheck').onclick=function(){var s=0,left=$('sigBank').children.length;
+  [['bSimple','s'],['bCont','c']].forEach(function(p){$(p[0]).querySelectorAll('.chip').forEach(function(c){c.classList.remove('ok','bad');if(c.dataset.k===p[1]){c.classList.add('ok');s++}else c.classList.add('bad')})});
+  $('sigRes').textContent=(left?'Разложи еще '+left+'. ':'')+'Верно: '+s+' из '+signals.length+(s===signals.length?'. Great start! 🔁':'');
+  if(!left) setStars('sig',s)};
+$('sigReset').onclick=buildSig;
+buildSig();
+
+/* ---------- ACT 2 -ing ---------- */
+var ing=[{q:'dance → ___',a:['dancing']},{q:'stretch → ___',a:['stretching']},{q:'sit → ___',a:['sitting']},{q:'jump → ___',a:['jumping']},
+  {q:'smile → ___',a:['smiling']},{q:'run → ___',a:['running']},{q:'practise → ___',a:['practising','practicing']},{q:'spin → ___',a:['spinning']}];
+var ingL=inputList('ingList',ing,'ingRes','ing','. Perfect spelling! ✏️');
+$('ingCheck').onclick=ingL.check;$('ingReset').onclick=ingL.build;
+
+/* ---------- ACT 3 scene ---------- */
+var scene=[
+  {emo:'🧘‍♀️',q:'Masha ___ (stretch) at the barre.',a:['is stretching',"masha is stretching","masha's stretching"]},
+  {emo:'🎹',q:'Mr Brown ___ (play) the piano.',a:['is playing',"mr brown is playing","mr brown's playing"]},
+  {emo:'👀',q:'The teacher ___ (watch) the girls.',a:['is watching',"the teacher is watching","the teacher's watching"]},
+  {emo:'💧',q:'Lena ___ (drink) water.',a:['is drinking',"lena is drinking","lena's drinking"]},
+  {emo:'🤸',q:'Tom and Sam ___ (jump).',a:['are jumping','tom and sam are jumping']},
+  {emo:'🪞',q:'I ___ (look) in the mirror.',a:['am looking','i am looking',"i'm looking"]}
+];
+function buildScene(){var box=$('scene');box.innerHTML='';$('sceneRes').textContent='';
+  scene.forEach(function(c){var d=document.createElement('div');d.className='card';
+    d.innerHTML='<div class="emo">'+c.emo+'</div><div>'+c.q.replace('___','<input type="text" class="inline-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ответ" style="width:100%!important;margin-top:4px">')+'</div>';box.appendChild(d)})}
+$('sceneCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#scene input').forEach(function(inp,i){inp.classList.remove('ok','bad');var v=norm(inp.value);if(!v){empty++;return}
+    if(scene[i].a.map(norm).indexOf(v)>-1){inp.classList.add('ok');s++}else inp.classList.add('bad')});
+  $('sceneRes').textContent=(empty?'Осталось заполнить '+empty+'. ':'')+'Верно: '+s+' из '+scene.length+(s===scene.length?'. What a busy studio! 📸':'. Не забудь am / is / are перед глаголом.');
+  if(!empty) setStars('scene',s)};
+$('sceneReset').onclick=buildScene;
+buildScene();
+var shortQ=[
+  {q:'Is Masha stretching? ___',o:["Yes, she is.","No, she isn't.","Yes, she does."],a:'Yes, she is.'},
+  {q:'Is Lena dancing? ___',o:["Yes, she is.","No, she isn't.","No, she doesn't."],a:"No, she isn't."},
+  {q:'Are Tom and Sam jumping? ___',o:["Yes, they are.","No, they aren't.","Yes, they do."],a:'Yes, they are.'},
+  {q:'Is Mr Brown singing? ___',o:["Yes, he is.","No, he isn't.","No, he doesn't."],a:"No, he isn't."}
+];
+var shortL=selectList('shortList',shortQ,'shortRes','short','. Brava! 👏');
+$('shortCheck').onclick=shortL.check;$('shortReset').onclick=shortL.build;
+
+/* ---------- ACT 4 Emily ---------- */
+$('showVerbs').onclick=function(){var on=$('story').classList.toggle('show');$('showVerbs').textContent=on?'Спрячь цвета':'Покажи глаголы'};
+$('storySay').onclick=function(){speak($('story').innerText)};
+$('storyStop').onclick=stopSpeak;
+var tf=[['Emily usually has ballet class on Saturday mornings.',true],['Today Emily is at home.',false],['Right now Emily is dancing on stage.',false],
+  ['Lily is doing her make-up.',true],['The children mustn\'t eat in their costumes.',true],['Emily has to stay after the show.',false]];
+var tfSel=[];
+function buildTF(){var box=$('tfList');box.innerHTML='';tfSel=tf.map(function(){return null});$('tfRes').textContent='';
+  tf.forEach(function(t,i){var d=document.createElement('div');d.className='tf';d.innerHTML='<span>'+(i+1)+'. '+t[0]+'</span>';
+    var r=document.createElement('div');r.className='row';
+    [['True',true],['False',false]].forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];
+      b.onclick=function(){tfSel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+    d.appendChild(r);box.appendChild(d)})}
+$('tfCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#tfList .tf').forEach(function(d,i){var bs=d.querySelectorAll('.opt');bs.forEach(function(b){b.classList.remove('ok','bad')});
+    if(tfSel[i]===null){empty++;return}var ch=tfSel[i]?bs[0]:bs[1];if(tfSel[i]===tf[i][1]){ch.classList.add('ok');s++}else ch.classList.add('bad')});
+  $('tfRes').textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+tf.length+(s===tf.length?'. Great reading! 💌':'');
+  if(!empty) setStars('tf',s)};
+$('tfReset').onclick=buildTF;
+buildTF();
+
+/* ---------- ACT 5 rules ---------- */
+var M=['must',"mustn't","don't have to"];
+var signs=[
+  {emo:'💇‍♀️',q:'You ___ put your hair in a bun.',o:M,a:'must'},
+  {emo:'📵',q:'You ___ use your phone in class.',o:M,a:"mustn't"},
+  {emo:'⏰',q:'You ___ be late for class.',o:M,a:"mustn't"},
+  {emo:'🍫',q:'You ___ eat in the studio.',o:M,a:"mustn't"},
+  {emo:'🩰',q:'You ___ wear a leotard and tights for class.',o:M,a:'must'},
+  {emo:'🙋‍♀️',q:'You ___ listen to the teacher.',o:M,a:'must'},
+  {emo:'🎭',q:'You ___ watch every show. It\'s your choice.',o:M,a:"don't have to"},
+  {emo:'😴',q:'It\'s Sunday! You ___ get up at seven.',o:M,a:"don't have to"}
+];
+var signL=selectList('signList',signs,'signRes','signs','. You know all the rules! 📜');
+$('signCheck').onclick=signL.check;$('signReset').onclick=signL.build;
+var H=['have to','has to',"don't have to","doesn't have to"];
+var hasQ=[
+  {q:'Emily ___ be ready fifteen minutes before her dance.',o:H,a:'has to'},
+  {q:'She ___ stay after the show. She can go home.',o:H,a:"doesn't have to"},
+  {q:'We ___ be quiet backstage.',o:H,a:'have to'},
+  {q:'My little sister ___ get up early. She is on holiday!',o:H,a:"doesn't have to"},
+  {q:'___ Emily have to wear make-up?',o:['Do','Does','Is'],a:'Does'}
+];
+var hasL=selectList('hasList',hasQ,'hasRes','has','. Brava! 🌟');
+$('hasCheck').onclick=hasL.check;$('hasReset').onclick=hasL.build;
+var savedRules=load('rules')||[];
+['At the Academy we must','We mustn\'t','We have to','We don\'t have to'].forEach(function(p,i){var d=document.createElement('div');d.className='me-row';
+  d.innerHTML='<span><b>'+p+'</b></span><input type="text" placeholder="...">';var inp=d.querySelector('input');inp.value=savedRules[i]||'';
+  inp.oninput=function(){savedRules[i]=inp.value;save('rules',savedRules)};$('myRules').appendChild(d)});
+
+/* ---------- ACT 6 beat the clock ---------- */
+var bank=[
+  ['Look! Emily ___ on stage.',['is dancing','dances'],0],
+  ['I ___ ballet class every day.',['have','am having'],0],
+  ['You ___ talk in class. It\'s a rule!',["mustn't","don't have to"],0],
+  ['It\'s Sunday, so we ___ get up early.',["don't have to","mustn't"],0],
+  ['Shh! The teacher ___ to us.',['is talking','talks'],0],
+  ['Dancers ___ warm up before class.',['must',"mustn't"],0],
+  ['She usually ___ to bed at nine.',['goes','is going'],0],
+  ['Listen! Somebody ___ the piano.',['is playing','plays'],0],
+  ['What ___ you doing right now?',['are','do'],0],
+  ['___ you usually walk to school?',['Do','Are'],0],
+  ['We ___ be late for class.',["mustn't","don't have to"],0],
+  ['My sister ___ her homework at the moment.',['is doing','does'],0],
+  ['Right now I ___ to music.',['am listening','listen'],0],
+  ['At our school we ___ wear a uniform.',['have to','are having'],0],
+  ['He ___ wear a bun. He\'s a boy!',["doesn't have to","mustn't"],0],
+  ['They ___ stretching at the barre now.',['are','do'],0],
+  ['Emily ___ be quiet backstage.',['has to','have to'],0],
+  ['I always ___ porridge for breakfast.',['eat','am eating'],0]
+];
+var bTimer=null,bLeft=60,bScore=0,bQueue=[],bLock=false,bestRec=load('record')||0;
+$('bBest').textContent=bestRec;
+function stopClock(){ if(bTimer){clearInterval(bTimer);bTimer=null;$('bQ').textContent='Ready?';$('bOpts').innerHTML='';$('bStart').style.display='';} }
+function bNext(){
+  if(!bQueue.length) bQueue=shuffle(bank);
+  var it=bQueue.pop();bLock=false;$('bQ').textContent=it[0];var box=$('bOpts');box.innerHTML='';
+  shuffle(it[1].map(function(o,k){return [o,k]})).forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];
+    b.onclick=function(){ if(bLock||!bTimer)return; bLock=true;
+      if(p[1]===it[2]){b.classList.add('ok');bScore++;$('bScore').innerHTML='Score: '+bScore+' · Record: <span id="bBest">'+bestRec+'</span>';setTimeout(bNext,350)}
+      else{b.classList.add('bad');box.querySelectorAll('.opt').forEach(function(x){if(x.textContent===it[1][it[2]])x.classList.add('ok')});setTimeout(bNext,1100)}
+    };box.appendChild(b)});
+}
+$('bStart').onclick=function(){
+  bLeft=60;bScore=0;bQueue=shuffle(bank);$('bRes').textContent='';$('bStart').style.display='none';
+  $('bTime').textContent=bLeft;$('bScore').innerHTML='Score: 0 · Record: <span id="bBest">'+bestRec+'</span>';
+  bTimer=setInterval(function(){bLeft--;$('bTime').textContent=bLeft;
+    if(bLeft<=0){clearInterval(bTimer);bTimer=null;$('bOpts').innerHTML='';$('bQ').textContent='Time!';$('bStart').style.display='';$('bStart').textContent='Еще раз';
+      var rec=bScore>bestRec; if(rec){bestRec=bScore;save('record',bestRec)}
+      $('bScore').innerHTML='Score: '+bScore+' · Record: <span id="bBest">'+bestRec+'</span>';
+      $('bRes').textContent=rec?'Новый рекорд: '+bScore+'! 🏆':'Результат: '+bScore+'. Попробуешь побить рекорд?';
+      setStars('clock',Math.min(bScore,10));}
+  },1000);
+  bNext();
+};
+
+/* ---------- ACT 7 video call ---------- */
+var qs=[
+  ['What are you doing right now?',"Right now I'm..."],
+  ['What is your family doing now, do you think?',"I think my mum is..."],
+  ['What do you usually do on Saturdays?','On Saturdays I usually...'],
+  ['What must you wear for ballet class?','We must wear...'],
+  ["What mustn't you do in class?","We mustn't..."],
+  ['Do you have to get up early?',"Yes, I do. I have to get up at... / No, I don't."],
+  ['Which rule is difficult for you?','... is difficult for me.'],
+  ['Which rule do you like? Why?','I like the rule... because...']
+];
+var micDone=0;
+qs.forEach(function(q){var c=document.createElement('div');c.className='card';
+  c.innerHTML='<b>'+q[0]+'</b><span class="help">'+q[1]+'</span><div class="row"><button class="btn say">🔊</button><button class="btn check">Готово</button></div>';
+  var bs=c.querySelectorAll('button');bs[0].onclick=function(){speak(q[0])};
+  bs[1].onclick=function(){var on=c.classList.toggle('done');micDone+=on?1:-1;bs[1].textContent=on?'Готово ✓':'Готово';
+    $('micRes').textContent=micDone?'Ответов: '+micDone+' из '+qs.length+(micDone===qs.length?'. Emily is happy! 📱':''):'';setStars('mic',micDone)};
+  $('mic').appendChild(c)});
+
+/* ---------- FINALE ---------- */
+var L=$('letter');L.value=load('letter')||'';
+function wc(){var n=(L.value.trim().match(/[A-Za-z']+/g)||[]).length;$('wc').textContent=n+' words'+(n>=60&&n<=80?' ✓':(n>80?' (можно чуть короче)':''));}
+L.oninput=function(){save('letter',L.value);wc()};wc();
+function flash(btn,msg,orig){btn.textContent=msg;setTimeout(function(){btn.textContent=orig},1800)}
+function copyText(t,btn,orig){
+  function fallback(){L.focus();L.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}flash(btn,ok?'Скопировано ✓':'Выдели текст и скопируй',orig)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){flash(btn,'Скопировано ✓',orig)},fallback)}else fallback();
+}
+$('copyLetter').onclick=function(){var t=L.value.trim();if(!t){flash($('copyLetter'),'Сначала напиши письмо','Скопировать');return}copyText(t,$('copyLetter'),'Скопировать')};
+$('shareLetter').onclick=function(){var t=L.value.trim();if(!t){flash($('shareLetter'),'Сначала напиши письмо','Отправить учителю');return}
+  if(navigator.share){navigator.share({title:'My letter to Emily',text:t}).catch(function(){})}else copyText(t,$('shareLetter'),'Отправить учителю')};
+var hwTasks=[
+  'Ответь Эмили на письмо (от 60 до 80 слов) и отправь учителю кнопкой «Отправить учителю».',
+  'Сыграй в Beat the clock еще два раза и попробуй побить свой рекорд.',
+  'Запиши голосовое на 30 секунд: что происходит вокруг тебя прямо сейчас? Например: My sister is reading. The cat is sleeping.',
+  'Допиши в Act 5 правила своей Академии, если на уроке не успела.'
+];
+var hwSaved=load('hw')||[];
+function hwProgress(){var all=document.querySelectorAll('#hwList input'),n=0;all.forEach(function(x){if(x.checked)n++});$('hwBar').style.width=(n/all.length*100)+'%'}
+hwTasks.forEach(function(t,i){var d=document.createElement('label');d.className='check-item';d.innerHTML='<input type="checkbox"><span>'+t+'</span>';
+  var c=d.querySelector('input');c.checked=!!hwSaved[i];
+  c.onchange=function(){save('hw',[].map.call(document.querySelectorAll('#hwList input'),function(x){return x.checked}));hwProgress()};$('hwList').appendChild(d)});
+hwProgress();
+})();
+</script>
+</body>
+</html>
