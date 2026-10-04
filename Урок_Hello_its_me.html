@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English with Pip: Hello, it's me!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FFF6E6; --paper:#FFFDF8; --line:#EADBC4;
+  --sky:#4FAEE3; --skyl:#DDF1FC;
+  --grass:#5DB54B; --grassl:#E3F5DD;
+  --coral:#FF7A61; --corall:#FFE4DD;
+  --sun:#FFC933; --sunl:#FFF3C7;
+  --brown:#7A5233; --ink:#4A3424;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Nunito',system-ui,'Segoe UI',Arial,sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:'Comfortaa','Nunito',system-ui,sans-serif;line-height:1.25;margin:0 0 .5em}
+h1{font-size:1.7rem}
+h2{font-size:1.4rem;color:var(--brown)}
+h3{font-size:1.15rem}
+p{margin:.3em 0 .8em}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+
+header{background:var(--sky);color:#fff;padding:18px 16px 22px}
+.head-in{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.head-in .face{font-size:62px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12))}
+.head-in .title{flex:1;min-width:220px}
+.head-in h1{color:#fff;margin:0}
+.head-in .sub{opacity:.95;margin:2px 0 0}
+.stars{background:#fff;color:var(--brown);border-radius:999px;padding:8px 16px;font-weight:800;font-size:1.1rem;white-space:nowrap}
+
+.tabs{position:sticky;top:0;z-index:10;background:var(--cream);border-bottom:2px dashed var(--line)}
+.tabs-in{max-width:920px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 12px;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:800;cursor:pointer;min-height:44px}
+.tab.active{background:var(--brown);border-color:var(--brown);color:#fff}
+
+main{max-width:920px;margin:0 auto;padding:12px 14px 60px}
+.block{background:var(--paper);border:2px solid var(--line);border-radius:24px;padding:18px;margin:18px 0}
+.block.sky{border-color:#B9E1F7}
+.block.grass{border-color:#C6E8BC}
+.block.coral{border-color:#FFC9BC}
+.block.sun{border-color:#FFE28A}
+.hint{color:#8A6E55;font-size:.95rem}
+.rule{background:var(--sunl);border-radius:16px;padding:12px 16px;margin:10px 0}
+
+.pip{display:flex;gap:10px;align-items:flex-end;margin:6px 0 14px}
+.pip .face{font-size:42px;line-height:1}
+.bubble{background:var(--skyl);border-radius:20px 20px 20px 6px;padding:10px 14px;max-width:100%}
+
+.btn{border:none;border-radius:16px;padding:10px 18px;min-height:46px;font-weight:800;cursor:pointer;background:var(--skyl);transition:transform .08s}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.check{background:var(--grass);color:#fff}
+.btn.reset{background:var(--sunl)}
+.btn.again{background:var(--skyl)}
+.btn.go{background:var(--coral);color:#fff}
+.btn.big{font-size:1.15rem;padding:12px 22px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.next{display:flex;justify-content:flex-end;margin-top:8px}
+.msg{font-weight:800;min-height:1.5em;margin-top:10px}
+.msg.ok{color:#3E8E2F}.msg.bad{color:#D9534F}
+
+.say{border:none;background:var(--sunl);border-radius:12px;min-width:40px;min-height:40px;cursor:pointer;font-size:1.05rem}
+
+/* phrases */
+.phrases{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.phrase{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:2px solid var(--line);background:#fff;border-radius:18px;padding:12px 14px;cursor:pointer;position:relative;min-height:74px}
+.phrase:hover{border-color:var(--sky)}
+.phrase .en{font-weight:800;font-size:1.1rem;padding-right:28px}
+.phrase .ru{color:#8A6E55;font-size:.95rem}
+.phrase .spk{position:absolute;right:10px;top:10px}
+
+.dialog .line{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.dialog .who{font-size:30px;line-height:1}
+.dialog .txt{background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 12px}
+.dialog .line.me .txt{background:var(--corall);border-color:#FFC9BC}
+
+/* answer quiz */
+.qa{border-bottom:2px dashed var(--line);padding:12px 0}
+.qa:last-of-type{border-bottom:none}
+.qa .q{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;margin-bottom:8px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 14px;cursor:pointer;min-height:44px;font-weight:700}
+.opt.sel{border-color:var(--sky);background:var(--skyl)}
+.opt.right{border-color:var(--grass);background:var(--grassl)}
+.opt.wrong{border-color:var(--coral);background:var(--corall)}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.flip{border:none;border-radius:20px;min-height:150px;padding:14px;cursor:pointer;background:var(--skyl);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.flip:nth-child(3n+2){background:var(--grassl)}
+.flip:nth-child(3n){background:var(--corall)}
+.flip .em{font-size:44px;line-height:1}
+.flip .ft{font-weight:800}
+.flip .bk{display:none;font-size:.98rem}
+.flip.open .em{font-size:30px}
+.flip.open .ft{display:none}
+.flip.open .bk{display:block}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700;min-height:44px}
+.chip.on{background:var(--sun);border-color:var(--sun)}
+
+/* pairs */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pcol{display:flex;flex-direction:column;gap:8px}
+.pbtn{border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 10px;min-height:52px;cursor:pointer;font-weight:800;font-size:1.05rem}
+.pbtn.emo{font-size:30px;line-height:1}
+.pbtn.sel{border-color:var(--sky);background:var(--skyl)}
+.pbtn.done{border-color:var(--grass);background:var(--grassl);cursor:default;opacity:.8}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* listening quiz & catch */
+.stage{text-align:center}
+.qcount{font-weight:800;color:#8A6E55}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:420px;margin:14px auto}
+.choice{border:3px solid var(--line);background:#fff;border-radius:20px;min-height:96px;cursor:pointer;font-size:52px;line-height:1;display:flex;align-items:center;justify-content:center;font-weight:800}
+.choice.num{font-size:44px;font-family:'Comfortaa','Nunito',sans-serif}
+.choice.right{border-color:var(--grass);background:var(--grassl)}
+.choice.wrong{border-color:var(--coral);background:var(--corall)}
+.swatch{display:inline-block;width:62px;height:62px;border-radius:50%;border:3px solid rgba(0,0,0,.12)}
+.word-big{font-family:'Comfortaa','Nunito',sans-serif;font-size:2.2rem;font-weight:700;margin:6px 0}
+.timer{display:flex;justify-content:center;gap:18px;font-weight:800;font-size:1.15rem}
+.bar{height:12px;background:var(--line);border-radius:999px;overflow:hidden;max-width:420px;margin:8px auto}
+.bar > i{display:block;height:100%;background:var(--sun);width:100%;transition:width 1s linear}
+
+/* numbers */
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.numb{border:2px solid var(--line);background:#fff;border-radius:14px;padding:6px;cursor:pointer;min-height:60px}
+.numb b{display:block;font-size:1.4rem;font-family:'Comfortaa','Nunito',sans-serif}
+.numb span{font-size:.85rem;color:#8A6E55}
+.cake{font-size:30px;letter-spacing:2px;line-height:1.3;margin:6px 0}
+.cake .base{font-size:56px;display:block}
+
+/* builder */
+.target,.pool{min-height:64px;border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.target{background:var(--skyl);border:2px dashed var(--sky)}
+.target.right{background:var(--grassl);border-color:var(--grass)}
+.target.wrong{background:var(--corall);border-color:var(--coral)}
+.pool{background:#fff;border:2px solid var(--line);margin-top:10px}
+.tile{border:2px solid var(--line);background:var(--sunl);border-radius:12px;padding:8px 12px;font-weight:800;cursor:pointer;min-height:44px}
+
+/* like cards */
+.likes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.lcard{background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px;text-align:center}
+.lcard .em{font-size:40px;line-height:1.1}
+.lcard .w{font-weight:800}
+.lcard .lb{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.lcard .lb button{border:2px solid var(--line);background:#fff;border-radius:12px;min-width:48px;min-height:44px;cursor:pointer;font-size:1.3rem}
+.lcard.yes{border-color:var(--grass);background:var(--grassl)}
+.lcard.no{border-color:var(--coral);background:var(--corall)}
+.lcard .s{font-size:.95rem;font-weight:700;min-height:1.4em;margin-top:4px}
+.gram{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-bottom:2px dashed var(--line)}
+.gram:last-of-type{border-bottom:none}
+.gram .em{font-size:28px}
+
+/* interview */
+.chat{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px;min-height:160px;max-height:420px;overflow-y:auto}
+.cl{display:flex;gap:8px;margin:8px 0;align-items:flex-end}
+.cl .b{border-radius:18px;padding:8px 12px;max-width:80%}
+.cl.pipl .b{background:var(--skyl);border-bottom-left-radius:6px}
+.cl.me{justify-content:flex-end}
+.cl.me .b{background:var(--corall);border-bottom-right-radius:6px}
+.cl .who{font-size:28px;line-height:1}
+.answers{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.answers input{font:inherit;border:2px solid var(--line);border-radius:14px;padding:8px 12px;min-height:46px;flex:1;min-width:180px}
+
+/* wheel */
+.wheel-wrap{position:relative;width:min(320px,82vw);aspect-ratio:1;margin:10px auto}
+.pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:34px;z-index:2;line-height:1}
+.wheel{width:100%;height:100%;border-radius:50%;border:6px solid var(--brown);position:relative;transition:transform 3.2s cubic-bezier(.17,.67,.21,1)}
+.wheel .lab{position:absolute;left:50%;top:50%;font-size:30px;line-height:1;width:40px;height:40px;margin:-20px 0 0 -20px;display:flex;align-items:center;justify-content:center}
+.wq{text-align:center;min-height:120px}
+.wq .qq{font-family:'Comfortaa','Nunito',sans-serif;font-size:1.5rem;font-weight:700;margin:6px 0}
+
+/* form */
+.field{margin:14px 0}
+.field > label,.field > .lbl{display:block;font-weight:800;margin-bottom:6px}
+.field input[type=text]{font:inherit;border:2px solid var(--line);border-radius:14px;padding:8px 12px;min-height:46px;width:100%;max-width:320px}
+.story{background:#fff;border:3px solid var(--sun);border-radius:20px;padding:16px 18px;font-size:1.15rem;line-height:1.8}
+.story .blank{color:#C0A68B}
+
+/* homework */
+.video{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.todo label{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:2px dashed var(--line);cursor:pointer}
+.todo label:last-child{border-bottom:none}
+.todo input{width:26px;height:26px;flex:0 0 auto;margin-top:2px;accent-color:var(--grass)}
+.todo label.done span{text-decoration:line-through;color:#8A6E55}
+.results{display:grid;grid-template-columns:1fr auto;gap:6px 14px}
+.results .v{font-weight:800}
+.link{color:var(--sky);font-weight:800}
+
+#printArea{display:none}
+@media print{
+  body{background:#fff}
+  header,.tabs,main{display:none!important}
+  #printArea{display:block;font-family:'Nunito',Arial,sans-serif;color:#000;padding:10mm}
+  #printArea h2{color:#000}
+  #printArea .ln{border-bottom:1px solid #999;height:12mm}
+}
+@media (max-width:520px){
+  body{font-size:17px}
+  .block{padding:14px;border-radius:20px}
+  .choice{min-height:84px}
+}
+@media (prefers-reduced-motion:reduce){
+  .wheel{transition:none}
+  .bar > i{transition:none}
+  .shake{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="face" aria-hidden="true">🐶</div>
+    <div class="title">
+      <h1>Hello, it's me!</h1>
+      <p class="sub">Урок с щенком Пипом: знакомимся, считаем и рассказываем о себе</p>
+    </div>
+    <div class="stars" title="Звезды за выполненные игры">⭐ <span id="starCount">0</span></div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Разделы урока">
+  <div class="tabs-in">
+    <button class="tab active" data-tab="t-hello">👋 Hello!</button>
+    <button class="tab" data-tab="t-why">🌍 Зачем английский</button>
+    <button class="tab" data-tab="t-know">🎮 Что я знаю</button>
+    <button class="tab" data-tab="t-meet">🎂 Имя и возраст</button>
+    <button class="tab" data-tab="t-like">💛 I like</button>
+    <button class="tab" data-tab="t-me">🐶 Про меня</button>
+    <button class="tab" data-tab="t-home">🏠 Домашка</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ HELLO ============ -->
+<section class="panel" id="t-hello">
+  <div class="block sky">
+    <div class="pip"><div class="face">🐶</div><div class="bubble"><b>Hi! I'm Pip.</b> Я щенок, и я учу английский вместе с тобой. Нажимай на карточки, и я скажу фразу вслух.</div></div>
+    <h2>Как поздороваться и попрощаться</h2>
+    <div class="phrases" id="greetPhrases"></div>
+  </div>
+
+  <div class="block grass">
+    <h2>Пип знакомится с Аней</h2>
+    <p class="hint">Послушай диалог, а потом прочитай его вместе с учителем по ролям.</p>
+    <div class="dialog" id="dialog"></div>
+    <div class="row"><button class="btn again" id="playDialog">🔊 Послушать диалог</button></div>
+  </div>
+
+  <div class="block coral">
+    <h2>Что ответить?</h2>
+    <p class="hint">Пип что-то говорит. Выбери, что ему ответить, а потом нажми «Проверить».</p>
+    <div id="answerQuiz"></div>
+    <div class="row">
+      <button class="btn check" id="aqCheck">Проверить</button>
+      <button class="btn reset" id="aqReset">Сбросить</button>
+    </div>
+    <div class="msg" id="aqMsg"></div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-why">Дальше: зачем нам английский</button></div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="panel" id="t-why" hidden>
+  <div class="block sun">
+    <div class="pip"><div class="face">🐶</div><div class="bubble">Зачем учить английский? Открывай карточки по одной и обсуждай с учителем.</div></div>
+    <div class="flips" id="flips"></div>
+  </div>
+
+  <div class="block sky">
+    <h2>А что интересно тебе?</h2>
+    <p class="hint">Выбери все, что нравится. Можно несколько.</p>
+    <div class="chips" id="reasons"></div>
+    <div class="msg" id="reasonsMsg"></div>
+  </div>
+
+  <div class="block grass">
+    <h2>Ты уже знаешь английский!</h2>
+    <p class="hint">Эти слова пришли в русский язык из английского. Нажми на русское слово, потом на такое же английское.</p>
+    <div id="loanPairs"></div>
+    <div class="row"><button class="btn reset" id="loanReset">Сбросить</button></div>
+    <div class="msg" id="loanMsg"></div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-know">Дальше: проверим, что ты знаешь</button></div>
+</section>
+
+<!-- ============ KNOW ============ -->
+<section class="panel" id="t-know" hidden>
+  <div class="block sky">
+    <h2>🎧 Квиз на слух</h2>
+    <p class="hint">Пип говорит слово. Найди картинку. Если не расслышала, нажми «Послушать еще».</p>
+    <div class="stage" id="lq"></div>
+  </div>
+
+  <div class="block grass">
+    <h2>🧩 Найди пару</h2>
+    <p class="hint">Нажми на слово, потом на картинку.</p>
+    <div id="wordPairs"></div>
+    <div class="row">
+      <button class="btn reset" id="wpReset">Сбросить</button>
+      <button class="btn again" id="wpAgain">Еще раз, другие слова</button>
+    </div>
+    <div class="msg" id="wpMsg"></div>
+  </div>
+
+  <div class="block sun">
+    <h2>⏱️ Поймай! Числа и цвета</h2>
+    <p class="hint">У тебя 40 секунд. Читай слово, слушай и быстро нажимай на нужное число или цвет.</p>
+    <div class="stage" id="catch">
+      <div class="timer"><span>⏱️ <span id="cLeft">40</span> сек</span><span>⭐ <span id="cScore">0</span></span><span>🏆 <span id="cBest">0</span></span></div>
+      <div class="bar"><i id="cBar"></i></div>
+      <div class="word-big" id="cWord">Ready?</div>
+      <div class="choices" id="cChoices"></div>
+      <div class="row" style="justify-content:center"><button class="btn go big" id="cStart">Старт!</button></div>
+      <div class="msg" id="cMsg"></div>
+    </div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-meet">Дальше: имя и возраст</button></div>
+</section>
+
+<!-- ============ MEET ============ -->
+<section class="panel" id="t-meet" hidden>
+  <div class="block sky">
+    <h2>Как познакомиться</h2>
+    <div class="phrases" id="meetPhrases"></div>
+    <div class="rule"><b>I'm</b> это короткое <b>I am</b>. Так можно говорить и так: <i>I'm eight</i> и <i>I'm eight years old</i>.</div>
+  </div>
+
+  <div class="block sun">
+    <h2>Числа от 1 до 20</h2>
+    <p class="hint">Нажимай и повторяй за Пипом.</p>
+    <div class="nums" id="nums"></div>
+  </div>
+
+  <div class="block coral">
+    <h2>🎂 How old are you?</h2>
+    <p class="hint">Посчитай свечки на торте и выбери, что скажет именинник.</p>
+    <div class="stage" id="cakeGame"></div>
+  </div>
+
+  <div class="block grass">
+    <h2>🔤 Собери фразу</h2>
+    <p class="hint">Нажимай на слова по порядку. Ошиблась? Нажми на слово в верхней строке, и оно вернется вниз.</p>
+    <div id="builder"></div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-like">Дальше: I like</button></div>
+</section>
+
+<!-- ============ LIKE ============ -->
+<section class="panel" id="t-like" hidden>
+  <div class="block sun">
+    <h2>I like и I don't like</h2>
+    <div class="rule">
+      <b>I like</b> 👍 мне нравится, я люблю<br>
+      <b>I don't like</b> 👎 мне не нравится, я не люблю<br>
+      <span class="hint">don't = do not</span>
+    </div>
+    <p class="hint">Нажимай 👍 или 👎 на каждой карточке и читай свою фразу вслух.</p>
+    <div class="likes" id="likes"></div>
+    <div class="row"><button class="btn reset" id="likesReset">Сбросить</button><button class="btn again" id="likesSay">🔊 Прочитать мои фразы</button></div>
+  </div>
+
+  <div class="block sky">
+    <h2>like или don't like?</h2>
+    <p class="hint">Посмотри на пальчик 👍 или 👎 и выбери нужное слово.</p>
+    <div id="gram"></div>
+    <div class="row">
+      <button class="btn check" id="gramCheck">Проверить</button>
+      <button class="btn reset" id="gramReset">Сбросить</button>
+    </div>
+    <div class="msg" id="gramMsg"></div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-me">Дальше: расскажи про себя</button></div>
+</section>
+
+<!-- ============ ME ============ -->
+<section class="panel" id="t-me" hidden>
+  <div class="block sky">
+    <h2>🎤 Интервью с Пипом</h2>
+    <p class="hint">Пип задает вопросы. Отвечай кнопками или пиши свое имя.</p>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="answers" id="chatAnswers"></div>
+    <div class="row"><button class="btn again" id="chatRestart">Начать заново</button></div>
+  </div>
+
+  <div class="block sun">
+    <h2>🎡 Колесо вопросов</h2>
+    <p class="hint">Крути колесо и отвечай на вопрос вслух. Если трудно, открой подсказку.</p>
+    <div class="wheel-wrap"><div class="pointer" aria-hidden="true">🔻</div><div class="wheel" id="wheel"></div></div>
+    <div class="row" style="justify-content:center"><button class="btn go big" id="spin">Крутить!</button></div>
+    <div class="wq" id="wq"></div>
+  </div>
+
+  <div class="block coral">
+    <h2>📝 All about me</h2>
+    <p class="hint">Заполни анкету. Внизу сам соберется рассказ о тебе. Он пригодится для домашки.</p>
+    <div class="field"><label for="fName">My name is…</label><input type="text" id="fName" placeholder="Напиши имя по-английски" autocomplete="off"></div>
+    <div class="field"><span class="lbl">I am … years old</span><div class="chips" id="fAge"></div></div>
+    <div class="field"><span class="lbl">My favourite colour is…</span><div class="chips" id="fColour"></div></div>
+    <div class="field"><span class="lbl">I like… (животные)</span><div class="chips" id="fAnimal"></div></div>
+    <div class="field"><span class="lbl">My favourite food is…</span><div class="chips" id="fFood"></div></div>
+    <div class="field"><span class="lbl">I like… (что любишь делать)</span><div class="chips" id="fHobby"></div></div>
+    <div class="field"><span class="lbl">I don't like…</span><div class="chips" id="fDislike"></div></div>
+    <h3>Мой рассказ</h3>
+    <div class="story" id="story"></div>
+    <div class="row"><button class="btn again" id="storySay">🔊 Послушать рассказ</button><button class="btn reset" id="formReset">Сбросить анкету</button></div>
+  </div>
+  <div class="next"><button class="btn go" data-go="t-home">Дальше: домашка</button></div>
+</section>
+
+<!-- ============ HOME ============ -->
+<section class="panel" id="t-home" hidden>
+  <div class="block sun">
+    <div class="pip"><div class="face">🐶</div><div class="bubble">You are great! Вот что ты сегодня сделала.</div></div>
+    <div class="results" id="results"></div>
+  </div>
+
+  <div class="block sky">
+    <h2>🎬 Видео для домашки</h2>
+    <div class="video">
+      <iframe src="https://www.youtube-nocookie.com/embed/RpmJ21mMDRk" title="Видео для домашнего задания" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p class="hint">Видео работает, когда есть интернет. Если плеер не запускается, <a class="link" href="https://youtu.be/RpmJ21mMDRk" target="_blank" rel="noopener">открой видео на YouTube</a>.</p>
+  </div>
+
+  <div class="block grass">
+    <h2>✅ Домашнее задание</h2>
+    <div class="todo" id="todo"></div>
+  </div>
+
+  <div class="block coral">
+    <h2>📖 Образец рассказа о себе</h2>
+    <p class="hint">Это твой рассказ из анкеты. Перепиши его в тетрадь. Можешь добавить что-то свое.</p>
+    <div class="story" id="hwStory"></div>
+    <div class="row">
+      <button class="btn again" id="hwSay">🔊 Послушать</button>
+      <button class="btn reset" id="printBtn">🖨️ Распечатать задание</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="printArea"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = (a, n) => shuffle(a).slice(0, n);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('pip1_' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('pip1_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ---------- speech ---------- */
+const canSpeak = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+let voices = [];
+function loadVoices() { try { voices = speechSynthesis.getVoices(); } catch (e) { voices = []; } }
+if (canSpeak) { loadVoices(); try { speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {} }
+function makeUtt(text, pitch) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-GB'; u.rate = 0.85; u.pitch = pitch || 1;
+  const v = voices.find(v => /en[-_]GB/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang));
+  if (v) u.voice = v;
+  return u;
+}
+function say(text, pitch) {
+  if (!canSpeak || !text) return;
+  try { speechSynthesis.cancel(); speechSynthesis.speak(makeUtt(text, pitch)); } catch (e) {}
+}
+function sayList(list) {
+  if (!canSpeak) return;
+  try { speechSynthesis.cancel(); list.forEach(([t, p]) => speechSynthesis.speak(makeUtt(t, p))); } catch (e) {}
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, b.dataset.pitch ? +b.dataset.pitch : 1); });
+
+/* ---------- stars & results ---------- */
+let stars = store.get('stars', {});
+let results = store.get('results', {});
+const RESULT_NAMES = {
+  answers: 'Что ответить?', loan: 'Слова из английского', listen: 'Квиз на слух', pairs: 'Найди пару',
+  catch: 'Поймай! (лучший счет)', cake: 'How old are you?', builder: 'Собери фразу', gram: "like или don't like",
+  interview: 'Интервью с Пипом', story: 'Анкета All about me'
+};
+function award(id) { if (!stars[id]) { stars[id] = 1; store.set('stars', stars); } updateStars(); }
+function updateStars() { $('#starCount').textContent = Object.keys(stars).length; }
+function setResult(id, text) { results[id] = text; store.set('results', results); renderResults(); }
+function renderResults() {
+  const box = $('#results'); box.innerHTML = '';
+  const keys = Object.keys(RESULT_NAMES);
+  let any = false;
+  keys.forEach(k => {
+    if (!results[k]) return; any = true;
+    box.append(el('div', '', esc(RESULT_NAMES[k])), el('div', 'v', esc(results[k])));
+  });
+  if (!any) box.append(el('div', 'hint', 'Здесь появятся твои результаты, когда ты поиграешь в игры урока.'));
+}
+
+/* ---------- tabs ---------- */
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== id);
+  if (id === 't-home') { renderResults(); renderStory(); }
+  window.scrollTo({ top: 0 });
+  const t = document.querySelector('.tab.active'); if (t && t.scrollIntoView) t.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.go)));
+
+/* ---------- data ---------- */
+const NUMS = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+const COLOURS = [
+  {w:'red',c:'#E53935'},{w:'blue',c:'#1E88E5'},{w:'green',c:'#43A047'},{w:'yellow',c:'#FDD835'},{w:'orange',c:'#FB8C00'},
+  {w:'pink',c:'#F48FB1'},{w:'purple',c:'#8E24AA'},{w:'brown',c:'#795548'},{w:'black',c:'#212121'},{w:'white',c:'#FFFFFF'}
+];
+const ANIMALS = [
+  {w:'cat',e:'🐱',pl:'cats'},{w:'dog',e:'🐶',pl:'dogs'},{w:'rabbit',e:'🐰',pl:'rabbits'},{w:'horse',e:'🐴',pl:'horses'},
+  {w:'frog',e:'🐸',pl:'frogs'},{w:'bear',e:'🐻',pl:'bears'},{w:'fish',e:'🐟',pl:'fish'},{w:'bird',e:'🐦',pl:'birds'},
+  {w:'lion',e:'🦁',pl:'lions'},{w:'mouse',e:'🐭',pl:'mice'},{w:'monkey',e:'🐵',pl:'monkeys'},{w:'pig',e:'🐷',pl:'pigs'}
+];
+const FOOD = [
+  {w:'apple',e:'🍎'},{w:'banana',e:'🍌'},{w:'cake',e:'🍰'},{w:'milk',e:'🥛'},{w:'bread',e:'🍞'},
+  {w:'egg',e:'🥚'},{w:'pizza',e:'🍕'},{w:'ice cream',e:'🍦'},{w:'cheese',e:'🧀'},{w:'carrot',e:'🥕'}
+];
+
+/* ---------- HELLO: phrases ---------- */
+function phraseGrid(target, list) {
+  const box = $(target);
+  list.forEach(([en, ru]) => {
+    const b = el('button', 'phrase', `<span class="en">${esc(en)}</span><span class="ru">${esc(ru)}</span><span class="spk" aria-hidden="true">🔊</span>`);
+    b.dataset.say = en; box.append(b);
+  });
+}
+phraseGrid('#greetPhrases', [
+  ['Hello!','Привет! Здравствуй!'],['Hi!','Привет!'],['Good morning!','Доброе утро!'],['Good afternoon!','Добрый день!'],
+  ['Good evening!','Добрый вечер!'],['How are you?','Как дела?'],["I'm fine, thank you.",'Хорошо, спасибо.'],
+  ['Goodbye!','До свидания!'],['Bye!','Пока!'],['See you!','Увидимся!']
+]);
+
+const DIALOG = [
+  ['🐶','Hello! I\'m Pip.',1.35],['👧','Hi, Pip! I\'m Anya.',1.1],['🐶','Nice to meet you, Anya!',1.35],['👧','Nice to meet you too!',1.1],
+  ['🐶','How are you?',1.35],['👧','I\'m fine, thank you. And you?',1.1],['🐶','I\'m great! How old are you?',1.35],
+  ['👧','I\'m eight. And you?',1.1],['🐶','I\'m three! Goodbye, Anya!',1.35],['👧','Bye, Pip!',1.1]
+];
+(function () {
+  const box = $('#dialog');
+  DIALOG.forEach(([who, t, p]) => {
+    const line = el('div', 'line' + (who === '👧' ? ' me' : ''), `<div class="who" aria-hidden="true">${who}</div><div class="txt">${esc(t)}</div>`);
+    const s = el('button', 'say', '🔊'); s.dataset.say = t; s.dataset.pitch = p; s.setAttribute('aria-label', 'Послушать');
+    line.append(s); box.append(line);
+  });
+  $('#playDialog').addEventListener('click', () => sayList(DIALOG.map(([, t, p]) => [t, p])));
+})();
+
+/* ---------- HELLO: what to answer ---------- */
+const AQ = [
+  {q:'Hello!', o:['Hello!','Goodbye!',"I'm eight."], a:0},
+  {q:'How are you?', o:['My name is Anya.',"I'm fine, thank you.",'Yes, I do.'], a:1},
+  {q:"What's your name?", o:["I'm fine.",'I like cats.','My name is Anya.'], a:2},
+  {q:'How old are you?', o:["I'm eight.",'Good morning!','Nice to meet you!'], a:0},
+  {q:'Nice to meet you!', o:['Good night!','Nice to meet you too!',"I'm seven."], a:1},
+  {q:'Do you like pizza?', o:["I'm fine.",'Hello!','Yes, I do.'], a:2},
+  {q:'Good morning!', o:['Good morning!','Good night!','How old are you?'], a:0},
+  {q:'Goodbye!', o:['Hello!','Bye!','How are you?'], a:1}
+];
+let aqSel = {};
+function renderAQ() {
+  const box = $('#answerQuiz'); box.innerHTML = ''; aqSel = {};
+  AQ.forEach((it, i) => {
+    const row = el('div', 'qa');
+    const q = el('div', 'q', `<span aria-hidden="true">🐶</span> ${esc(it.q)}`);
+    const s = el('button', 'say', '🔊'); s.dataset.say = it.q; s.dataset.pitch = 1.35; s.setAttribute('aria-label', 'Послушать'); q.append(s);
+    const opts = el('div', 'opts');
+    it.o.forEach((o, j) => {
+      const b = el('button', 'opt', esc(o));
+      b.addEventListener('click', () => {
+        if (row.dataset.checked) return;
+        aqSel[i] = j; opts.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+      });
+      opts.append(b);
+    });
+    row.append(q, opts); box.append(row);
+  });
+  $('#aqMsg').textContent = ''; $('#aqMsg').className = 'msg';
+}
+$('#aqCheck').addEventListener('click', () => {
+  const rows = document.querySelectorAll('#answerQuiz .qa');
+  if (Object.keys(aqSel).length < AQ.length) { $('#aqMsg').textContent = 'Выбери ответ в каждой строчке.'; $('#aqMsg').className = 'msg bad'; return; }
+  let ok = 0;
+  rows.forEach((row, i) => {
+    row.dataset.checked = 1;
+    const bs = row.querySelectorAll('.opt');
+    bs.forEach(b => b.classList.remove('sel'));
+    bs[AQ[i].a].classList.add('right');
+    if (aqSel[i] === AQ[i].a) ok++; else bs[aqSel[i]].classList.add('wrong');
+  });
+  $('#aqMsg').textContent = `Верно ${ok} из ${AQ.length}. ` + (ok === AQ.length ? 'Супер!' : 'Зеленым показан правильный ответ.');
+  $('#aqMsg').className = 'msg ' + (ok >= 6 ? 'ok' : 'bad');
+  setResult('answers', `${ok} из ${AQ.length}`); award('answers');
+});
+$('#aqReset').addEventListener('click', renderAQ);
+renderAQ();
+
+/* ---------- WHY: flip cards ---------- */
+const WHY = [
+  ['🎬','Мультики и песни','Можно смотреть любимые мультики и понимать песни без перевода.'],
+  ['✈️','Путешествия','В любой стране можно спросить дорогу, купить мороженое и познакомиться.'],
+  ['👫','Друзья','Можно дружить и играть с детьми из других стран.'],
+  ['🎮','Игры и приложения','Многие игры, кнопки и надписи в телефоне на английском.'],
+  ['🧸','Надписи вокруг','На игрушках, коробках и одежде часто пишут по-английски. Скоро ты будешь все это читать!'],
+  ['🚀','Профессии','Английский нужен врачам, ученым, пилотам, программистам и даже космонавтам.']
+];
+(function () {
+  const box = $('#flips');
+  WHY.forEach(([e, f, b]) => {
+    const c = el('button', 'flip', `<span class="em" aria-hidden="true">${e}</span><span class="ft">${esc(f)}</span><span class="bk">${esc(b)}</span>`);
+    c.addEventListener('click', () => c.classList.toggle('open'));
+    box.append(c);
+  });
+})();
+
+const REASONS = ['🎬 мультики','🎵 песни','✈️ путешествия','👫 друзья из других стран','🎮 игры','📚 книжки','⭐ хорошие оценки','🤔 пока не знаю'];
+let profile = store.get('profile', {});
+(function () {
+  const box = $('#reasons');
+  profile.reasons = profile.reasons || [];
+  REASONS.forEach(r => {
+    const c = el('button', 'chip' + (profile.reasons.includes(r) ? ' on' : ''), esc(r));
+    c.addEventListener('click', () => {
+      const i = profile.reasons.indexOf(r);
+      if (i >= 0) profile.reasons.splice(i, 1); else profile.reasons.push(r);
+      c.classList.toggle('on'); store.set('profile', profile); reasonsMsg();
+    });
+    box.append(c);
+  });
+  reasonsMsg();
+})();
+function reasonsMsg() {
+  const n = profile.reasons.length;
+  $('#reasonsMsg').textContent = n ? 'Расскажи учителю, почему ты это выбрала.' : '';
+  $('#reasonsMsg').className = 'msg ok';
+}
+
+/* ---------- pairs (generic) ---------- */
+function makePairs(target, items, opts) {
+  const box = $(target); box.innerHTML = '';
+  const wrap = el('div', 'pairs');
+  const L = el('div', 'pcol'), R = el('div', 'pcol');
+  let sel = null, mistakes = 0, left = items.length;
+  const msg = $(opts.msg); msg.textContent = ''; msg.className = 'msg';
+  function mk(it, side) {
+    const b = el('button', 'pbtn' + (side === 'R' && opts.emoji ? ' emo' : ''), esc(side === 'L' ? it.left : it.right));
+    b.addEventListener('click', () => {
+      if (b.classList.contains('done')) return;
+      if (!sel || sel.side === side) {
+        if (sel) sel.b.classList.remove('sel');
+        sel = { side, key: it.key, b }; b.classList.add('sel'); return;
+      }
+      if (sel.key === it.key) {
+        sel.b.classList.remove('sel'); sel.b.classList.add('done'); b.classList.add('done');
+        say(it.sayText); left--;
+        if (!left) {
+          msg.textContent = mistakes ? `Все пары найдены! Ошибок: ${mistakes}.` : 'Все пары найдены без ошибок! Ты молодец!';
+          msg.className = 'msg ok';
+          setResult(opts.id, mistakes ? `все пары, ошибок: ${mistakes}` : 'все пары без ошибок'); award(opts.id);
+        }
+      } else {
+        mistakes++;
+        [sel.b, b].forEach(x => { x.classList.remove('sel'); x.classList.remove('shake'); void x.offsetWidth; x.classList.add('shake'); });
+      }
+      sel = null;
+    });
+    return b;
+  }
+  shuffle(items).forEach(it => L.append(mk(it, 'L')));
+  shuffle(items).forEach(it => R.append(mk(it, 'R')));
+  wrap.append(L, R); box.append(wrap);
+}
+
+const LOANS = [['футбол','football'],['хобби','hobby'],['клоун','clown'],['джинсы','jeans'],['попкорн','popcorn'],['сэндвич','sandwich'],['компьютер','computer'],['смартфон','smartphone']];
+function loanGame() { makePairs('#loanPairs', LOANS.map(([r, e]) => ({ key: e, left: r, right: e, sayText: e })), { id: 'loan', msg: '#loanMsg' }); }
+$('#loanReset').addEventListener('click', loanGame);
+loanGame();
+
+/* ---------- KNOW: listening quiz ---------- */
+function optionHTML(cat, item) {
+  if (cat === 'colour') return `<span class="swatch" style="background:${item.c}"></span>`;
+  if (cat === 'number') return String(item.n);
+  return item.e;
+}
+function makeQuiz() {
+  const qs = [];
+  const nums = NUMS.slice(1).map((w, i) => ({ w, n: i + 1 }));
+  const plan = [['colour', COLOURS, 3], ['number', nums, 3], ['animal', ANIMALS, 2], ['food', FOOD, 2]];
+  plan.forEach(([cat, pool, k]) => pick(pool, k).forEach(t => {
+    const others = pick(pool.filter(x => x.w !== t.w), 3);
+    qs.push({ cat, t, opts: shuffle([t, ...others]) });
+  }));
+  return shuffle(qs);
+}
+let lq = { qs: [], i: 0, ok: 0, lock: false };
+function lqStart() { lq = { qs: makeQuiz(), i: 0, ok: 0, lock: false }; lqShow(); }
+function lqShow() {
+  const box = $('#lq'); box.innerHTML = '';
+  if (lq.i >= lq.qs.length) {
+    const n = lq.qs.length;
+    box.append(el('div', 'word-big', `${lq.ok} / ${n}`));
+    box.append(el('p', '', lq.ok >= 8 ? 'Отлично! У тебя хорошие ушки.' : lq.ok >= 5 ? 'Хорошо! Некоторые слова повторим.' : 'Ничего страшного, эти слова мы выучим.'));
+    const again = el('button', 'btn again', 'Еще раз'); again.addEventListener('click', lqStart);
+    const r = el('div', 'row'); r.style.justifyContent = 'center'; r.append(again); box.append(r);
+    setResult('listen', `${lq.ok} из ${n}`); award('listen');
+    return;
+  }
+  const q = lq.qs[lq.i]; lq.lock = false;
+  box.append(el('div', 'qcount', `Вопрос ${lq.i + 1} из ${lq.qs.length}`));
+  const wordBox = el('div', 'word-big', '🎧');
+  box.append(wordBox);
+  const r = el('div', 'row'); r.style.justifyContent = 'center';
+  const lis = el('button', 'btn again', '🔊 Послушать еще'); lis.addEventListener('click', () => say(q.t.w));
+  const show = el('button', 'btn reset', 'Показать слово'); show.addEventListener('click', () => { wordBox.textContent = q.t.w; });
+  r.append(lis, show); box.append(r);
+  if (!canSpeak) { wordBox.textContent = q.t.w; lis.disabled = true; }
+  const ch = el('div', 'choices');
+  q.opts.forEach(o => {
+    const b = el('button', 'choice' + (q.cat === 'number' ? ' num' : ''), optionHTML(q.cat, o));
+    b.addEventListener('click', () => {
+      if (lq.lock) return; lq.lock = true;
+      const right = o.w === q.t.w;
+      if (right) { b.classList.add('right'); lq.ok++; }
+      else {
+        b.classList.add('wrong');
+        [...ch.children].forEach((c, k) => { if (q.opts[k].w === q.t.w) c.classList.add('right'); });
+        wordBox.textContent = q.t.w;
+      }
+      setTimeout(() => { lq.i++; lqShow(); }, right ? 800 : 1600);
+    });
+    ch.append(b);
+  });
+  box.append(ch);
+  setTimeout(() => say(q.t.w), 250);
+}
+lqStart();
+
+/* ---------- KNOW: word pairs ---------- */
+function wordPairsGame() {
+  const items = pick([...ANIMALS, ...FOOD], 8).map(x => ({ key: x.w, left: x.w, right: x.e, sayText: x.w }));
+  makePairs('#wordPairs', items, { id: 'pairs', msg: '#wpMsg', emoji: true });
+  wpLast = items;
+}
+let wpLast = [];
+$('#wpReset').addEventListener('click', () => makePairs('#wordPairs', wpLast, { id: 'pairs', msg: '#wpMsg', emoji: true }));
+$('#wpAgain').addEventListener('click', wordPairsGame);
+wordPairsGame();
+
+/* ---------- KNOW: catch game ---------- */
+const CATCH_TIME = 40;
+let cg = { run: false, left: CATCH_TIME, score: 0, t: null, target: null, timer: null };
+let best = store.get('catchBest', 0);
+$('#cBest').textContent = best;
+function cRound() {
+  const box = $('#cChoices'); box.innerHTML = '';
+  let cat, target, opts;
+  if (Math.random() < 0.5) {
+    cat = 'number';
+    const pool = NUMS.slice(1).map((w, i) => ({ w, n: i + 1 }));
+    target = pool[Math.floor(Math.random() * pool.length)];
+    opts = shuffle([target, ...pick(pool.filter(x => x.n !== target.n), 3)]);
+  } else {
+    cat = 'colour';
+    target = COLOURS[Math.floor(Math.random() * COLOURS.length)];
+    opts = shuffle([target, ...pick(COLOURS.filter(x => x.w !== target.w), 3)]);
+  }
+  cg.target = target;
+  $('#cWord').textContent = target.w; say(target.w);
+  opts.forEach(o => {
+    const b = el('button', 'choice' + (cat === 'number' ? ' num' : ''), optionHTML(cat, o));
+    b.addEventListener('click', () => {
+      if (!cg.run) return;
+      if (o.w === cg.target.w) { cg.score++; $('#cScore').textContent = cg.score; b.classList.add('right'); setTimeout(() => { if (cg.run) cRound(); }, 250); }
+      else { b.classList.add('wrong'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+    });
+    box.append(b);
+  });
+}
+function cStart() {
+  clearInterval(cg.timer);
+  cg = { run: true, left: CATCH_TIME, score: 0, target: null, timer: null };
+  $('#cScore').textContent = 0; $('#cLeft').textContent = CATCH_TIME; $('#cBar').style.width = '100%';
+  $('#cMsg').textContent = ''; $('#cStart').disabled = true;
+  cRound();
+  cg.timer = setInterval(() => {
+    cg.left--; $('#cLeft').textContent = cg.left; $('#cBar').style.width = (cg.left / CATCH_TIME * 100) + '%';
+    if (cg.left <= 0) cEnd();
+  }, 1000);
+}
+function cEnd() {
+  clearInterval(cg.timer); cg.run = false;
+  $('#cChoices').innerHTML = ''; $('#cWord').textContent = 'Time!';
+  if (cg.score > best) { best = cg.score; store.set('catchBest', best); $('#cBest').textContent = best; $('#cMsg').textContent = `Новый рекорд: ${cg.score}!`; }
+  else $('#cMsg').textContent = `Поймано: ${cg.score}. Попробуешь побить рекорд?`;
+  $('#cMsg').className = 'msg ok';
+  $('#cStart').disabled = false; $('#cStart').textContent = 'Еще раз';
+  setResult('catch', String(best)); award('catch');
+}
+$('#cStart').addEventListener('click', cStart);
+
+/* ---------- MEET ---------- */
+phraseGrid('#meetPhrases', [
+  ["What's your name?",'Как тебя зовут?'],['My name is Anya.','Меня зовут Аня.'],["I'm Anya.",'Я Аня.'],
+  ['How old are you?','Сколько тебе лет?'],["I'm eight.",'Мне восемь.'],["I'm eight years old.",'Мне восемь лет.'],
+  ['Nice to meet you!','Приятно познакомиться!'],['Nice to meet you too!','Мне тоже приятно!']
+]);
+(function () {
+  const box = $('#nums');
+  for (let n = 1; n <= 20; n++) {
+    const b = el('button', 'numb', `<b>${n}</b><span>${NUMS[n]}</span>`); b.dataset.say = NUMS[n]; box.append(b);
+  }
+})();
+
+let cake = { rounds: [], i: 0, ok: 0, lock: false };
+function cakeStart() { cake = { rounds: pick([5,6,7,8,9,10,11,12], 5), i: 0, ok: 0, lock: false }; cakeShow(); }
+function cakeShow() {
+  const box = $('#cakeGame'); box.innerHTML = '';
+  if (cake.i >= cake.rounds.length) {
+    box.append(el('div', 'word-big', `${cake.ok} / ${cake.rounds.length}`));
+    box.append(el('p', '', cake.ok === cake.rounds.length ? 'Все верно! Happy birthday to you!' : 'Хорошо! Числа будем повторять.'));
+    const a = el('button', 'btn again', 'Еще раз'); a.addEventListener('click', cakeStart);
+    const r = el('div', 'row'); r.style.justifyContent = 'center'; r.append(a); box.append(r);
+    setResult('cake', `${cake.ok} из ${cake.rounds.length}`); award('cake');
+    return;
+  }
+  const n = cake.rounds[cake.i]; cake.lock = false;
+  box.append(el('div', 'qcount', `Торт ${cake.i + 1} из ${cake.rounds.length}`));
+  const q = el('div', 'row'); q.style.justifyContent = 'center';
+  q.append(el('div', '', '<b>How old are you?</b>'));
+  const s = el('button', 'say', '🔊'); s.dataset.say = 'How old are you?'; s.setAttribute('aria-label', 'Послушать'); q.append(s);
+  box.append(q);
+  box.append(el('div', 'cake', '🕯️'.repeat(n) + '<span class="base">🎂</span>'));
+  const opts = shuffle([n, ...pick([5,6,7,8,9,10,11,12].filter(x => x !== n), 2)]);
+  const ch = el('div', 'opts'); ch.style.justifyContent = 'center';
+  opts.forEach(o => {
+    const t = `I'm ${NUMS[o]}.`;
+    const b = el('button', 'opt', esc(t));
+    b.addEventListener('click', () => {
+      if (cake.lock) return; cake.lock = true;
+      say(t);
+      if (o === n) { b.classList.add('right'); cake.ok++; }
+      else { b.classList.add('wrong'); [...ch.children].forEach((c, k) => { if (opts[k] === n) c.classList.add('right'); }); }
+      setTimeout(() => { cake.i++; cakeShow(); }, o === n ? 1100 : 1900);
+    });
+    ch.append(b);
+  });
+  box.append(ch);
+}
+cakeStart();
+
+/* ---------- MEET: sentence builder ---------- */
+const SENTS = [
+  {t:'Hello! My name is Pip.', ru:'Привет! Меня зовут Пип.'},
+  {t:'What is your name?', ru:'Как тебя зовут?'},
+  {t:'How old are you?', ru:'Сколько тебе лет?'},
+  {t:'I am eight years old.', ru:'Мне восемь лет.'},
+  {t:'Nice to meet you!', ru:'Приятно познакомиться!'},
+  {t:'How are you?', ru:'Как дела?'},
+  {t:'I am fine, thank you.', ru:'У меня все хорошо, спасибо.'},
+  {t:'I like ice cream.', ru:'Я люблю мороженое.'},
+  {t:"I don't like rain.", ru:'Я не люблю дождь.'}
+];
+let bd = { i: 0, score: 0, tries: 0, ans: [], pool: [], solved: false };
+function bdLoad() {
+  const s = SENTS[bd.i]; const toks = s.t.split(' ').map((w, k) => ({ w, id: k }));
+  let p = shuffle(toks); let guard = 0;
+  while (p.map(x => x.w).join(' ') === s.t && guard++ < 20) p = shuffle(toks);
+  bd.pool = p; bd.ans = []; bd.tries = 0; bd.solved = false; bdRender();
+}
+function bdRender() {
+  const box = $('#builder'); box.innerHTML = '';
+  if (bd.i >= SENTS.length) {
+    box.append(el('div', 'word-big', `${bd.score} / ${SENTS.length}`));
+    box.append(el('p', '', 'Столько фраз ты собрала с первой попытки. Отличная работа!'));
+    const a = el('button', 'btn again', 'Еще раз'); a.addEventListener('click', () => { bd = { i: 0, score: 0 }; bdLoad(); });
+    box.append(a);
+    setResult('builder', `${bd.score} из ${SENTS.length} с первой попытки`); award('builder');
+    return;
+  }
+  const s = SENTS[bd.i];
+  box.append(el('div', 'qcount', `Фраза ${bd.i + 1} из ${SENTS.length}`));
+  box.append(el('p', '', `<b>${esc(s.ru)}</b>`));
+  const tgt = el('div', 'target' + (bd.solved ? ' right' : ''));
+  if (!bd.ans.length) tgt.append(el('span', 'hint', 'Нажимай на слова внизу'));
+  bd.ans.forEach((t, k) => {
+    const b = el('button', 'tile', esc(t.w));
+    b.addEventListener('click', () => { if (bd.solved) return; bd.ans.splice(k, 1); bd.pool.push(t); bdRender(); });
+    tgt.append(b);
+  });
+  const pool = el('div', 'pool');
+  bd.pool.forEach((t, k) => {
+    const b = el('button', 'tile', esc(t.w));
+    b.addEventListener('click', () => { bd.pool.splice(k, 1); bd.ans.push(t); bdRender(); });
+    pool.append(b);
+  });
+  if (!bd.pool.length) pool.append(el('span', 'hint', 'Все слова на месте. Нажми «Проверить».'));
+  box.append(tgt, pool);
+  const row = el('div', 'row');
+  const chk = el('button', 'btn check', 'Проверить');
+  const rst = el('button', 'btn reset', 'Сбросить');
+  const nxt = el('button', 'btn go', 'Следующая фраза');
+  const msg = el('div', 'msg');
+  chk.disabled = bd.solved || bd.pool.length > 0;
+  nxt.hidden = !bd.solved;
+  chk.addEventListener('click', () => {
+    bd.tries++;
+    if (bd.ans.map(x => x.w).join(' ') === s.t) {
+      bd.solved = true; if (bd.tries === 1) bd.score++; say(s.t); bdRender();
+      const m = $('#builder .msg'); m.textContent = 'Верно!'; m.className = 'msg ok';
+    } else {
+      tgt.classList.add('wrong'); msg.textContent = 'Почти! Попробуй поменять слова местами.'; msg.className = 'msg bad';
+      if (bd.tries >= 2 && !row.querySelector('.show')) {
+        const sh = el('button', 'btn reset show', 'Показать ответ');
+        sh.addEventListener('click', () => { msg.textContent = s.t; msg.className = 'msg'; say(s.t); });
+        row.append(sh);
+      }
+    }
+  });
+  rst.addEventListener('click', () => { if (bd.solved) return; bd.pool = shuffle([...bd.pool, ...bd.ans]); bd.ans = []; bdRender(); });
+  nxt.addEventListener('click', () => { bd.i++; if (bd.i < SENTS.length) bdLoad(); else bdRender(); });
+  row.append(chk, rst, nxt); box.append(row, msg);
+}
+bdLoad();
+
+/* ---------- LIKE: cards ---------- */
+const LIKES = [
+  ['🐱','cats'],['🐶','dogs'],['🍕','pizza'],['🍦','ice cream'],['🍫','chocolate'],['🥕','carrots'],
+  ['🕷️','spiders'],['🌧️','rain'],['❄️','snow'],['⚽','football'],['🎨','drawing'],['💃','dancing'],
+  ['📚','books'],['📺','cartoons'],['🥛','milk'],['🍎','apples']
+];
+let likes = store.get('likes', {});
+function likeSentence(w, v) { return v ? `I like ${w}.` : `I don't like ${w}.`; }
+function renderLikes() {
+  const box = $('#likes'); box.innerHTML = '';
+  LIKES.forEach(([e, w]) => {
+    const v = likes[w];
+    const c = el('div', 'lcard' + (v === true ? ' yes' : v === false ? ' no' : ''));
+    c.append(el('div', 'em', e), el('div', 'w', esc(w)));
+    const lb = el('div', 'lb');
+    const y = el('button', '', '👍'); y.setAttribute('aria-label', 'I like ' + w);
+    const n = el('button', '', '👎'); n.setAttribute('aria-label', "I don't like " + w);
+    y.addEventListener('click', () => { likes[w] = true; store.set('likes', likes); say(likeSentence(w, true)); renderLikes(); });
+    n.addEventListener('click', () => { likes[w] = false; store.set('likes', likes); say(likeSentence(w, false)); renderLikes(); });
+    lb.append(y, n); c.append(lb);
+    c.append(el('div', 's', v === undefined ? '' : esc(likeSentence(w, v))));
+    box.append(c);
+  });
+}
+$('#likesReset').addEventListener('click', () => { likes = {}; store.set('likes', likes); renderLikes(); });
+$('#likesSay').addEventListener('click', () => {
+  const list = LIKES.filter(([, w]) => likes[w] !== undefined).map(([, w]) => [likeSentence(w, likes[w]), 1]);
+  if (list.length) sayList(list);
+});
+renderLikes();
+
+/* ---------- LIKE: grammar ---------- */
+const GRAM = [
+  {e:'🍦', thumb:'👍', w:'ice cream', ok:'like'},
+  {e:'🕷️', thumb:'👎', w:'spiders', ok:"don't like"},
+  {e:'🐱', thumb:'👍', w:'cats', ok:'like'},
+  {e:'🌧️', thumb:'👎', w:'rain', ok:"don't like"},
+  {e:'🍎', thumb:'👍', w:'apples', ok:'like'},
+  {e:'🐍', thumb:'👎', w:'snakes', ok:"don't like"}
+];
+let gSel = {};
+function renderGram() {
+  const box = $('#gram'); box.innerHTML = ''; gSel = {};
+  GRAM.forEach((g, i) => {
+    const r = el('div', 'gram');
+    r.append(el('span', 'em', g.e + g.thumb), el('b', '', 'I'));
+    const o = el('div', 'opts');
+    ['like', "don't like"].forEach(v => {
+      const b = el('button', 'opt', esc(v));
+      b.addEventListener('click', () => { if (r.dataset.checked) return; gSel[i] = v; o.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); });
+      o.append(b);
+    });
+    r.append(o, el('b', '', esc(g.w) + '.'));
+    box.append(r);
+  });
+  $('#gramMsg').textContent = ''; $('#gramMsg').className = 'msg';
+}
+$('#gramCheck').addEventListener('click', () => {
+  if (Object.keys(gSel).length < GRAM.length) { $('#gramMsg').textContent = 'Выбери слово в каждой строчке.'; $('#gramMsg').className = 'msg bad'; return; }
+  let ok = 0;
+  document.querySelectorAll('#gram .gram').forEach((r, i) => {
+    r.dataset.checked = 1;
+    r.querySelectorAll('.opt').forEach(b => {
+      b.classList.remove('sel');
+      if (b.textContent === GRAM[i].ok) b.classList.add('right');
+      else if (b.textContent === gSel[i]) b.classList.add('wrong');
+    });
+    if (gSel[i] === GRAM[i].ok) ok++;
+  });
+  $('#gramMsg').textContent = `Верно ${ok} из ${GRAM.length}.` + (ok === GRAM.length ? ' Отлично!' : ' Посмотри на пальчик еще раз.');
+  $('#gramMsg').className = 'msg ' + (ok >= 5 ? 'ok' : 'bad');
+  setResult('gram', `${ok} из ${GRAM.length}`); award('gram');
+});
+$('#gramReset').addEventListener('click', renderGram);
+renderGram();
+
+/* ---------- ME: profile & story ---------- */
+const STORY_FOOD = ['pizza','ice cream','pancakes','apples','chocolate','pasta','soup','bananas'];
+const STORY_HOBBY = ['drawing','dancing','reading','singing','swimming','skating','playing games','riding my bike'];
+const STORY_DISLIKE = ['spiders','rain','porridge','onions','snakes','noise','cold weather'];
+
+function saveProfile() { store.set('profile', profile); renderStory(); renderForm(); }
+function storyParts() {
+  const p = profile, B = x => x ? esc(x) : '<span class="blank">____</span>';
+  return [
+    ['Hello!', true],
+    [`My name is ${B(p.name)}.`, !!p.name],
+    [`I am ${B(p.age ? NUMS[p.age] : '')} years old.`, !!p.age],
+    [`My favourite colour is ${B(p.colour)}.`, !!p.colour],
+    [`I like ${B(p.animal)}.`, !!p.animal],
+    [`My favourite food is ${B(p.food)}.`, !!p.food],
+    [`I like ${B(p.hobby)}.`, !!p.hobby],
+    [`I don't like ${B(p.dislike)}.`, !!p.dislike],
+    ['Nice to meet you!', true]
+  ];
+}
+function storyText() { return storyParts().filter(x => x[1]).map(x => x[0].replace(/<[^>]+>/g, '')).join(' '); }
+function renderStory() {
+  const html = storyParts().map(x => x[0]).join(' ');
+  $('#story').innerHTML = html; $('#hwStory').innerHTML = html;
+  const filled = storyParts().filter(x => x[1]).length;
+  if (filled >= 9) { setResult('story', 'рассказ готов'); award('story'); }
+}
+function chipGroup(target, list, field, label) {
+  const box = $(target); box.innerHTML = '';
+  list.forEach(v => {
+    const c = el('button', 'chip' + (profile[field] === v ? ' on' : ''), label ? label(v) : esc(v));
+    c.addEventListener('click', () => { profile[field] = profile[field] === v ? '' : v; if (profile[field] && typeof v === 'string') say(v); saveProfile(); });
+    box.append(c);
+  });
+}
+function renderForm() {
+  const fn = $('#fName'); if (document.activeElement !== fn) fn.value = profile.name || '';
+  chipGroup('#fAge', [6,7,8,9,10], 'age', v => `${v} ${NUMS[v]}`);
+  chipGroup('#fColour', COLOURS.map(c => c.w), 'colour', v => `<span class="swatch" style="width:18px;height:18px;vertical-align:-3px;background:${COLOURS.find(c => c.w === v).c}"></span> ${v}`);
+  chipGroup('#fAnimal', ANIMALS.map(a => a.pl), 'animal', v => `${ANIMALS.find(a => a.pl === v).e} ${v}`);
+  chipGroup('#fFood', STORY_FOOD, 'food');
+  chipGroup('#fHobby', STORY_HOBBY, 'hobby');
+  chipGroup('#fDislike', STORY_DISLIKE, 'dislike');
+}
+function cleanName(s) {
+  s = String(s || '').trim().replace(/^(my name is|my name's|i am|i'm|im)\s+/i, '').replace(/[.!?,]+$/, '').trim();
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+}
+$('#fName').addEventListener('input', e => { profile.name = cleanName(e.target.value); store.set('profile', profile); renderStory(); });
+$('#storySay').addEventListener('click', () => say(storyText()));
+$('#hwSay').addEventListener('click', () => say(storyText()));
+$('#formReset').addEventListener('click', () => {
+  const r = profile.reasons || [];
+  profile = { reasons: r }; $('#fName').value = ''; saveProfile();
+});
+
+/* ---------- ME: interview with Pip ---------- */
+let iv = { step: 0 };
+function pipSays(text) {
+  const c = $('#chat');
+  c.append(el('div', 'cl pipl', `<div class="who" aria-hidden="true">🐶</div><div class="b">${esc(text)}</div>`));
+  c.scrollTop = c.scrollHeight; say(text, 1.35);
+}
+function meSays(text) {
+  const c = $('#chat');
+  c.append(el('div', 'cl me', `<div class="b">${esc(text)}</div><div class="who" aria-hidden="true">👧</div>`));
+  c.scrollTop = c.scrollHeight;
+}
+function answers(list) {
+  const a = $('#chatAnswers'); a.innerHTML = '';
+  list.forEach(([label, fn]) => { const b = el('button', 'opt', label); b.addEventListener('click', () => { a.innerHTML = ''; fn(); }); a.append(b); });
+}
+function ivStart() {
+  $('#chat').innerHTML = ''; $('#chatAnswers').innerHTML = '';
+  pipSays("Hi! I'm Pip. What's your name?");
+  const a = $('#chatAnswers');
+  const inp = el('input'); inp.type = 'text'; inp.placeholder = 'My name is…'; inp.setAttribute('aria-label', 'Твое имя');
+  const go = el('button', 'btn check', 'Ответить');
+  const send = () => {
+    const n = cleanName(inp.value);
+    if (!n) { inp.focus(); return; }
+    profile.name = n; saveProfile();
+    meSays(`My name is ${n}.`); a.innerHTML = '';
+    setTimeout(() => ivAge(n), 700);
+  };
+  go.addEventListener('click', send);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  a.append(inp, go);
+}
+function ivAge(n) {
+  pipSays(`Nice to meet you, ${n}! How old are you?`);
+  answers([6,7,8,9,10].map(x => [`I'm ${NUMS[x]}.`, () => { profile.age = x; saveProfile(); meSays(`I'm ${NUMS[x]}.`); setTimeout(ivHow, 700); }]));
+}
+function ivHow() {
+  pipSays("Cool! I'm three. How are you?");
+  answers([["I'm fine, thank you.", 'Great!'], ["I'm OK.", 'OK!'], ["I'm great!", 'Super!'], ["I'm tired.", 'Oh! Let\'s play, then!']]
+    .map(([t, r]) => [t, () => { meSays(t); setTimeout(() => { pipSays(r); setTimeout(ivDogs, 1400); }, 700); }]));
+}
+function ivDogs() {
+  pipSays('I like bones! Do you like dogs?');
+  answers([['Yes, I do.', 'Woof! I like you!'], ["No, I don't.", "Oh! That's OK."]]
+    .map(([t, r]) => [t, () => { meSays(t); setTimeout(() => { pipSays(r); setTimeout(ivColour, 1400); }, 700); }]));
+}
+function ivColour() {
+  pipSays('What colour do you like?');
+  answers(COLOURS.map(c => [`<span class="swatch" style="width:18px;height:18px;vertical-align:-3px;background:${c.c}"></span> ${c.w}`,
+    () => { profile.colour = c.w; saveProfile(); meSays(`I like ${c.w}.`); setTimeout(ivAnimal, 700); }]));
+}
+function ivAnimal() {
+  pipSays('What animals do you like?');
+  answers(ANIMALS.map(an => [`${an.e} ${an.pl}`, () => { profile.animal = an.pl; saveProfile(); meSays(`I like ${an.pl}.`); setTimeout(ivBye, 700); }]));
+}
+function ivBye() {
+  pipSays(`Thank you, ${profile.name}! You are my friend now. Goodbye!`);
+  answers([['Bye, Pip!', () => { meSays('Bye, Pip!'); setResult('interview', 'пройдено'); award('interview'); }], ['See you, Pip!', () => { meSays('See you, Pip!'); setResult('interview', 'пройдено'); award('interview'); }]]);
+}
+$('#chatRestart').addEventListener('click', ivStart);
+ivStart();
+
+/* ---------- ME: wheel ---------- */
+const WHEEL = [
+  {e:'🙂', q:"What's your name?", ru:'Как тебя зовут?', a:'My name is…'},
+  {e:'🎂', q:'How old are you?', ru:'Сколько тебе лет?', a:"I'm eight."},
+  {e:'😊', q:'How are you?', ru:'Как дела?', a:"I'm fine, thank you."},
+  {e:'🎨', q:'What colour do you like?', ru:'Какой цвет тебе нравится?', a:'I like blue.'},
+  {e:'🐱', q:'Do you like cats?', ru:'Ты любишь кошек?', a:"Yes, I do. / No, I don't."},
+  {e:'🍕', q:"What's your favourite food?", ru:'Какая твоя любимая еда?', a:'My favourite food is pizza.'},
+  {e:'🐾', q:'Have you got a pet?', ru:'У тебя есть домашний питомец?', a:"Yes, I have. / No, I haven't."},
+  {e:'🏫', q:'Do you like school?', ru:'Тебе нравится в школе?', a:"Yes, I do. / No, I don't."}
+];
+(function () {
+  const w = $('#wheel');
+  const cols = ['#DDF1FC','#FFF3C7','#E3F5DD','#FFE4DD'];
+  const seg = 360 / WHEEL.length;
+  w.style.background = 'conic-gradient(' + WHEEL.map((_, i) => `${cols[i % 4]} ${i * seg}deg ${(i + 1) * seg}deg`).join(',') + ')';
+  WHEEL.forEach((it, i) => {
+    const a = i * seg + seg / 2;
+    const l = el('div', 'lab', it.e);
+        l.dataset.angle = a;
+    w.append(l);
+  });
+  placeLabels();
+  window.addEventListener('resize', placeLabels);
+})();
+function placeLabels() {
+  const w = $('#wheel'); const r = (w.clientWidth || 300) * 0.34;
+  w.querySelectorAll('.lab').forEach(l => { const a = +l.dataset.angle; l.style.transform = `rotate(${a}deg) translateY(${-r}px) rotate(${-a}deg)`; });
+}
+let wheelRot = 0, spinning = false;
+$('#spin').addEventListener('click', () => {
+  if (spinning) return; spinning = true; $('#spin').disabled = true;
+  placeLabels();
+  const seg = 360 / WHEEL.length;
+  const idx = Math.floor(Math.random() * WHEEL.length);
+  const jitter = (Math.random() - 0.5) * seg * 0.6;
+  const targetMod = (360 - (idx * seg + seg / 2 + jitter) + 360) % 360;
+  const cur = ((wheelRot % 360) + 360) % 360;
+  wheelRot += 360 * 4 + ((targetMod - cur + 360) % 360);
+  $('#wheel').style.transform = `rotate(${wheelRot}deg)`;
+  $('#wq').innerHTML = '';
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(() => { spinning = false; $('#spin').disabled = false; showWheelQ(WHEEL[idx]); }, reduce ? 100 : 3300);
+});
+function showWheelQ(it) {
+  const box = $('#wq'); box.innerHTML = '';
+  box.append(el('div', 'qq', `${it.e} ${esc(it.q)}`));
+  const r = el('div', 'row'); r.style.justifyContent = 'center';
+  const s = el('button', 'btn again', '🔊 Послушать'); s.dataset.say = it.q;
+  const h = el('button', 'btn reset', 'Подсказка');
+  const hint = el('p', 'hint'); hint.hidden = true;
+  hint.innerHTML = `${esc(it.ru)}<br>Можно ответить так: <b>${esc(it.a)}</b>`;
+  h.addEventListener('click', () => { hint.hidden = !hint.hidden; });
+  r.append(s, h); box.append(r, hint);
+  say(it.q);
+}
+
+/* ---------- HOME: checklist & print ---------- */
+const TODO = [
+  'Посмотри видео еще раз. Можно два раза!',
+  'Запиши в тетрадь 3 факта из видео, которые тебе запомнились. Можно по-русски.',
+  'Перепиши в тетрадь свой рассказ о себе на английском (образец ниже).',
+  'Прочитай свой рассказ вслух. Можно маме, папе или любимой игрушке.'
+];
+let todo = store.get('todo', {});
+function renderTodo() {
+  const box = $('#todo'); box.innerHTML = '';
+  TODO.forEach((t, i) => {
+    const l = el('label', todo[i] ? 'done' : '');
+    const c = el('input'); c.type = 'checkbox'; c.checked = !!todo[i];
+    c.addEventListener('change', () => { todo[i] = c.checked; store.set('todo', todo); renderTodo(); });
+    l.append(c, el('span', '', esc(t)));
+    box.append(l);
+  });
+  if (TODO.every((_, i) => todo[i])) box.append(el('p', 'msg ok', 'Все готово! Пип тобой гордится 🐶'));
+}
+$('#printBtn').addEventListener('click', () => {
+  const pa = $('#printArea');
+  pa.innerHTML = `<h2>Домашнее задание</h2><ol>${TODO.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
+    <p>Видео: https://youtu.be/RpmJ21mMDRk</p>
+    <h2>Мой рассказ о себе</h2><p style="font-size:16pt;line-height:1.8">${storyParts().map(x => x[0]).join(' ')}</p>
+    <h2>Мои 3 факта из видео</h2><div class="ln"></div><div class="ln"></div><div class="ln"></div>`;
+  window.print();
+});
+
+/* ---------- init ---------- */
+renderForm(); renderStory(); renderTodo(); renderResults(); updateStars();
+</script>
+</body>
+</html>
