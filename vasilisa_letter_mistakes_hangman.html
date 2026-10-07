@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dear Emily</title>
+<style>
+
+
+:root{
+  --ivory:#FFF8EE; --paper:#FFFFFF; --rose:#F6B8C8; --rose-soft:#FDE6EC;
+  --velvet:#8C2F55; --velvet-dark:#5E1C38; --sky:#8EC5E8; --sky-soft:#E3F2FB;
+  --sun:#FFD66B; --grass:#6DBB72; --grass-soft:#E4F5E5; --coral:#FF8A70; --coral-soft:#FFE6E0;
+  --ink:#4A3428; --muted:#8A7163;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);
+  font-family:'Nunito','Comfortaa','Trebuchet MS','Segoe UI',sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:'Comfortaa','Nunito','Trebuchet MS',sans-serif;line-height:1.2;margin:0 0 .4em}
+button{font-family:inherit;font-size:1rem;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--velvet);outline-offset:2px}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 110%,#FFE9B8 0%,#F9D2DC 45%,#E9A8BE 100%);
+  padding:48px 20px 36px;text-align:center;border-bottom:10px solid var(--velvet-dark)}
+.stage:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;
+  background:repeating-radial-gradient(circle at 20px -6px,var(--velvet) 0 22px,transparent 23px) 0 0/40px 34px, var(--velvet-dark);}
+.curtain{position:absolute;top:0;bottom:0;width:52%;z-index:3;
+  background:repeating-linear-gradient(90deg,var(--velvet) 0 18px,var(--velvet-dark) 18px 24px,var(--velvet) 24px 44px);
+  transition:transform 1.6s cubic-bezier(.6,.05,.3,1)}
+.curtain.l{left:0}.curtain.r{right:0}
+.stage.open .curtain.l{transform:translateX(-88%)}
+.stage.open .curtain.r{transform:translateX(88%)}
+.stage-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.swan{font-size:64px;display:inline-block;transform-origin:50% 90%}
+.stage.open .swan{animation:bow 1.2s 1.4s ease-in-out 1}
+@keyframes bow{0%,100%{transform:rotate(0)}40%{transform:rotate(-14deg) translateY(4px)}}
+.stage h1{font-size:clamp(1.8rem,5vw,2.8rem);color:var(--velvet-dark)}
+.stage p{margin:.2em 0;color:var(--velvet-dark)}
+.stars{display:inline-block;margin-top:10px;background:var(--paper);border-radius:999px;padding:6px 18px;font-weight:800;
+  box-shadow:0 3px 0 var(--velvet-dark)}
+@media (prefers-reduced-motion:reduce){.curtain{transition:none}.stage.open .swan{animation:none}}
+
+/* ---------- programme (tabs) ---------- */
+.programme{position:sticky;top:0;z-index:10;background:var(--velvet-dark);padding:8px 10px;
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.programme button{flex:0 0 auto;border:0;border-radius:14px;padding:8px 14px;background:transparent;color:#FBE3EA;
+  font-weight:700;white-space:nowrap}
+.programme button small{display:block;font-weight:600;opacity:.75;font-size:.72rem}
+.programme button.active{background:var(--rose);color:var(--velvet-dark)}
+
+main{max-width:880px;margin:0 auto;padding:22px 16px 60px}
+section{display:none}
+section.active{display:block}
+.act-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.act-title .num{font-family:'Comfortaa',sans-serif;font-weight:800;color:var(--velvet);font-size:.95rem;
+  border:2px solid var(--velvet);border-radius:10px;padding:2px 10px}
+.task{color:var(--muted);margin:0 0 16px}
+.card{background:var(--paper);border-radius:22px;padding:20px;margin:16px 0;border:2px solid #F3E3D6}
+.odette{display:flex;gap:12px;align-items:flex-start;background:var(--rose-soft);border-radius:18px;padding:12px 16px;margin:12px 0}
+.odette .ava{font-size:34px;line-height:1}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:10px 18px;font-weight:800;min-height:44px}
+.btn.check{background:var(--grass);color:#fff}
+.btn.reset{background:#EFE3D8;color:var(--ink)}
+.btn.again{background:var(--sky);color:#123}
+.btn.say{background:var(--sun);color:var(--ink)}
+.btn.main{background:var(--velvet);color:#fff}
+.result{margin-top:12px;font-weight:800;min-height:1.5em}
+.speak{border:0;background:var(--sun);border-radius:10px;padding:2px 8px;margin-left:6px;font-size:.9rem}
+
+/* quiz */
+.q{margin:14px 0}
+.q p{margin:0 0 8px;font-weight:700}
+.opt{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:8px 14px;min-height:44px}
+.opt.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.opt.ok{border-color:var(--grass);background:var(--grass-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* pairs */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pairs .col{display:flex;flex-direction:column;gap:8px}
+.tile{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:10px;min-height:48px;font-weight:700}
+.tile.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.tile.done{border-color:var(--grass);background:var(--grass-soft);color:#2F6B33;cursor:default}
+.tile.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* clock */
+.clockwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:center}
+.clockwrap svg{width:200px;height:200px}
+.timeopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:260px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.rules div{background:var(--sky-soft);border-radius:14px;padding:10px;text-align:center}
+.rules b{display:block;font-size:1.1rem}
+
+/* reading */
+.story p{margin:0 0 .8em}
+.story{background:#FFFDF8;border-left:6px solid var(--rose);border-radius:0 18px 18px 0;padding:16px 18px}
+.tf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #EADBCD}
+.tf .row{flex:0 0 auto}
+.me-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;padding:6px 0}
+input[type=text],select{font-family:inherit;font-size:1rem;border:2px solid #E8D8CB;border-radius:12px;padding:8px 10px;background:#fff;min-height:44px;width:100%}
+input.ok{border-color:var(--grass);background:var(--grass-soft)}
+input.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* grammar */
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-grid div{background:var(--sky-soft);border-radius:16px;padding:12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;text-align:center;font-weight:700}
+.scale div{border-radius:12px;padding:8px 4px;font-size:.9rem}
+.gap-item{padding:8px 0;border-bottom:1px dashed #EADBCD}
+.builder .line{min-height:52px;border:2px dashed var(--rose);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;background:#FFFDF8}
+.builder .bank{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:0;border-radius:12px;padding:8px 12px;background:var(--sky-soft);font-weight:700;min-height:40px}
+.line .chip{background:var(--rose-soft)}
+.builder.ok .line{border-color:var(--grass);background:var(--grass-soft)}
+.builder.bad .line{border-color:var(--coral);background:var(--coral-soft)}
+.inline-in{width:auto!important;min-width:110px;display:inline-block;min-height:38px;padding:4px 8px}
+
+/* day builder */
+.act-row{display:grid;grid-template-columns:34px 1.4fr 1fr 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.act-row input[type=checkbox]{width:24px;height:24px}
+.free{color:var(--muted);font-size:.9rem}
+.fixed-mark{font-size:.8rem;background:var(--sky-soft);border-radius:8px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.out{background:#FFFDF8;border-radius:18px;padding:16px;border:2px solid var(--rose);min-height:60px;white-space:pre-wrap}
+
+/* interview */
+.mic{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.mic .card{margin:0;display:flex;flex-direction:column;gap:8px}
+.mic .help{color:var(--muted);font-size:.95rem}
+.mic .card.done{border-color:var(--grass);background:var(--grass-soft)}
+
+/* finale */
+.links a{color:var(--velvet);font-weight:800}
+.links li{margin:0 0 12px}
+.poster{margin-top:14px;text-align:center;border-radius:22px;padding:26px 18px;
+  background:radial-gradient(circle at 50% 0,#FFF3C4,#F9D2DC 60%,#E9A8BE);font-family:'Comfortaa',sans-serif;font-size:1.3rem;font-weight:800;color:var(--velvet-dark);display:none}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.check-item input{width:26px;height:26px;flex:0 0 auto;margin-top:2px}
+.bar{height:16px;background:#F1E4D8;border-radius:10px;overflow:hidden;margin-top:12px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .4s}
+
+@media (max-width:620px){
+  body{font-size:17px}
+  .rule-grid,.me-row{grid-template-columns:1fr}
+  .act-row{grid-template-columns:30px 1fr;}
+  .act-row select{grid-column:2}
+  .act-row .free{grid-column:2}
+  .timeopts{grid-template-columns:1fr;min-width:0;width:100%}
+  .tf{flex-direction:column;align-items:flex-start}
+}
+
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.now{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.scene{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.scene .card{margin:0}
+.scene .emo{font-size:40px;line-height:1}
+.story .pc,.story .ps,.story .md{border-radius:6px;transition:background .3s}
+.story.show .pc{background:var(--rose)}
+.story.show .ps{background:#BFE0F5}
+.story.show .md{background:var(--sun)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:.9rem}
+.legend span{border-radius:8px;padding:2px 8px}
+.gloss{font-size:.95rem;color:var(--muted);margin-top:10px}
+.sign{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.sign .emo{font-size:34px;text-align:center}
+.clockbox{text-align:center}
+.bigtime{font-family:'Comfortaa',sans-serif;font-size:2.4rem;font-weight:800;color:var(--velvet)}
+.bq{font-size:1.25rem;font-weight:800;margin:14px 0}
+.bopts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2px solid #E8D8CB;border-radius:14px;padding:12px;background:#FFFDF8;line-height:1.5}
+.plan li{margin-bottom:4px}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}}
+
+.letter p{margin:0 0 .7em}
+.letter .good,.letter .err{border-radius:6px;transition:background .3s}
+.letter.showgood .good{background:#CDEFCB}
+.letter.showerr .err{background:var(--coral-soft);text-decoration:underline wavy var(--coral);text-underline-offset:4px}
+.orig{background:var(--coral-soft);border-radius:12px;padding:8px 12px;margin-bottom:8px;font-style:italic}
+.mc .opts{display:flex;flex-direction:column;gap:8px}
+.mc .opt{text-align:left}
+.mc{padding:12px 0;border-bottom:1px dashed #EADBCD}
+.capchip{border:2px solid #E8D8CB;background:#fff;border-radius:12px;padding:8px 14px;font-weight:800;min-height:44px;font-size:1.05rem}
+.capchip.ok{border-color:var(--grass);background:var(--grass-soft)}
+.capchip.bad{border-color:var(--coral);background:var(--coral-soft)}
+.likes .lrow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.face{border:2px solid #E8D8CB;background:#fff;border-radius:12px;font-size:1.4rem;width:46px;height:46px;padding:0}
+.face.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.cardq{font-family:'Comfortaa',sans-serif;font-size:1.35rem;font-weight:800;text-align:center;padding:26px 14px;border-radius:20px;background:var(--sky-soft);min-height:110px;display:flex;align-items:center;justify-content:center}
+.story .lk,.story .pr,.story .qq{border-radius:6px;transition:background .3s}
+.story.show .lk{background:var(--rose)}
+.story.show .pr{background:#BFE0F5}
+.story.show .qq{background:var(--sun)}
+/* hangman */
+.hang{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center}
+.hang svg{width:200px;height:220px;flex:0 0 auto}
+.hang svg .p{opacity:0;transition:opacity .3s}
+.hang svg .p.on{opacity:1}
+.hword{font-family:'Comfortaa',monospace;font-size:2rem;font-weight:800;letter-spacing:.35em;text-align:center;color:var(--velvet-dark);word-break:break-all}
+.hinfo{text-align:center;color:var(--muted);margin:6px 0}
+.kb{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-top:14px}
+.kb button{border:0;border-radius:10px;min-height:44px;font-weight:800;font-size:1.05rem;background:var(--sky-soft);color:var(--ink)}
+.kb button.hit{background:var(--grass);color:#fff}
+.kb button.miss{background:#E7DCD2;color:#B2A091}
+.kb button:disabled{cursor:default}
+.hscore{display:flex;justify-content:center;gap:18px;font-weight:800;margin-top:8px}
+@media (max-width:620px){.kb{grid-template-columns:repeat(7,1fr)}.hword{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<header class="stage" id="stage">
+  <div class="curtain l"></div><div class="curtain r"></div>
+  <div class="stage-inner">
+    <div class="swan" aria-hidden="true">🦢</div>
+    <h1>Dear Emily</h1>
+    <p>Your letter, the rules and a little game</p>
+    <div class="stars">⭐ <span id="starCount">0</span> stars</div>
+  </div>
+</header>
+
+<nav class="programme" id="programme" aria-label="Lesson programme">
+  <button data-go="a1" class="active"><small>Act 1</small>My letter</button>
+  <button data-go="a2"><small>Act 2</small>on, at, in</button>
+  <button data-go="a3"><small>Act 3</small>must + verb</button>
+  <button data-go="a4"><small>Act 4</small>Questions</button>
+  <button data-go="a5"><small>Act 5</small>Capitals</button>
+  <button data-go="a6"><small>Act 6</small>Emily replies</button>
+  <button data-go="a7"><small>Act 7</small>Free time</button>
+  <button data-go="a8"><small>Act 8</small>Hangman</button>
+  <button data-go="a9"><small>Finale</small>Version 2</button>
+</nav>
+
+<main>
+
+<!-- ============ ACT 1 ============ -->
+<section id="a1" class="active">
+  <div class="act-title"><span class="num">Act 1</span><h2>💌 My letter</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Vasilisa, your letter is lovely! Emily understands everything. Now let's make it perfect, like a dancer before the show.</div></div>
+  <div class="card">
+    <div class="story letter" id="myLetter">
+      <p>Hi Emily,</p>
+      <p><span class="good">Thanks for your message!</span> <span class="good">Right now I'm doing my homework for Tuesday.</span> 💋</p>
+      <p><span class="err">At</span> Saturday I also have six lessons <span class="err">in academy</span>. I have two <span class="err">Classical dance</span>, gymnastics, Russian, literature and math. 📓</p>
+      <p>What about our rules?:</p>
+      <p><span class="err">In academy</span> we must <span class="err">wearing</span> a uniform. <span class="good">We mustn't be late for class and we have to take a snack.</span> ‼️</p>
+      <p><span class="err">Haw your day?</span> <span class="err">What are you love doing in free time?</span> 🩰</p>
+      <p><span class="good">Tell me what's interesting about your academy.</span> ✨</p>
+      <p>Love,<br>Vasilisa. ❤️</p>
+    </div>
+    <div class="btns"><button class="btn check" id="showGood">Что получилось</button><button class="btn reset" id="showErr">Где ошибки</button></div>
+    <p class="gloss" id="goodNote" style="display:none">Зеленым отмечено то, что написано без единой ошибки. «Right now I'm doing my homework» и «We mustn't be late for class» ровно то, что мы учили в прошлый раз. Брава!</p>
+  </div>
+  <div class="card">
+    <h3>Detective: fix your sentences</h3>
+    <p class="task">Вот твои предложения. Выбери, как их написать правильно.</p>
+    <div id="fixList"></div>
+    <div class="btns"><button class="btn check" id="fixCheck">Проверить</button><button class="btn reset" id="fixReset">Сбросить</button></div>
+    <div class="result" id="fixRes"></div>
+  </div>
+  <div class="card" style="background:var(--sky-soft)">
+    <b>Два маленьких совета</b><br>
+    1. We have to <b>bring</b> a snack звучит естественнее, чем take. Bring значит «приносить с собой».<br>
+    2. После вопросительного знака двоеточие не нужно. Можно так: What about our rules? Или так: Here are our rules:
+  </div>
+</section>
+
+<!-- ============ ACT 2 ============ -->
+<section id="a2">
+  <div class="act-title"><span class="num">Act 2</span><h2>📅 on, at, in</h2></div>
+  <p class="task">В письме было «At Saturday» и «in academy». Вот правило.</p>
+  <div class="rules">
+    <div><b>on</b>дни<br>on Saturday<br>on Mondays</div>
+    <div><b>at</b>время<br>at seven o'clock<br>at half past eight</div>
+    <div><b>in</b>месяцы, времена года, части дня<br>in October, in winter<br>in the morning</div>
+  </div>
+  <div class="card" style="background:var(--rose-soft)">
+    <b>Где ты?</b> at school, <b>at the Academy</b>, at home. Перед Academy нужно the: это твоя, особенная Академия.
+  </div>
+  <div class="card">
+    <h3>Choose on, at or in</h3>
+    <div id="prepList"></div>
+    <div class="btns"><button class="btn check" id="prepCheck">Проверить</button><button class="btn reset" id="prepReset">Сбросить</button></div>
+    <div class="result" id="prepRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 3 ============ -->
+<section id="a3">
+  <div class="act-title"><span class="num">Act 3</span><h2>📜 must + verb</h2></div>
+  <p class="task">В письме было «we must wearing». Запомни: после must глагол стоит в самой простой форме, без -ing и без to.</p>
+  <div class="rule-grid">
+    <div style="background:var(--grass-soft)"><b>✅ Так</b><br>We must <b>wear</b> a uniform.<br>We mustn't <b>be</b> late.<br>We have to <b>bring</b> a snack.</div>
+    <div style="background:var(--coral-soft)"><b>🚫 Не так</b><br>We must <s>wearing</s> a uniform.<br>We must <s>to wear</s> a uniform.</div>
+  </div>
+  <div class="odette"><div class="ava">🦢</div><div>Have to это исключение: там to уже внутри. Have to <b>wear</b>, has to <b>bring</b>. А после to снова самый простой глагол!</div></div>
+  <div class="card">
+    <h3>Choose the right verb</h3>
+    <div id="mustList"></div>
+    <div class="btns"><button class="btn check" id="mustCheck">Проверить</button><button class="btn reset" id="mustReset">Сбросить</button></div>
+    <div class="result" id="mustRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 4 ============ -->
+<section id="a4">
+  <div class="act-title"><span class="num">Act 4</span><h2>❓ Questions: do or are?</h2></div>
+  <p class="task">В письме было «Haw your day?» и «What are you love doing?». Вот как выбрать помощника для вопроса.</p>
+  <div class="rule-grid">
+    <div><b>am / is / are</b><br>когда другого глагола нет или есть -ing<br>How <b>is</b> your day?<br>What <b>are</b> you doing now?</div>
+    <div style="background:var(--rose-soft)"><b>do / does</b><br>когда есть обычный глагол<br>What <b>do</b> you love doing?<br><b>Does</b> Emily like comics?</div>
+  </div>
+  <div class="card" style="background:#FFF4CF">
+    How пишется через <b>o</b>: <b>How</b> is your day? И не забудь your: in <b>your</b> free time.
+  </div>
+  <div class="card">
+    <h3>1. Choose the helper</h3>
+    <div id="qList"></div>
+    <div class="btns"><button class="btn check" id="qCheck">Проверить</button><button class="btn reset" id="qReset">Сбросить</button></div>
+    <div class="result" id="qRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Build the question</h3>
+    <p class="task">Нажимай на слова по порядку. Ошиблась? Нажми на слово в строке, и оно вернется обратно.</p>
+    <div id="builders"></div>
+    <div class="btns"><button class="btn check" id="buildCheck">Проверить</button><button class="btn reset" id="buildReset">Сбросить</button></div>
+    <div class="result" id="buildRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 5 ============ -->
+<section id="a5">
+  <div class="act-title"><span class="num">Act 5</span><h2>🔠 Capitals and lessons</h2></div>
+  <div class="rule-grid">
+    <div><b>С большой буквы</b><br>языки: <b>R</b>ussian, <b>E</b>nglish<br>дни и месяцы: <b>S</b>aturday, <b>O</b>ctober<br>имена и города: <b>E</b>mily, <b>L</b>ondon</div>
+    <div style="background:var(--rose-soft)"><b>С маленькой буквы</b><br>другие предметы:<br>maths, literature, gymnastics, classical dance</div>
+  </div>
+  <div class="card">
+    <h3>1. Big or small?</h3>
+    <p class="task">Нажми на слово, которому нужна большая буква. Нажмешь еще раз, и буква снова станет маленькой.</p>
+    <div class="row" id="capBox"></div>
+    <div class="btns"><button class="btn check" id="capCheck">Проверить</button><button class="btn reset" id="capReset">Сбросить</button></div>
+    <div class="result" id="capRes"></div>
+  </div>
+  <div class="card" style="background:var(--sky-soft)">
+    <b>Two what?</b> После числа нужно слово, которое считаем: I have two classical dance <b>lessons</b>. Просто «two classical dance» не получится, ведь непонятно, два чего.
+  </div>
+  <div class="card">
+    <h3>2. Two what?</h3>
+    <div id="twoList"></div>
+    <div class="btns"><button class="btn check" id="twoCheck">Проверить</button><button class="btn reset" id="twoReset">Сбросить</button></div>
+    <div class="result" id="twoRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 6 ============ -->
+<section id="a6">
+  <div class="act-title"><span class="num">Act 6</span><h2>📬 Emily replies</h2></div>
+  <p class="task">Эмили получила твое письмо и ответила на твои вопросы. Прочитай. Потом нажми «Покажи цвета».</p>
+  <div class="card">
+    <div class="story" id="story">
+      <p>Hi Vasilisa!</p>
+      <p>Thank you for your letter! Six lessons <span class="pr">on Saturday</span>? Wow! At my school we don't have lessons <span class="pr">on Saturdays</span>, but we have ballet class <span class="pr">in the morning</span>.</p>
+      <p>You asked: how is my day? It's a good day! Right now I'm sitting in the kitchen and I'm eating an apple. My cat is sleeping on the sofa.</p>
+      <p>What do I love doing in my free time? I <span class="lk">love reading</span> comics and I <span class="lk">like drawing</span>. I <span class="lk">enjoy swimming</span>, but I <span class="lk">don't like running</span>. And I <span class="lk">hate getting up</span> early <span class="pr">on Sundays</span>!</p>
+      <p>Here is something interesting about my academy: we have a big library, and <span class="pr">on Fridays</span> we have music lessons with a real pianist.</p>
+      <p><span class="qq">What do you love doing at the weekend?</span> <span class="qq">Do you have any free time?</span></p>
+      <p>Love,<br>Emily</p>
+    </div>
+    <div class="gloss">kitchen: кухня · comics: комиксы · drawing: рисование · library: библиотека · pianist: пианист</div>
+    <div class="btns"><button class="btn main" id="showColors">Покажи цвета</button><button class="btn say" id="storySay">🔊 Послушать</button><button class="btn reset" id="storyStop">⏹ Стоп</button></div>
+    <div class="legend"><span style="background:var(--rose)">love / like + -ing</span><span style="background:#BFE0F5">on / in</span><span style="background:var(--sun)">questions</span></div>
+  </div>
+  <div class="card">
+    <h3>True or False?</h3>
+    <div id="tfList"></div>
+    <div class="btns"><button class="btn check" id="tfCheck">Проверить</button><button class="btn reset" id="tfReset">Сбросить</button></div>
+    <div class="result" id="tfRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 7 ============ -->
+<section id="a7">
+  <div class="act-title"><span class="num">Act 7</span><h2>🎨 Let's talk: free time</h2></div>
+  <p class="task">Ты сама спросила Эмили, что она любит делать. Теперь твоя очередь рассказать! После love, like, enjoy и hate глагол получает -ing, как в прошлом уроке.</p>
+  <div class="scale" style="grid-template-columns:repeat(4,1fr)">
+    <div style="background:#6DBB72;color:#fff">😍<br>I love dancing</div>
+    <div style="background:#A8D8A0">😊<br>I like drawing</div>
+    <div style="background:#FFC2A8">😕<br>I don't like running</div>
+    <div style="background:#FF8A70;color:#fff">😩<br>I hate getting up early</div>
+  </div>
+  <div class="card likes">
+    <h3>1. My like-o-meter</h3>
+    <p class="task">Выбери лицо для каждого дела, потом нажми «Собрать рассказ» и прочитай вслух.</p>
+    <div id="likeRows"></div>
+    <div class="btns"><button class="btn main" id="likeMake">Собрать рассказ</button><button class="btn say" id="likeSay">🔊 Послушать</button></div>
+    <div class="out" id="likeOut" style="margin-top:12px">Здесь появится твой рассказ.</div>
+  </div>
+  <div class="card">
+    <h3>2. Pick a card</h3>
+    <p class="task">Учитель тянет карточку, ты отвечаешь целым предложением. Потом поменяйтесь: карточку тянешь ты, а отвечает учитель.</p>
+    <div class="cardq" id="cardQ">🎴 Tap «New card»</div>
+    <div class="btns" style="justify-content:center"><button class="btn main" id="cardNew">New card</button><button class="btn say" id="cardSay">🔊</button></div>
+    <div class="result" id="cardRes" style="text-align:center"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 8 ============ -->
+<section id="a8">
+  <div class="act-title"><span class="num">Act 8</span><h2>🎯 Hangman</h2></div>
+  <p class="task">Угадай слово по буквам. За каждую неправильную букву появляется часть виселицы. Десять ошибок, и человечек готов: раунд проигран. Слова из сегодняшнего и прошлых уроков.</p>
+  <div class="card">
+    <div class="hang">
+      <svg viewBox="0 0 200 220" aria-label="Виселица">
+        <line class="p" x1="20" y1="205" x2="140" y2="205" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="205" x2="50" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="20" x2="135" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="20" x2="135" y2="48" stroke="#4A3428" stroke-width="4" stroke-linecap="round"/>
+        <circle class="p" cx="135" cy="66" r="18" fill="none" stroke="#4A3428" stroke-width="5"/>
+        <line class="p" x1="135" y1="84" x2="135" y2="140" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="112" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="158" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="115" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="155" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div style="flex:1;min-width:240px">
+        <div class="hword" id="hWord"></div>
+        <div class="hinfo" id="hCat"></div>
+        <div class="hinfo" id="hLives"></div>
+        <div class="hinfo" id="hHint" style="font-weight:800;color:var(--velvet)"></div>
+      </div>
+    </div>
+    <div class="kb" id="kb"></div>
+    <div class="result" id="hRes" style="text-align:center"></div>
+    <div class="btns" style="justify-content:center"><button class="btn say" id="hHintBtn">Подсказка</button><button class="btn again" id="hNew">Новое слово</button></div>
+    <div class="hscore"><span>🏆 Угадано: <span id="hWins">0</span></span><span>🔥 Подряд: <span id="hStreak">0</span></span></div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="a9">
+  <div class="act-title"><span class="num">Finale</span><h2>✉️ Version 2</h2></div>
+  <div class="card">
+    <p class="task" style="margin-top:0">Это твое письмо. Исправь в нем ошибки прямо здесь. Отмечай галочкой, что уже поправила.</p>
+    <div id="fixChecklist"></div>
+    <textarea id="letter"></textarea>
+    <div class="btns">
+      <button class="btn check" id="shareLetter">Отправить учителю</button>
+      <button class="btn reset" id="copyLetter">Скопировать</button>
+      <button class="btn reset" id="restoreLetter">Вернуть исходное письмо</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🏠 Homework</h3>
+    <div id="hwList"></div>
+    <div class="bar"><div id="hwBar"></div></div>
+  </div>
+  <div class="result" id="finalRes" style="text-align:center;font-size:1.2rem"></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+function $(id){return document.getElementById(id)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+var canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+function speak(text){ if(!canSpeak) return; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=0.9;
+  var v=window.speechSynthesis.getVoices().filter(function(x){return /^en(-|_)GB/i.test(x.lang)})[0]; if(v)u.voice=v; window.speechSynthesis.speak(u);}catch(e){} }
+function stopSpeak(){ if(canSpeak){ try{window.speechSynthesis.cancel()}catch(e){} } }
+function save(k,v){try{localStorage.setItem('dearemily_'+k,JSON.stringify(v))}catch(e){}}
+function load(k){try{return JSON.parse(localStorage.getItem('dearemily_'+k))}catch(e){return null}}
+
+var best={};
+function setStars(block,n){ if(!(block in best)||n>best[block]){best[block]=n} var t=0;for(var k in best)t+=best[k]; $('starCount').textContent=t; updateFinal(); }
+function starWord(n){var a=n%10,b=n%100;if(a===1&&b!==11)return 'звезда';if(a>=2&&a<=4&&(b<12||b>14))return 'звезды';return 'звезд'}
+function updateFinal(){var t=0;for(var k in best)t+=best[k];$('finalRes').textContent=t?('За урок у тебя '+t+' '+starWord(t)+'. Bravo, Vasilisa! 🌹'):''}
+
+window.addEventListener('load',function(){ setTimeout(function(){ $('stage').classList.add('open') },300) });
+var tabs=document.querySelectorAll('.programme button');
+tabs.forEach(function(b){ b.addEventListener('click',function(){
+  tabs.forEach(function(x){x.classList.remove('active')}); b.classList.add('active');
+  document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
+  $(b.dataset.go).classList.add('active'); stopSpeak();
+  window.scrollTo({top:$('stage').offsetHeight,behavior:'smooth'});
+})});
+
+/* generic: select gaps */
+function selectList(boxId,items,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    items.forEach(function(c,i){var d=document.createElement('div');d.className='gap-item';
+      var sel='<select class="inline-in" aria-label="Выбери вариант"><option value="">...</option>'+c.o.map(function(o){return '<option value="'+o+'">'+o+'</option>'}).join('')+'</select>';
+      d.innerHTML=(i+1)+'. '+c.q.replace('___',sel);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' select').forEach(function(sel,i){sel.classList.remove('ok','bad');
+      if(!sel.value){empty++;return} if(sel.value===items[i].a){sel.classList.add('ok');s++}else sel.classList.add('bad')});
+    $(resId).textContent=(empty?'Осталось выбрать '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+/* generic: multiple choice with buttons */
+function mcList(boxId,items,resId,block,okMsg){
+  var sel=[];
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';sel=items.map(function(){return -1});
+    items.forEach(function(it,i){var d=document.createElement('div');d.className='mc';
+      d.innerHTML=(it.orig?'<div class="orig">'+(i+1)+'. '+it.orig+'</div>':'<p><b>'+(i+1)+'. '+it.q+'</b></p>');
+      var r=document.createElement('div');r.className='opts';
+      shuffle(it.o.map(function(o,k){return [o,k]})).forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];b.dataset.k=p[1];
+        b.onclick=function(){sel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+      d.appendChild(r);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' .mc').forEach(function(d,i){
+      d.querySelectorAll('.opt').forEach(function(b){b.classList.remove('ok','bad');
+        if(sel[i]===-1)return;
+        if(+b.dataset.k===0&&sel[i]===0)b.classList.add('ok');else if(+b.dataset.k===sel[i])b.classList.add('bad')});
+      if(sel[i]===-1)empty++;else if(sel[i]===0)s++});
+    $(resId).textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+
+/* ---------- ACT 1 ---------- */
+$('showGood').onclick=function(){var on=$('myLetter').classList.toggle('showgood');$('goodNote').style.display=on?'block':'none'};
+$('showErr').onclick=function(){$('myLetter').classList.toggle('showerr')};
+/* first option is always the correct one; options are shuffled on screen */
+var fixes=[
+  {orig:'At Saturday I also have six lessons in academy.',o:['On Saturday I also have six lessons at the Academy.','In Saturday I also have six lessons in the Academy.','At Saturday I also have six lessons at academy.']},
+  {orig:'I have two Classical dance, gymnastics, Russian, literature and math.',o:['I have two classical dance lessons, gymnastics, Russian, literature and math.','I have two Classical dances, Gymnastics, russian, Literature and Math.','I have two classical dance, gymnastics, russian, literature and math.']},
+  {orig:'In academy we must wearing a uniform.',o:['At the Academy we must wear a uniform.','At the Academy we must to wear a uniform.','In the Academy we must wearing a uniform.']},
+  {orig:'Haw your day?',o:['How is your day?','How your day is?','How are your day?']},
+  {orig:'What are you love doing in free time?',o:['What do you love doing in your free time?','What are you loving doing in free time?','What does you love doing in your free time?']}
+];
+var fixL=mcList('fixList',fixes,'fixRes','fix','. Detective Vasilisa! 🔍');
+$('fixCheck').onclick=fixL.check;$('fixReset').onclick=fixL.build;
+
+/* ---------- ACT 2 ---------- */
+var P=['on','at','in'];
+var prep=[
+  {q:'I have ballet class ___ Monday.',o:P,a:'on'},
+  {q:'Lessons start ___ half past eight.',o:P,a:'at'},
+  {q:'My birthday is ___ May.',o:P,a:'in'},
+  {q:'I do my homework ___ the evening.',o:P,a:'in'},
+  {q:'We have six lessons ___ Saturday.',o:P,a:'on'},
+  {q:'Right now I am ___ the Academy.',o:P,a:'at'},
+  {q:'I go to bed ___ nine o\'clock.',o:P,a:'at'},
+  {q:'It is very cold in St Petersburg ___ winter.',o:P,a:'in'},
+  {q:'My sister is ___ home.',o:P,a:'at'},
+  {q:'___ Sundays I sleep a lot!',o:['On','At','In'],a:'On'}
+];
+var prepL=selectList('prepList',prep,'prepRes','prep','. Perfect! 📅');
+$('prepCheck').onclick=prepL.check;$('prepReset').onclick=prepL.build;
+
+/* ---------- ACT 3 ---------- */
+var must=[
+  {q:'We must ___ a uniform.',o:['wear','wearing','to wear'],a:'wear'},
+  {q:'You mustn\'t ___ late for class.',o:['be','being','to be'],a:'be'},
+  {q:'We have to ___ a snack.',o:['bring','bringing','brings'],a:'bring'},
+  {q:'Dancers must ___ before class.',o:['warm up','warming up','to warm up'],a:'warm up'},
+  {q:'Emily has to ___ ready at six.',o:['be','being','is'],a:'be'},
+  {q:'You mustn\'t ___ in the studio.',o:['eat','eating','to eat'],a:'eat'}
+];
+var mustL=selectList('mustList',must,'mustRes','must','. Brava! 📜');
+$('mustCheck').onclick=mustL.check;$('mustReset').onclick=mustL.build;
+
+/* ---------- ACT 4 ---------- */
+var H=['do','does','is','are'];
+var qs4=[
+  {q:'What ___ you love doing?',o:H,a:'do'},
+  {q:'How ___ your day?',o:H,a:'is'},
+  {q:'What ___ you doing right now?',o:H,a:'are'},
+  {q:'___ Emily like comics?',o:['Do','Does','Is','Are'],a:'Does'},
+  {q:'Where ___ your Academy?',o:H,a:'is'},
+  {q:'What time ___ you get up?',o:H,a:'do'},
+  {q:'___ you tired today?',o:['Do','Does','Is','Are'],a:'Are'}
+];
+var qL=selectList('qList',qs4,'qRes','q','. Super! ❓');
+$('qCheck').onclick=qL.check;$('qReset').onclick=qL.build;
+var sentences=[
+  ['How','is','your','day?'],
+  ['What','do','you','love','doing','in','your','free','time?'],
+  ['What','are','you','doing','now?'],
+  ['Do','you','have','lessons','on','Saturday?']
+];
+function buildBuilders(){
+  var box=$('builders');box.innerHTML='';$('buildRes').textContent='';
+  sentences.forEach(function(s,i){
+    var w=document.createElement('div');w.className='builder';w.dataset.i=i;
+    w.innerHTML='<div style="font-weight:700">'+(i+1)+'.</div><div class="line"></div><div class="bank"></div>';
+    var line=w.querySelector('.line'),bank=w.querySelector('.bank');
+    var order=shuffle(s);var guard=0;while(order.join(' ')===s.join(' ')&&guard++<10)order=shuffle(s);
+    order.forEach(function(word){var c=document.createElement('button');c.className='chip';c.textContent=word;
+      c.onclick=function(){w.classList.remove('ok','bad');(c.parentNode===bank?line:bank).appendChild(c)};bank.appendChild(c)});
+    box.appendChild(w)});
+}
+$('buildCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#builders .builder').forEach(function(w){w.classList.remove('ok','bad');
+    var i=+w.dataset.i,got=[].map.call(w.querySelectorAll('.line .chip'),function(c){return c.textContent});
+    if(got.length<sentences[i].length){empty++;return}
+    if(got.join(' ')===sentences[i].join(' ')){w.classList.add('ok');s++}else w.classList.add('bad')});
+  $('buildRes').textContent=(empty?'Не все вопросы собраны. ':'')+'Верно: '+s+' из '+sentences.length+(s===sentences.length?'. Beautiful questions! ✨':'');
+  if(!empty) setStars('build',s)};
+$('buildReset').onclick=buildBuilders;
+buildBuilders();
+
+/* ---------- ACT 5 ---------- */
+var caps=[['russian',1],['maths',0],['saturday',1],['literature',0],['english',1],['october',1],['gymnastics',0],['emily',1],['history',0],['monday',1],['ballet',0],['london',1]];
+function cap(w){return w.charAt(0).toUpperCase()+w.slice(1)}
+function buildCaps(){var box=$('capBox');box.innerHTML='';$('capRes').textContent='';
+  shuffle(caps).forEach(function(c){var b=document.createElement('button');b.className='capchip';b.textContent=c[0];b.dataset.need=c[1];b.dataset.up=0;
+    b.onclick=function(){b.classList.remove('ok','bad');var up=b.dataset.up==='1'?0:1;b.dataset.up=up;b.textContent=up?cap(c[0]):c[0]};box.appendChild(b)})}
+$('capCheck').onclick=function(){var s=0;
+  document.querySelectorAll('#capBox .capchip').forEach(function(b){b.classList.remove('ok','bad');if(b.dataset.up===b.dataset.need){b.classList.add('ok');s++}else b.classList.add('bad')});
+  $('capRes').textContent='Верно: '+s+' из '+caps.length+(s===caps.length?'. Capital work! 🔠':'. Красные слова нужно исправить.');
+  setStars('caps',Math.round(s/2))};
+$('capReset').onclick=buildCaps;
+buildCaps();
+var two=[
+  {q:'I have two ___ on Saturday.',o:['classical dance','classical dance lessons'],a:'classical dance lessons'},
+  {q:'Today we have three ___.',o:['Russian','Russian lessons'],a:'Russian lessons'},
+  {q:'On Monday I have two ___.',o:['gymnastics lessons','gymnastics'],a:'gymnastics lessons'}
+];
+var twoL=selectList('twoList',two,'twoRes','two','. Brava! 🌟');
+$('twoCheck').onclick=twoL.check;$('twoReset').onclick=twoL.build;
+
+/* ---------- ACT 6 ---------- */
+$('showColors').onclick=function(){var on=$('story').classList.toggle('show');$('showColors').textContent=on?'Спрячь цвета':'Покажи цвета'};
+$('storySay').onclick=function(){speak($('story').innerText)};
+$('storyStop').onclick=stopSpeak;
+var tf=[['Emily has lessons on Saturdays.',false],['Right now Emily is eating an apple.',true],['Her cat is sleeping on the bed.',false],
+  ['Emily loves reading comics.',true],['She enjoys running.',false],['She hates getting up early on Sundays.',true],['They have music lessons on Fridays.',true]];
+var tfSel=[];
+function buildTF(){var box=$('tfList');box.innerHTML='';tfSel=tf.map(function(){return null});$('tfRes').textContent='';
+  tf.forEach(function(t,i){var d=document.createElement('div');d.className='tf';d.innerHTML='<span>'+(i+1)+'. '+t[0]+'</span>';
+    var r=document.createElement('div');r.className='row';
+    [['True',true],['False',false]].forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];
+      b.onclick=function(){tfSel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+    d.appendChild(r);box.appendChild(d)})}
+$('tfCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#tfList .tf').forEach(function(d,i){var bs=d.querySelectorAll('.opt');bs.forEach(function(b){b.classList.remove('ok','bad')});
+    if(tfSel[i]===null){empty++;return}var ch=tfSel[i]?bs[0]:bs[1];if(tfSel[i]===tf[i][1]){ch.classList.add('ok');s++}else ch.classList.add('bad')});
+  $('tfRes').textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+tf.length+(s===tf.length?'. Great reading! 📬':'');
+  if(!empty) setStars('tf',s)};
+$('tfReset').onclick=buildTF;
+buildTF();
+
+/* ---------- ACT 7 ---------- */
+var activities=[['📚','reading'],['🎨','drawing'],['🏊‍♀️','swimming'],['🍰','cooking'],['🎬','watching films'],['🎤','singing'],
+  ['🎮','playing computer games'],['🚶‍♀️','going for walks'],['😴','sleeping'],['⏰','getting up early'],['📝','doing homework'],['🩰','dancing']];
+var FACES=[['😍','love'],['😊','like'],['😕',"don't like"],['😩','hate']];
+var likeSel=load('likes')||{};
+activities.forEach(function(a){var r=document.createElement('div');r.className='lrow';
+  r.innerHTML='<span>'+a[0]+' '+a[1]+'</span><div class="row"></div>';var box=r.querySelector('.row');
+  FACES.forEach(function(f,k){var b=document.createElement('button');b.className='face'+(likeSel[a[1]]===k?' sel':'');b.textContent=f[0];b.setAttribute('aria-label',f[1]);
+    b.onclick=function(){box.querySelectorAll('.face').forEach(function(x){x.classList.remove('sel')});
+      if(likeSel[a[1]]===k){delete likeSel[a[1]]}else{likeSel[a[1]]=k;b.classList.add('sel')} save('likes',likeSel)};box.appendChild(b)});
+  $('likeRows').appendChild(r)});
+function joinList(arr){if(arr.length<2)return arr.join('');return arr.slice(0,-1).join(', ')+' and '+arr[arr.length-1]}
+$('likeMake').onclick=function(){var groups=[[],[],[],[]];
+  activities.forEach(function(a){if(a[1] in likeSel)groups[likeSel[a[1]]].push(a[1])});
+  var parts=[];
+  if(groups[0].length)parts.push('I love '+joinList(groups[0])+'.');
+  if(groups[1].length)parts.push('I like '+joinList(groups[1])+'.');
+  if(groups[2].length)parts.push("I don't like "+joinList(groups[2])+'.');
+  if(groups[3].length)parts.push('And I hate '+joinList(groups[3])+'!');
+  if(!parts.length){$('likeOut').textContent='Выбери лицо хотя бы для одного дела.';return}
+  $('likeOut').textContent='In my free time... '+parts.join(' ');setStars('likes',3)};
+$('likeSay').onclick=function(){var t=$('likeOut').textContent;if(t.indexOf('In my')===0)speak(t)};
+var cards=['What do you love doing in your free time?','What do you like doing at the weekend?','What do you hate doing? Why?',
+  'Do you enjoy reading? What are you reading now?','Do you have free time at the Academy? When?','What do your friends at the Academy like doing?',
+  'What do you love doing with your family?','What new hobby do you want to try?','What do you like doing on Sunday mornings?','Do you like getting up early? Why or why not?'];
+var deck=[],cardCount=0;
+$('cardNew').onclick=function(){if(!deck.length)deck=shuffle(cards);var q=deck.pop();$('cardQ').textContent=q;speak(q);cardCount++;
+  $('cardRes').textContent='Карточек: '+cardCount;setStars('cards',Math.min(cardCount,6))};
+$('cardSay').onclick=function(){var t=$('cardQ').textContent;if(t.indexOf('🎴')!==0)speak(t)};
+
+/* ---------- ACT 8 hangman ---------- */
+var words=[
+  ['academy','академия','school'],['uniform','форма','school'],['literature','литература','school'],['gymnastics','гимнастика','school'],
+  ['timetable','расписание','school'],['homework','домашнее задание','school'],['lesson','урок','school'],
+  ['saturday','суббота','days and months'],['october','октябрь','days and months'],['weekend','выходные','days and months'],
+  ['rehearsal','репетиция','ballet'],['costume','костюм','ballet'],['backstage','за кулисами','ballet'],['ballerina','балерина','ballet'],
+  ['mirror','зеркало','ballet'],['stretching','растяжка','ballet'],['leotard','купальник','ballet'],
+  ['snack','перекус','food'],['breakfast','завтрак','food'],['porridge','каша','food'],
+  ['nervous','волнуюсь','feelings'],['tired','устала','feelings'],['library','библиотека','school'],['drawing','рисование','free time'],['swimming','плавание','free time']
+];
+var MAX=10,hDeck=[],hCur=null,hGuess={},hMiss=0,hOver=false,hWins=load('hwins')||0,hStreak=0;
+$('hWins').textContent=hWins;
+var parts=document.querySelectorAll('.hang svg .p');
+var kb=$('kb');
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(ch){var b=document.createElement('button');b.textContent=ch.toUpperCase();b.dataset.ch=ch;b.onclick=function(){guess(ch)};kb.appendChild(b)});
+function render(){
+  $('hWord').textContent=hCur[0].split('').map(function(c){return hGuess[c]||hOver?c.toUpperCase():'_'}).join('');
+  parts.forEach(function(p,i){p.classList.toggle('on',i<hMiss)});
+  $('hLives').textContent='Ошибок: '+hMiss+' из '+MAX;
+}
+function newWord(){
+  if(!hDeck.length)hDeck=shuffle(words);hCur=hDeck.pop();hGuess={};hMiss=0;hOver=false;
+  $('hCat').textContent='Тема: '+hCur[2]+' · букв: '+hCur[0].length;$('hHint').textContent='';$('hRes').textContent='';
+  kb.querySelectorAll('button').forEach(function(b){b.disabled=false;b.className=''});render();
+}
+function guess(ch){
+  if(hOver||hGuess[ch]||!hCur)return;
+  var btn=kb.querySelector('[data-ch="'+ch+'"]');btn.disabled=true;hGuess[ch]=true;
+  if(hCur[0].indexOf(ch)>-1){btn.className='hit'}else{btn.className='miss';hMiss++}
+  var won=hCur[0].split('').every(function(c){return hGuess[c]});
+  if(won){hOver=true;hWins++;hStreak++;save('hwins',hWins);$('hRes').textContent='Yes! '+hCur[0].toUpperCase()+' = '+hCur[1]+' 🎉';speak(hCur[0]);setStars('hang',Math.min(hStreak,5))}
+  else if(hMiss>=MAX){hOver=true;hStreak=0;$('hRes').textContent='Человечек готов! Это слово '+hCur[0].toUpperCase()+' ('+hCur[1]+'). Попробуй новое.';speak(hCur[0])}
+  if(hOver)kb.querySelectorAll('button').forEach(function(b){b.disabled=true});
+  $('hWins').textContent=hWins;$('hStreak').textContent=hStreak;render();
+}
+$('hHintBtn').onclick=function(){if(hCur&&!hOver)$('hHint').textContent='Подсказка: '+hCur[1]};
+$('hNew').onclick=function(){if(hCur&&!hOver)hStreak=0;$('hStreak').textContent=hStreak;newWord()};
+document.addEventListener('keydown',function(e){if(!$('a8').classList.contains('active'))return;if(/^[a-z]$/i.test(e.key)&&!e.metaKey&&!e.ctrlKey)guess(e.key.toLowerCase())});
+newWord();
+
+/* ---------- FINALE ---------- */
+var ORIG="Hi Emily,\nThanks for your message! Right now I'm doing my homework for Tuesday. 💋\n\nAt Saturday I also have six lessons in academy. I have two Classical dance, gymnastics, Russian, literature and math. 📓\n\nWhat about our rules?:\nIn academy we must wearing a uniform. We mustn't be late for class and we have to take a snack. ‼️\n\nHaw your day? What are you love doing in free time? 🩰\n\nTell me what's interesting about your academy. ✨\n\nLove,\nVasilisa. ❤️";
+var L=$('letter');L.value=load('letter')||ORIG;
+L.oninput=function(){save('letter',L.value)};
+$('restoreLetter').onclick=function(){L.value=ORIG;save('letter',ORIG)};
+var checks=['On Saturday и at the Academy','two classical dance lessons','must wear','How is your day?','What do you love doing in your free time?','bring a snack и один знак после вопроса'];
+var chSaved=load('checks')||[];
+checks.forEach(function(t,i){var d=document.createElement('label');d.className='check-item';d.innerHTML='<input type="checkbox"><span>'+t+'</span>';
+  var c=d.querySelector('input');c.checked=!!chSaved[i];
+  c.onchange=function(){save('checks',[].map.call(document.querySelectorAll('#fixChecklist input'),function(x){return x.checked}))};$('fixChecklist').appendChild(d)});
+function flash(btn,msg,orig){btn.textContent=msg;setTimeout(function(){btn.textContent=orig},1800)}
+function copyText(t,btn,orig){
+  function fallback(){L.focus();L.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}flash(btn,ok?'Скопировано ✓':'Выдели текст и скопируй',orig)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){flash(btn,'Скопировано ✓',orig)},fallback)}else fallback();
+}
+$('copyLetter').onclick=function(){copyText(L.value.trim(),$('copyLetter'),'Скопировать')};
+$('shareLetter').onclick=function(){var t=L.value.trim();
+  if(navigator.share){navigator.share({title:'My letter to Emily, version 2',text:t}).catch(function(){})}else copyText(t,$('shareLetter'),'Отправить учителю')};
+var hwTasks=[
+  'Исправь письмо в Finale и отправь учителю кнопкой «Отправить учителю».',
+  'Ответь Эмили голосовым сообщением на 30 секунд: What do you love doing at the weekend? Do you have any free time?',
+  'Угадай 5 слов в Hangman.',
+  'Пройди Act 2 еще раз и проверь, что все on, at, in правильные.'
+];
+var hwSaved=load('hw')||[];
+function hwProgress(){var all=document.querySelectorAll('#hwList input'),n=0;all.forEach(function(x){if(x.checked)n++});$('hwBar').style.width=(n/all.length*100)+'%'}
+hwTasks.forEach(function(t,i){var d=document.createElement('label');d.className='check-item';d.innerHTML='<input type="checkbox"><span>'+t+'</span>';
+  var c=d.querySelector('input');c.checked=!!hwSaved[i];
+  c.onchange=function(){save('hw',[].map.call(document.querySelectorAll('#hwList input'),function(x){return x.checked}));hwProgress()};$('hwList').appendChild(d)});
+hwProgress();
+})();
+</script>
+</body>
+</html>
