@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vasilisa's Lessons</title>
+<style>
+:root{--ivory:#FFF8EE;--paper:#FFFFFF;--rose:#F6B8C8;--rose-soft:#FDE6EC;--velvet:#8C2F55;--velvet-dark:#5E1C38;
+  --sky-soft:#E3F2FB;--sun:#FFD66B;--grass:#6DBB72;--ink:#4A3428;--muted:#8A7163}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:'Nunito','Trebuchet MS','Segoe UI',sans-serif;font-size:18px;line-height:1.5}
+h1,h2{font-family:'Comfortaa','Nunito','Trebuchet MS',sans-serif;line-height:1.2;margin:0 0 .3em}
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 110%,#FFE9B8 0%,#F9D2DC 45%,#E9A8BE 100%);
+  padding:56px 20px 40px;text-align:center;border-bottom:10px solid var(--velvet-dark)}
+.stage:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;
+  background:repeating-radial-gradient(circle at 20px -6px,var(--velvet) 0 22px,transparent 23px) 0 0/40px 34px,var(--velvet-dark)}
+.stage:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,var(--velvet) 0 28px,transparent 28px calc(100% - 28px),var(--velvet) calc(100% - 28px))}
+.swan{font-size:60px}
+.stage h1{font-size:clamp(1.9rem,6vw,2.8rem);color:var(--velvet-dark)}
+.stage p{margin:0;color:var(--velvet-dark)}
+main{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+.lesson{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;background:var(--paper);border:2px solid #F3E3D6;
+  border-radius:22px;padding:16px 18px;margin:0 0 14px;text-decoration:none;color:inherit;transition:transform .15s,border-color .15s}
+.lesson:hover,.lesson:focus-visible{border-color:var(--velvet);transform:translateY(-2px);outline:none}
+.lesson .emo{font-size:40px;text-align:center;background:var(--rose-soft);border-radius:18px;height:64px;display:flex;align-items:center;justify-content:center}
+.lesson h2{font-size:1.25rem;color:var(--velvet-dark);margin:0}
+.lesson .num{font-size:.85rem;font-weight:800;color:var(--velvet)}
+.lesson p{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.new{display:inline-block;background:var(--sun);border-radius:8px;padding:0 8px;font-size:.8rem;font-weight:800;margin-left:6px;vertical-align:middle}
+.lesson.latest{border-color:var(--rose);box-shadow:0 4px 0 var(--rose)}
+.note{text-align:center;color:var(--muted);font-size:.9rem;margin-top:22px}
+@media (max-width:480px){.lesson{grid-template-columns:52px 1fr}.lesson .emo{height:52px;font-size:32px}}
+</style>
+</head>
+<body>
+<header class="stage">
+  <div class="swan" aria-hidden="true">🦢</div>
+  <h1>Vasilisa's Lessons</h1>
+  <p>Choose a lesson and let's dance into English!</p>
+</header>
+<main id="list"></main>
+
+<script>
+/* =====================================================
+   СПИСОК УРОКОВ
+   Чтобы добавить новый урок, скопируйте одну строку
+   и поставьте ее в конец списка, заменив:
+   file: точное имя файла в репозитории,
+   title: название урока,
+   about: пара слов о том, что в нем,
+   emoji: значок.
+   ===================================================== */
+var lessons = [
+  {file:'vasilisa_ballet_day.html', title:'My Ballet Day',  about:'My day at the Academy · Present Simple · telling the time', emoji:'🩰'},
+  {file:'vasilisa_backstage.html',  title:'Backstage',      about:'Right now · must, mustn\'t, have to · a letter from Emily',   emoji:'🎭'},
+  {file:'vasilisa_dear_emily.html', title:'Dear Emily',     about:'My letter · on, at, in · free time · Hangman',              emoji:'💌'}
+];
+
+var box=document.getElementById('list');
+for(var i=lessons.length-1;i>=0;i--){
+  var l=lessons[i],latest=(i===lessons.length-1);
+  var a=document.createElement('a');
+  a.className='lesson'+(latest?' latest':'');a.href=l.file;
+  a.innerHTML='<div class="emo">'+l.emoji+'</div><div><div class="num">Lesson '+(i+1)+(latest?'<span class="new">New</span>':'')+'</div><h2>'+l.title+'</h2><p>'+l.about+'</p></div>';
+  box.appendChild(a);
+}
+var n=document.createElement('p');n.className='note';n.textContent='Новые уроки появляются наверху.';box.appendChild(n);
+</script>
+</body>
+</html>
