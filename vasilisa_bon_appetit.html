@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bon Appétit!</title>
+<style>
+
+
+:root{
+  --ivory:#FFF8EE; --paper:#FFFFFF; --rose:#F6B8C8; --rose-soft:#FDE6EC;
+  --velvet:#8C2F55; --velvet-dark:#5E1C38; --sky:#8EC5E8; --sky-soft:#E3F2FB;
+  --sun:#FFD66B; --grass:#6DBB72; --grass-soft:#E4F5E5; --coral:#FF8A70; --coral-soft:#FFE6E0;
+  --ink:#4A3428; --muted:#8A7163;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);
+  font-family:'Nunito','Comfortaa','Trebuchet MS','Segoe UI',sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:'Comfortaa','Nunito','Trebuchet MS',sans-serif;line-height:1.2;margin:0 0 .4em}
+button{font-family:inherit;font-size:1rem;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--velvet);outline-offset:2px}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 110%,#FFE9B8 0%,#F9D2DC 45%,#E9A8BE 100%);
+  padding:48px 20px 36px;text-align:center;border-bottom:10px solid var(--velvet-dark)}
+.stage:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;
+  background:repeating-radial-gradient(circle at 20px -6px,var(--velvet) 0 22px,transparent 23px) 0 0/40px 34px, var(--velvet-dark);}
+.curtain{position:absolute;top:0;bottom:0;width:52%;z-index:3;
+  background:repeating-linear-gradient(90deg,var(--velvet) 0 18px,var(--velvet-dark) 18px 24px,var(--velvet) 24px 44px);
+  transition:transform 1.6s cubic-bezier(.6,.05,.3,1)}
+.curtain.l{left:0}.curtain.r{right:0}
+.stage.open .curtain.l{transform:translateX(-88%)}
+.stage.open .curtain.r{transform:translateX(88%)}
+.stage-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.swan{font-size:64px;display:inline-block;transform-origin:50% 90%}
+.stage.open .swan{animation:bow 1.2s 1.4s ease-in-out 1}
+@keyframes bow{0%,100%{transform:rotate(0)}40%{transform:rotate(-14deg) translateY(4px)}}
+.stage h1{font-size:clamp(1.8rem,5vw,2.8rem);color:var(--velvet-dark)}
+.stage p{margin:.2em 0;color:var(--velvet-dark)}
+.stars{display:inline-block;margin-top:10px;background:var(--paper);border-radius:999px;padding:6px 18px;font-weight:800;
+  box-shadow:0 3px 0 var(--velvet-dark)}
+@media (prefers-reduced-motion:reduce){.curtain{transition:none}.stage.open .swan{animation:none}}
+
+/* ---------- programme (tabs) ---------- */
+.programme{position:sticky;top:0;z-index:10;background:var(--velvet-dark);padding:8px 10px;
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.programme button{flex:0 0 auto;border:0;border-radius:14px;padding:8px 14px;background:transparent;color:#FBE3EA;
+  font-weight:700;white-space:nowrap}
+.programme button small{display:block;font-weight:600;opacity:.75;font-size:.72rem}
+.programme button.active{background:var(--rose);color:var(--velvet-dark)}
+
+main{max-width:880px;margin:0 auto;padding:22px 16px 60px}
+section{display:none}
+section.active{display:block}
+.act-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.act-title .num{font-family:'Comfortaa',sans-serif;font-weight:800;color:var(--velvet);font-size:.95rem;
+  border:2px solid var(--velvet);border-radius:10px;padding:2px 10px}
+.task{color:var(--muted);margin:0 0 16px}
+.card{background:var(--paper);border-radius:22px;padding:20px;margin:16px 0;border:2px solid #F3E3D6}
+.odette{display:flex;gap:12px;align-items:flex-start;background:var(--rose-soft);border-radius:18px;padding:12px 16px;margin:12px 0}
+.odette .ava{font-size:34px;line-height:1}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:10px 18px;font-weight:800;min-height:44px}
+.btn.check{background:var(--grass);color:#fff}
+.btn.reset{background:#EFE3D8;color:var(--ink)}
+.btn.again{background:var(--sky);color:#123}
+.btn.say{background:var(--sun);color:var(--ink)}
+.btn.main{background:var(--velvet);color:#fff}
+.result{margin-top:12px;font-weight:800;min-height:1.5em}
+.speak{border:0;background:var(--sun);border-radius:10px;padding:2px 8px;margin-left:6px;font-size:.9rem}
+
+/* quiz */
+.q{margin:14px 0}
+.q p{margin:0 0 8px;font-weight:700}
+.opt{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:8px 14px;min-height:44px}
+.opt.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.opt.ok{border-color:var(--grass);background:var(--grass-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* pairs */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pairs .col{display:flex;flex-direction:column;gap:8px}
+.tile{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:10px;min-height:48px;font-weight:700}
+.tile.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.tile.done{border-color:var(--grass);background:var(--grass-soft);color:#2F6B33;cursor:default}
+.tile.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* clock */
+.clockwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:center}
+.clockwrap svg{width:200px;height:200px}
+.timeopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:260px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.rules div{background:var(--sky-soft);border-radius:14px;padding:10px;text-align:center}
+.rules b{display:block;font-size:1.1rem}
+
+/* reading */
+.story p{margin:0 0 .8em}
+.story{background:#FFFDF8;border-left:6px solid var(--rose);border-radius:0 18px 18px 0;padding:16px 18px}
+.tf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #EADBCD}
+.tf .row{flex:0 0 auto}
+.me-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;padding:6px 0}
+input[type=text],select{font-family:inherit;font-size:1rem;border:2px solid #E8D8CB;border-radius:12px;padding:8px 10px;background:#fff;min-height:44px;width:100%}
+input.ok{border-color:var(--grass);background:var(--grass-soft)}
+input.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* grammar */
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-grid div{background:var(--sky-soft);border-radius:16px;padding:12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;text-align:center;font-weight:700}
+.scale div{border-radius:12px;padding:8px 4px;font-size:.9rem}
+.gap-item{padding:8px 0;border-bottom:1px dashed #EADBCD}
+.builder .line{min-height:52px;border:2px dashed var(--rose);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;background:#FFFDF8}
+.builder .bank{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:0;border-radius:12px;padding:8px 12px;background:var(--sky-soft);font-weight:700;min-height:40px}
+.line .chip{background:var(--rose-soft)}
+.builder.ok .line{border-color:var(--grass);background:var(--grass-soft)}
+.builder.bad .line{border-color:var(--coral);background:var(--coral-soft)}
+.inline-in{width:auto!important;min-width:110px;display:inline-block;min-height:38px;padding:4px 8px}
+
+/* day builder */
+.act-row{display:grid;grid-template-columns:34px 1.4fr 1fr 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.act-row input[type=checkbox]{width:24px;height:24px}
+.free{color:var(--muted);font-size:.9rem}
+.fixed-mark{font-size:.8rem;background:var(--sky-soft);border-radius:8px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.out{background:#FFFDF8;border-radius:18px;padding:16px;border:2px solid var(--rose);min-height:60px;white-space:pre-wrap}
+
+/* interview */
+.mic{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.mic .card{margin:0;display:flex;flex-direction:column;gap:8px}
+.mic .help{color:var(--muted);font-size:.95rem}
+.mic .card.done{border-color:var(--grass);background:var(--grass-soft)}
+
+/* finale */
+.links a{color:var(--velvet);font-weight:800}
+.links li{margin:0 0 12px}
+.poster{margin-top:14px;text-align:center;border-radius:22px;padding:26px 18px;
+  background:radial-gradient(circle at 50% 0,#FFF3C4,#F9D2DC 60%,#E9A8BE);font-family:'Comfortaa',sans-serif;font-size:1.3rem;font-weight:800;color:var(--velvet-dark);display:none}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.check-item input{width:26px;height:26px;flex:0 0 auto;margin-top:2px}
+.bar{height:16px;background:#F1E4D8;border-radius:10px;overflow:hidden;margin-top:12px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .4s}
+
+@media (max-width:620px){
+  body{font-size:17px}
+  .rule-grid,.me-row{grid-template-columns:1fr}
+  .act-row{grid-template-columns:30px 1fr;}
+  .act-row select{grid-column:2}
+  .act-row .free{grid-column:2}
+  .timeopts{grid-template-columns:1fr;min-width:0;width:100%}
+  .tf{flex-direction:column;align-items:flex-start}
+}
+
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.now{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.scene{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.scene .card{margin:0}
+.scene .emo{font-size:40px;line-height:1}
+.story .pc,.story .ps,.story .md{border-radius:6px;transition:background .3s}
+.story.show .pc{background:var(--rose)}
+.story.show .ps{background:#BFE0F5}
+.story.show .md{background:var(--sun)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:.9rem}
+.legend span{border-radius:8px;padding:2px 8px}
+.gloss{font-size:.95rem;color:var(--muted);margin-top:10px}
+.sign{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.sign .emo{font-size:34px;text-align:center}
+.clockbox{text-align:center}
+.bigtime{font-family:'Comfortaa',sans-serif;font-size:2.4rem;font-weight:800;color:var(--velvet)}
+.bq{font-size:1.25rem;font-weight:800;margin:14px 0}
+.bopts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2px solid #E8D8CB;border-radius:14px;padding:12px;background:#FFFDF8;line-height:1.5}
+.plan li{margin-bottom:4px}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}}
+
+.mc .opts{display:flex;flex-direction:column;gap:8px}
+.mc .opt{text-align:left}
+.mc{padding:12px 0;border-bottom:1px dashed #EADBCD}
+.mc p{margin:0 0 8px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.un{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.fridge{background:linear-gradient(#EAF6FD,#D3ECFA);border:6px solid #B9D9EC;border-radius:26px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px;margin:0 auto}
+.fridge div{background:#fff;border-radius:14px;padding:8px;text-align:center;font-weight:700;font-size:.95rem}
+.fridge span{display:block;font-size:2rem;line-height:1.2}
+.story .cn,.story .un,.story .sa,.story .mm{border-radius:6px;transition:background .3s}
+.story.show .sa{background:var(--sun)}
+.story.show .mm{background:#BFE0F5}
+.story.show .ct{background:var(--rose)}
+/* cafe */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.mitem{position:relative;border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:10px 8px;text-align:center;font-family:inherit;font-size:.95rem;min-height:44px}
+.mitem .e{display:block;font-size:2rem;line-height:1.2}
+.mitem b{display:block}
+.mitem .pr{color:var(--velvet);font-weight:800}
+.mitem .cnt{position:absolute;top:-8px;right:-8px;background:var(--velvet);color:#fff;border-radius:999px;min-width:28px;height:28px;line-height:28px;font-weight:800;display:none}
+.mitem.has{border-color:var(--velvet);background:var(--rose-soft)}
+.mitem.has .cnt{display:block}
+.tray{background:#FFFDF8;border:2px dashed var(--rose);border-radius:16px;padding:10px;margin-top:12px;min-height:56px}
+.tray .tl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}
+.tray .minus{border:0;background:#EFE3D8;border-radius:10px;width:40px;height:40px;font-weight:800;font-size:1.2rem}
+.bill{font-family:'Comfortaa',sans-serif;font-weight:800;font-size:1.2rem;color:var(--velvet);margin-top:10px}
+.dialog p{margin:0 0 6px}
+.dialog b{color:var(--velvet)}
+.cardq{font-family:'Comfortaa',sans-serif;font-size:1.35rem;font-weight:800;text-align:center;padding:26px 14px;border-radius:20px;background:var(--sky-soft);min-height:110px;display:flex;align-items:center;justify-content:center}
+.snack{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.snack button{border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:10px 6px;font-family:inherit;font-size:.95rem;min-height:44px}
+.snack button span{display:block;font-size:1.9rem}
+.snack button.on{border-color:var(--grass);background:var(--grass-soft)}
+/* hangman */
+.hang{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center}
+.hang svg{width:200px;height:220px;flex:0 0 auto}
+.hang svg .p{opacity:0;transition:opacity .3s}
+.hang svg .p.on{opacity:1}
+.hword{font-family:'Comfortaa',monospace;font-size:2rem;font-weight:800;letter-spacing:.35em;text-align:center;color:var(--velvet-dark);word-break:break-all}
+.hinfo{text-align:center;color:var(--muted);margin:6px 0}
+.kb{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-top:14px}
+.kb button{border:0;border-radius:10px;min-height:44px;font-weight:800;font-size:1.05rem;background:var(--sky-soft);color:var(--ink)}
+.kb button.hit{background:var(--grass);color:#fff}
+.kb button.miss{background:#E7DCD2;color:#B2A091}
+.hscore{display:flex;justify-content:center;gap:18px;font-weight:800;margin-top:8px}
+.cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.cheat div{background:var(--sky-soft);border-radius:14px;padding:10px 12px;font-size:.95rem}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}.kb{grid-template-columns:repeat(7,1fr)}.hword{font-size:1.6rem}}
+</style>
+</head>
+<body>
+
+<header class="stage" id="stage">
+  <div class="curtain l"></div><div class="curtain r"></div>
+  <div class="stage-inner">
+    <div class="swan" aria-hidden="true">🦢</div>
+    <h1>Bon Appétit!</h1>
+    <p>Food, some and any, much and many</p>
+    <div class="stars">⭐ <span id="starCount">0</span> stars</div>
+  </div>
+</header>
+
+<nav class="programme" id="programme" aria-label="Lesson programme">
+  <button data-go="a1" class="active"><small>Act 1</small>Food words</button>
+  <button data-go="a2"><small>Act 2</small>Count it?</button>
+  <button data-go="a3"><small>Act 3</small>A cup of...</button>
+  <button data-go="a4"><small>Act 4</small>some & any</button>
+  <button data-go="a5"><small>Act 5</small>much & many</button>
+  <button data-go="a6"><small>Act 6</small>Emily's lunch</button>
+  <button data-go="a7"><small>Act 7</small>Café</button>
+  <button data-go="a8"><small>Act 8</small>Snack box</button>
+  <button data-go="a9"><small>Act 9</small>Hangman</button>
+  <button data-go="a10"><small>Finale</small>Homework</button>
+</nav>
+
+<main>
+
+<!-- ============ ACT 1 ============ -->
+<section id="a1" class="active">
+  <div class="act-title"><span class="num">Act 1</span><h2>🥐 Food words</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Hello, Vasilisa! Dancers need a lot of energy. Today we talk about food! In your letter you wrote: «we have to take a snack». So what's in your snack box? Let's find out!</div></div>
+  <p class="task">Найди пары: нажми на английское слово, потом на перевод. Английское слово звучит при нажатии.</p>
+  <div class="card">
+    <div class="pairs"><div class="col" id="enCol"></div><div class="col" id="ruCol"></div></div>
+    <div class="result" id="pairsRes"></div>
+    <div class="btns"><button class="btn again" id="pairsAgain">Еще раз</button></div>
+  </div>
+</section>
+
+<!-- ============ ACT 2 ============ -->
+<section id="a2">
+  <div class="act-title"><span class="num">Act 2</span><h2>🔢 Can you count it?</h2></div>
+  <div class="rule-grid">
+    <div><b>🍎 Можно посчитать</b><br>an apple, two apples<br>a banana, three bananas<br>an egg, some eggs</div>
+    <div style="background:var(--rose-soft)"><b>💧 Нельзя посчитать</b><br>water, milk, bread, cheese<br>Нельзя сказать «a water» или «two breads».<br>Говорим: some water, some bread</div>
+  </div>
+  <div class="card" style="background:#FFF4CF">
+    <b>a или an?</b> Перед гласным звуком an: <b>an</b> apple, <b>an</b> egg, <b>an</b> orange. Перед согласным a: <b>a</b> banana, <b>a</b> carrot.
+  </div>
+  <div class="card">
+    <h3>1. Two baskets</h3>
+    <p class="task">Нажми на слово, потом на корзину. Ошиблась? Нажми на слово в корзине, и оно вернется.</p>
+    <div class="builder"><div class="bank" id="cBank"></div></div>
+    <div class="basket-wrap">
+      <button class="basket" id="bCount" type="button"><h4>🍎 Can count</h4><div class="chips"></div></button>
+      <button class="basket un" id="bUn" type="button"><h4>💧 Can't count</h4><div class="chips"></div></button>
+    </div>
+    <div class="btns"><button class="btn check" id="cCheck">Проверить</button><button class="btn reset" id="cReset">Сбросить</button></div>
+    <div class="result" id="cRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. a, an or some?</h3>
+    <div id="aanList"></div>
+    <div class="btns"><button class="btn check" id="aanCheck">Проверить</button><button class="btn reset" id="aanReset">Сбросить</button></div>
+    <div class="result" id="aanRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 3 ============ -->
+<section id="a3">
+  <div class="act-title"><span class="num">Act 3</span><h2>🍵 A cup of tea</h2></div>
+  <p class="task">Как посчитать то, что посчитать нельзя? Берем «упаковку»: стакан, кусочек, бутылку.</p>
+  <div class="rules">
+    <div><b>a cup of</b>tea 🍵</div>
+    <div><b>a glass of</b>milk 🥛</div>
+    <div><b>a bottle of</b>water 💧</div>
+    <div><b>a slice of</b>bread 🍞</div>
+    <div><b>a piece of</b>cake 🍰</div>
+    <div><b>a bowl of</b>soup 🥣</div>
+    <div><b>a bar of</b>chocolate 🍫</div>
+    <div><b>a packet of</b>biscuits 🍪</div>
+    <div><b>a carton of</b>juice 🧃</div>
+    <div><b>a jar of</b>honey 🍯</div>
+  </div>
+  <div class="odette"><div class="ava">🦢</div><div>Two cups of tea, three pieces of cake! Окончание -s получает «упаковка», а не еда.</div></div>
+  <div class="card">
+    <h3>1. Choose the right word</h3>
+    <div id="contList"></div>
+    <div class="btns"><button class="btn check" id="contCheck">Проверить</button><button class="btn reset" id="contReset">Сбросить</button></div>
+    <div class="result" id="contRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Two of them!</h3>
+    <div id="plList"></div>
+    <div class="btns"><button class="btn check" id="plCheck">Проверить</button><button class="btn reset" id="plReset">Сбросить</button></div>
+    <div class="result" id="plRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 4 ============ -->
+<section id="a4">
+  <div class="act-title"><span class="num">Act 4</span><h2>🧊 some & any</h2></div>
+  <div class="rule-grid">
+    <div><b>✅ some</b><br>в утверждении<br>There <b>is some</b> milk.<br>There <b>are some</b> eggs.</div>
+    <div style="background:var(--rose-soft)"><b>❓🚫 any</b><br>в вопросе и отрицании<br><b>Is there any</b> milk?<br>There <b>aren't any</b> apples.</div>
+  </div>
+  <div class="card" style="background:var(--grass-soft)">
+    <b>Вежливое исключение.</b> Когда предлагаем или просим, говорим some даже в вопросе:<br>Would you like <b>some</b> tea? Can I have <b>some</b> water, please?
+  </div>
+  <div class="card">
+    <h3>1. What's in the fridge?</h3>
+    <p class="task">Посмотри в холодильник. Для каждой еды выбери правильное предложение. Если еды в холодильнике нет, значит, ее нет совсем.</p>
+    <div class="fridge">
+      <div><span>🥛</span>milk</div><div><span>🥚🥚</span>eggs</div><div><span>🧀</span>cheese</div>
+      <div><span>🥕🥕</span>carrots</div><div><span>🧈</span>butter</div><div><span>🧃</span>juice</div>
+    </div>
+    <div id="fridgeList"></div>
+    <div class="btns"><button class="btn check" id="frCheck">Проверить</button><button class="btn reset" id="frReset">Сбросить</button></div>
+    <div class="result" id="frRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. some or any?</h3>
+    <div id="saList"></div>
+    <div class="btns"><button class="btn check" id="saCheck">Проверить</button><button class="btn reset" id="saReset">Сбросить</button></div>
+    <div class="result" id="saRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 5 ============ -->
+<section id="a5">
+  <div class="act-title"><span class="num">Act 5</span><h2>⚖️ much, many, a lot of</h2></div>
+  <div class="rules">
+    <div><b>many</b>то, что считаем<br>How <b>many</b> apples?<br>I don't have <b>many</b> biscuits.</div>
+    <div><b>much</b>то, что не считаем<br>How <b>much</b> water?<br>There isn't <b>much</b> milk.</div>
+    <div><b>a lot of</b>и то, и другое<br>I eat <b>a lot of</b> apples.<br>I drink <b>a lot of</b> water.</div>
+  </div>
+  <div class="card" style="background:#FFF4CF">
+    <b>Подсказка.</b> Much и many чаще живут в вопросах и отрицаниях. В обычном утверждении удобнее a lot of. А про деньги: <b>How much is it?</b> Сколько стоит? It's three pounds.
+  </div>
+  <div class="card">
+    <h3>Choose much, many or a lot of</h3>
+    <div id="mmList"></div>
+    <div class="btns"><button class="btn check" id="mmCheck">Проверить</button><button class="btn reset" id="mmReset">Сбросить</button></div>
+    <div class="result" id="mmRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 6 ============ -->
+<section id="a6">
+  <div class="act-title"><span class="num">Act 6</span><h2>📬 Emily's lunch</h2></div>
+  <p class="task">Эмили рассказывает, что едят в ее балетной школе. Прочитай. Потом нажми «Покажи цвета».</p>
+  <div class="card">
+    <div class="story" id="story">
+      <p>Hi Vasilisa!</p>
+      <p>You asked about food at my school. Dancers need <span class="mm">a lot of</span> energy, so we eat well!</p>
+      <p>For breakfast I usually have <span class="ct">a bowl of</span> porridge with <span class="sa">some</span> honey and a banana. I don't drink <span class="sa">any</span> coffee, but I love <span class="ct">a cup of</span> tea.</p>
+      <p>At lunch we go to the canteen. There are <span class="mm">a lot of</span> vegetables, and there is always <span class="sa">some</span> soup, rice or pasta. I don't eat <span class="mm">much</span> meat, but I like fish.</p>
+      <p>Our teacher says we mustn't eat <span class="mm">a lot of</span> sweets. Is there <span class="sa">any</span> chocolate in my bag right now? Yes, there is: a small <span class="ct">bar of</span> chocolate for after class! Shh!</p>
+      <p>In my snack box there is an apple, <span class="sa">some</span> nuts and <span class="ct">a bottle of</span> water. What's in your snack box? <span class="mm">How many</span> lessons do you have before lunch?</p>
+      <p>Love,<br>Emily</p>
+    </div>
+    <div class="gloss">energy: энергия · canteen: столовая · vegetables: овощи · meat: мясо · sweets: сладости · nuts: орехи</div>
+    <div class="btns"><button class="btn main" id="showColors">Покажи цвета</button><button class="btn say" id="storySay">🔊 Послушать</button><button class="btn reset" id="storyStop">⏹ Стоп</button></div>
+    <div class="legend"><span style="background:var(--sun)">some / any</span><span style="background:#BFE0F5">much / many / a lot of</span><span style="background:var(--rose)">a cup of...</span></div>
+  </div>
+  <div class="card">
+    <h3>True or False?</h3>
+    <div id="tfList"></div>
+    <div class="btns"><button class="btn check" id="tfCheck">Проверить</button><button class="btn reset" id="tfReset">Сбросить</button></div>
+    <div class="result" id="tfRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 7 ============ -->
+<section id="a7">
+  <div class="act-title"><span class="num">Act 7</span><h2>☕ Café Swan Lake</h2></div>
+  <div class="card dialog">
+    <h3>At the café</h3>
+    <p><b>Waiter:</b> Hello! What would you like?</p>
+    <p><b>You:</b> I'd like a cheese sandwich, please.</p>
+    <p><b>Waiter:</b> Would you like anything to drink?</p>
+    <p><b>You:</b> Yes, please. Can I have a cup of tea?</p>
+    <p><b>Waiter:</b> Here you are.</p>
+    <p><b>You:</b> How much is it?</p>
+    <p><b>Waiter:</b> It's six pounds, please.</p>
+    <p class="gloss">I'd like = I would like, я бы хотела. Звучит вежливее, чем I want.</p>
+    <div class="btns"><button class="btn say" id="dlgSay">🔊 Послушать диалог</button></div>
+  </div>
+  <div class="card">
+    <h3>1. You are the waiter!</h3>
+    <p class="task">Нажми 🔊 и послушай заказ. Потом нажимай на еду в меню, чтобы собрать заказ на поднос. Лишнее убирай кнопкой «−». Всего 5 заказов.</p>
+    <div class="row" style="justify-content:space-between"><b id="srvRound"></b><button class="btn say" id="srvListen">🔊 Послушать заказ</button></div>
+    <div class="menu" id="srvMenu" style="margin-top:12px"></div>
+    <div class="tray" id="srvTray"></div>
+    <div class="btns"><button class="btn check" id="srvCheck">Проверить</button><button class="btn reset" id="srvText">Показать текст</button><button class="btn again" id="srvNext">Следующий заказ</button></div>
+    <div class="result" id="srvRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Now you order!</h3>
+    <p class="task">У тебя 12 фунтов. Закажи обед для себя и для Эмили. Собери заказ, потом скажи его вслух целиком.</p>
+    <div class="menu" id="myMenu"></div>
+    <div class="tray" id="myTray"></div>
+    <div class="out" id="myOrder" style="margin-top:12px">Здесь появится твой заказ.</div>
+    <div class="bill" id="myBill"></div>
+    <div class="btns"><button class="btn say" id="mySay">🔊 Послушать</button><button class="btn reset" id="myReset">Сбросить</button></div>
+  </div>
+</section>
+
+<!-- ============ ACT 8 ============ -->
+<section id="a8">
+  <div class="act-title"><span class="num">Act 8</span><h2>🎒 My snack box</h2></div>
+  <div class="card">
+    <h3>1. Pack your snack box</h3>
+    <p class="task">Что ты обычно берешь с собой в Академию? Нажми на то, что лежит в твоем ланчбоксе, и прочитай рассказ вслух.</p>
+    <div class="snack" id="snack"></div>
+    <div class="out" id="snackOut" style="margin-top:12px">Здесь появится твой рассказ.</div>
+    <div class="btns"><button class="btn say" id="snackSay">🔊 Послушать</button></div>
+  </div>
+  <div class="card">
+    <h3>2. Let's talk!</h3>
+    <p class="task">Учитель тянет карточку, ты отвечаешь целым предложением. Потом поменяйтесь: карточку тянешь ты, а отвечает учитель.</p>
+    <div class="cardq" id="cardQ">🎴 Tap «New card»</div>
+    <div class="btns" style="justify-content:center"><button class="btn main" id="cardNew">New card</button><button class="btn say" id="cardSay">🔊</button></div>
+    <div class="result" id="cardRes" style="text-align:center"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 9 ============ -->
+<section id="a9">
+  <div class="act-title"><span class="num">Act 9</span><h2>🎯 Hangman: food</h2></div>
+  <p class="task">Угадай слово по буквам. За каждую неправильную букву появляется часть виселицы. Десять ошибок, и человечек готов. Все слова сегодня про еду.</p>
+  <div class="card">
+    <div class="hang">
+      <svg viewBox="0 0 200 220" aria-label="Виселица">
+        <line class="p" x1="20" y1="205" x2="140" y2="205" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="205" x2="50" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="20" x2="135" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="20" x2="135" y2="48" stroke="#4A3428" stroke-width="4" stroke-linecap="round"/>
+        <circle class="p" cx="135" cy="66" r="18" fill="none" stroke="#4A3428" stroke-width="5"/>
+        <line class="p" x1="135" y1="84" x2="135" y2="140" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="112" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="158" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="115" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="155" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div style="flex:1;min-width:240px">
+        <div class="hword" id="hWord"></div>
+        <div class="hinfo" id="hCat"></div>
+        <div class="hinfo" id="hLives"></div>
+        <div class="hinfo" id="hHint" style="font-weight:800;color:var(--velvet)"></div>
+      </div>
+    </div>
+    <div class="kb" id="kb"></div>
+    <div class="result" id="hRes" style="text-align:center"></div>
+    <div class="btns" style="justify-content:center"><button class="btn say" id="hHintBtn">Подсказка</button><button class="btn again" id="hNew">Новое слово</button></div>
+    <div class="hscore"><span>🏆 Угадано: <span id="hWins">0</span></span><span>🔥 Подряд: <span id="hStreak">0</span></span></div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="a10">
+  <div class="act-title"><span class="num">Finale</span><h2>🌹 Homework</h2></div>
+  <div class="card">
+    <h3>Шпаргалка урока</h3>
+    <div class="cheat">
+      <div><b>Считаем:</b> an apple, two apples<br><b>Не считаем:</b> some water, some bread</div>
+      <div><b>Упаковка:</b> a cup of tea, two cups of tea</div>
+      <div><b>some:</b> There is some milk.<br><b>any:</b> Is there any milk? There isn't any milk.</div>
+      <div><b>How many</b> apples? <b>How much</b> water?<br>I eat <b>a lot of</b> fruit.</div>
+      <div><b>В кафе:</b> I'd like..., please. Can I have...? How much is it?</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>✉️ Write back to Emily</h3>
+    <p class="task">Ответь Эмили про еду в Академии. Постарайся написать от 60 до 80 слов.</p>
+    <ol class="plan">
+      <li>Поблагодари за письмо.</li>
+      <li>Что ты обычно ешь на завтрак и на обед? Используй a bowl of, a cup of.</li>
+      <li>Что есть и чего нет в столовой Академии: There is some..., There isn't any...</li>
+      <li>Что лежит в твоем ланчбоксе?</li>
+      <li>Ответь на вопрос Эмили: How many lessons do you have before lunch?</li>
+      <li>Задай ей один вопрос про еду и попрощайся.</li>
+    </ol>
+    <textarea id="letter" placeholder="Hi Emily,&#10;Thank you for your letter! For breakfast I usually have..."></textarea>
+    <div id="wc" style="font-weight:800;margin-top:6px">0 words</div>
+    <div class="btns"><button class="btn check" id="shareLetter">Отправить учителю</button><button class="btn reset" id="copyLetter">Скопировать</button></div>
+  </div>
+  <div class="card">
+    <h3>🏠 Homework</h3>
+    <div id="hwList"></div>
+    <div class="bar"><div id="hwBar"></div></div>
+  </div>
+  <div class="result" id="finalRes" style="text-align:center;font-size:1.2rem"></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+function $(id){return document.getElementById(id)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+var canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+function speak(text){ if(!canSpeak) return; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=0.9;
+  var v=window.speechSynthesis.getVoices().filter(function(x){return /^en(-|_)GB/i.test(x.lang)})[0]; if(v)u.voice=v; window.speechSynthesis.speak(u);}catch(e){} }
+function stopSpeak(){ if(canSpeak){ try{window.speechSynthesis.cancel()}catch(e){} } }
+function save(k,v){try{localStorage.setItem('bonappetit_'+k,JSON.stringify(v))}catch(e){}}
+function load(k){try{return JSON.parse(localStorage.getItem('bonappetit_'+k))}catch(e){return null}}
+
+var best={};
+function setStars(block,n){ if(!(block in best)||n>best[block]){best[block]=n} var t=0;for(var k in best)t+=best[k]; $('starCount').textContent=t; updateFinal(); }
+function starWord(n){var a=n%10,b=n%100;if(a===1&&b!==11)return 'звезда';if(a>=2&&a<=4&&(b<12||b>14))return 'звезды';return 'звезд'}
+function updateFinal(){var t=0;for(var k in best)t+=best[k];$('finalRes').textContent=t?('За урок у тебя '+t+' '+starWord(t)+'. Bravo, Vasilisa! 🌹'):''}
+
+window.addEventListener('load',function(){ setTimeout(function(){ $('stage').classList.add('open') },300) });
+var tabs=document.querySelectorAll('.programme button');
+tabs.forEach(function(b){ b.addEventListener('click',function(){
+  tabs.forEach(function(x){x.classList.remove('active')}); b.classList.add('active');
+  document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
+  $(b.dataset.go).classList.add('active'); stopSpeak();
+  window.scrollTo({top:$('stage').offsetHeight,behavior:'smooth'});
+})});
+
+/* generic: select gaps */
+function selectList(boxId,items,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    items.forEach(function(c,i){var d=document.createElement('div');d.className='gap-item';
+      var sel='<select class="inline-in" aria-label="Выбери вариант"><option value="">...</option>'+c.o.map(function(o){return '<option value="'+o+'">'+o+'</option>'}).join('')+'</select>';
+      d.innerHTML=(i+1)+'. '+c.q.replace('___',sel);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' select').forEach(function(sel,i){sel.classList.remove('ok','bad');
+      if(!sel.value){empty++;return} if(sel.value===items[i].a){sel.classList.add('ok');s++}else sel.classList.add('bad')});
+    $(resId).textContent=(empty?'Осталось выбрать '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+/* generic: multiple choice, first option is the correct one, shuffled on screen */
+function mcList(boxId,items,resId,block,okMsg){
+  var sel=[];
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';sel=items.map(function(){return -1});
+    items.forEach(function(it,i){var d=document.createElement('div');d.className='mc';
+      d.innerHTML='<p><b>'+(i+1)+'. '+it.q+'</b></p>';
+      var r=document.createElement('div');r.className='opts';
+      shuffle(it.o.map(function(o,k){return [o,k]})).forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];b.dataset.k=p[1];
+        b.onclick=function(){sel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+      d.appendChild(r);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' .mc').forEach(function(d,i){
+      d.querySelectorAll('.opt').forEach(function(b){b.classList.remove('ok','bad');
+        if(sel[i]===-1)return;
+        if(+b.dataset.k===0&&sel[i]===0)b.classList.add('ok');else if(+b.dataset.k===sel[i])b.classList.add('bad')});
+      if(sel[i]===-1)empty++;else if(sel[i]===0)s++});
+    $(resId).textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+
+/* ---------- ACT 1 pairs ---------- */
+var words=[['porridge','каша 🥣'],['honey','мед 🍯'],['cheese','сыр 🧀'],['bread','хлеб 🍞'],['nuts','орехи 🥜'],
+  ['carrot','морковь 🥕'],['biscuits','печенье 🍪'],['juice','сок 🧃'],['soup','суп 🍲'],['vegetables','овощи 🥦']];
+var selEn=null,selRu=null,found=0,miss=0;
+function buildPairs(){
+  selEn=selRu=null;found=0;miss=0;$('pairsRes').textContent='';
+  var en=$('enCol'),ru=$('ruCol');en.innerHTML='';ru.innerHTML='';
+  shuffle(words).forEach(function(w){var b=document.createElement('button');b.className='tile';b.textContent=w[0];b.dataset.id=w[0];
+    b.onclick=function(){ if(b.classList.contains('done'))return; speak(w[0]); en.querySelectorAll('.tile').forEach(function(x){x.classList.remove('sel')}); b.classList.add('sel'); selEn=b; tryPair(); };
+    en.appendChild(b)});
+  shuffle(words).forEach(function(w){var b=document.createElement('button');b.className='tile';b.textContent=w[1];b.dataset.id=w[0];
+    b.onclick=function(){ if(b.classList.contains('done'))return; ru.querySelectorAll('.tile').forEach(function(x){x.classList.remove('sel')}); b.classList.add('sel'); selRu=b; tryPair(); };
+    ru.appendChild(b)});
+}
+function tryPair(){
+  if(!selEn||!selRu) return;
+  var a=selEn,b=selRu;selEn=selRu=null;a.classList.remove('sel');b.classList.remove('sel');
+  if(a.dataset.id===b.dataset.id){a.classList.add('done');b.classList.add('done');found++;
+    if(found===words.length){$('pairsRes').textContent='Все пары найдены! Ошибок: '+miss+'. 🥐';setStars('pairs',Math.max(3,10-miss));}
+  } else {miss++;[a,b].forEach(function(x){x.classList.add('shake');setTimeout(function(){x.classList.remove('shake')},400)})}
+}
+$('pairsAgain').onclick=buildPairs;
+buildPairs();
+
+/* ---------- ACT 2 baskets ---------- */
+var cwords=[['apple','c'],['banana','c'],['egg','c'],['carrot','c'],['sandwich','c'],['orange','c'],['biscuit','c'],
+  ['water','u'],['milk','u'],['bread','u'],['cheese','u'],['rice','u'],['honey','u'],['juice','u']];
+var cSel=null;
+function buildC(){
+  $('cRes').textContent='';cSel=null;var bank=$('cBank');bank.innerHTML='';
+  document.querySelectorAll('#a2 .basket .chips').forEach(function(c){c.innerHTML=''});
+  shuffle(cwords).forEach(function(w){var c=document.createElement('button');c.type='button';c.className='chip';c.textContent=w[0];c.dataset.k=w[1];
+    c.onclick=function(e){e.stopPropagation();c.classList.remove('ok','bad');
+      if(c.parentNode!==bank){ if(cSel){cSel.classList.remove('sel');c.parentNode.appendChild(cSel);cSel=null;return} bank.appendChild(c);return }
+      bank.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel')});c.classList.add('sel');cSel=c;};
+    bank.appendChild(c)});
+}
+[['bCount','c'],['bUn','u']].forEach(function(p){$(p[0]).onclick=function(){ if(!cSel)return; cSel.classList.remove('sel');$(p[0]).querySelector('.chips').appendChild(cSel);cSel=null; }});
+$('cCheck').onclick=function(){var s=0,left=$('cBank').children.length;
+  [['bCount','c'],['bUn','u']].forEach(function(p){$(p[0]).querySelectorAll('.chip').forEach(function(c){c.classList.remove('ok','bad');if(c.dataset.k===p[1]){c.classList.add('ok');s++}else c.classList.add('bad')})});
+  $('cRes').textContent=(left?'Разложи еще '+left+'. ':'')+'Верно: '+s+' из '+cwords.length+(s===cwords.length?'. Great counting! 🔢':'');
+  if(!left) setStars('count',Math.round(s*10/cwords.length))};
+$('cReset').onclick=buildC;
+buildC();
+var A=['a','an','some'];
+var aan=[{q:'I have ___ apple.',o:A,a:'an'},{q:'Can I have ___ milk, please?',o:A,a:'some'},{q:'There is ___ banana in my bag.',o:A,a:'a'},
+  {q:'I\'d like ___ bread.',o:A,a:'some'},{q:'She eats ___ egg for breakfast.',o:A,a:'an'},{q:'We have ___ biscuits.',o:A,a:'some'},
+  {q:'Give me ___ orange, please.',o:A,a:'an'},{q:'There is ___ cheese in the fridge.',o:A,a:'some'},{q:'I want ___ sandwich.',o:A,a:'a'}];
+var aanL=selectList('aanList',aan,'aanRes','aan','. Brava! 🌟');
+$('aanCheck').onclick=aanL.check;$('aanReset').onclick=aanL.build;
+
+/* ---------- ACT 3 containers ---------- */
+var cont=[{q:'a ___ of soup',o:['bowl','bar','slice'],a:'bowl'},{q:'a ___ of bread',o:['slice','bottle','cup'],a:'slice'},
+  {q:'a ___ of chocolate',o:['bar','glass','bowl'],a:'bar'},{q:'a ___ of tea',o:['cup','slice','packet'],a:'cup'},
+  {q:'a ___ of biscuits',o:['packet','glass','slice'],a:'packet'},{q:'a ___ of water',o:['bottle','piece','bar'],a:'bottle'},
+  {q:'a ___ of cake',o:['piece','bottle','cup'],a:'piece'},{q:'a ___ of juice',o:['carton','slice','bar'],a:'carton'},
+  {q:'a ___ of honey',o:['jar','slice','piece'],a:'jar'}];
+var contL=selectList('contList',cont,'contRes','cont','. Perfect! 🍵');
+$('contCheck').onclick=contL.check;$('contReset').onclick=contL.build;
+var pl=[{q:'two ___ 🍵🍵',o:['cups of tea','cup of teas','cups of teas'],a:'cups of tea'},
+  {q:'three ___ 🍰🍰🍰',o:['pieces of cake','piece of cakes','pieces of cakes'],a:'pieces of cake'},
+  {q:'two ___ 💧💧',o:['bottles of water','bottle of waters','bottles of waters'],a:'bottles of water'},
+  {q:'four ___ 🍞🍞🍞🍞',o:['slices of bread','slice of breads','slices of breads'],a:'slices of bread'}];
+var plL=selectList('plList',pl,'plRes','pl','. Super! ✨');
+$('plCheck').onclick=plL.check;$('plReset').onclick=plL.build;
+
+/* ---------- ACT 4 fridge + some/any ---------- */
+var fridge=[
+  {q:'🥛 milk',o:['There is some milk.','There isn\'t any milk.','There are some milk.']},
+  {q:'🥚 eggs',o:['There are some eggs.','There aren\'t any eggs.','There is some eggs.']},
+  {q:'🍎 apples',o:['There aren\'t any apples.','There are some apples.','There isn\'t any apples.']},
+  {q:'🍞 bread',o:['There isn\'t any bread.','There is some bread.','There aren\'t any bread.']},
+  {q:'🧀 cheese',o:['There is some cheese.','There isn\'t any cheese.','There are some cheese.']},
+  {q:'🍅 tomatoes',o:['There aren\'t any tomatoes.','There are some tomatoes.','There isn\'t some tomatoes.']},
+  {q:'Is there any juice?',o:['Yes, there is.','No, there isn\'t.','Yes, there are.']},
+  {q:'Are there any bananas?',o:['No, there aren\'t.','Yes, there are.','No, there isn\'t.']},
+  {q:'Are there any carrots?',o:['Yes, there are.','No, there aren\'t.','Yes, there is.']},
+  {q:'Is there any chocolate?',o:['No, there isn\'t.','Yes, there is.','No, there aren\'t.']}
+];
+var frL=mcList('fridgeList',fridge,'frRes','fridge','. You know your fridge! 🧊');
+$('frCheck').onclick=frL.check;$('frReset').onclick=frL.build;
+var SA=['some','any'];
+var sa=[{q:'I don\'t have ___ biscuits.',o:SA,a:'any'},{q:'Would you like ___ tea?',o:SA,a:'some'},{q:'Are there ___ bananas?',o:SA,a:'any'},
+  {q:'Can I have ___ water, please?',o:SA,a:'some'},{q:'We have ___ eggs for breakfast.',o:SA,a:'some'},{q:'There isn\'t ___ honey.',o:SA,a:'any'},
+  {q:'Is there ___ soup today?',o:SA,a:'any'},{q:'I\'d like ___ nuts, please.',o:SA,a:'some'}];
+var saL=selectList('saList',sa,'saRes','sa','. Brava! 🌟');
+$('saCheck').onclick=saL.check;$('saReset').onclick=saL.build;
+
+/* ---------- ACT 5 much/many ---------- */
+var M=['much','many','a lot of'];
+var mm=[{q:'How ___ apples do you eat a day?',o:M,a:'many'},{q:'How ___ water do you drink?',o:M,a:'much'},
+  {q:'I don\'t eat ___ sweets.',o:M,a:'many'},{q:'There isn\'t ___ milk in the fridge.',o:M,a:'much'},
+  {q:'I drink ___ water every day.',o:M,a:'a lot of'},{q:'How ___ is the cake? It\'s three pounds.',o:M,a:'much'},
+  {q:'Dancers eat ___ vegetables.',o:M,a:'a lot of'},{q:'Are there ___ eggs?',o:M,a:'many'},
+  {q:'How ___ lessons do you have on Saturday?',o:M,a:'many'}];
+var mmL=selectList('mmList',mm,'mmRes','mm','. Excellent! ⚖️');
+$('mmCheck').onclick=mmL.check;$('mmReset').onclick=mmL.build;
+
+/* ---------- ACT 6 reading ---------- */
+$('showColors').onclick=function(){var on=$('story').classList.toggle('show');$('showColors').textContent=on?'Спрячь цвета':'Покажи цвета'};
+$('storySay').onclick=function(){speak($('story').innerText)};
+$('storyStop').onclick=stopSpeak;
+var tf=[['Emily has porridge with honey for breakfast.',true],['Emily drinks a lot of coffee.',false],['There is always some soup, rice or pasta at lunch.',true],
+  ['Emily eats a lot of meat.',false],['There is a bar of chocolate in Emily\'s bag.',true],['In Emily\'s snack box there is an orange.',false]];
+var tfSel=[];
+function buildTF(){var box=$('tfList');box.innerHTML='';tfSel=tf.map(function(){return null});$('tfRes').textContent='';
+  tf.forEach(function(t,i){var d=document.createElement('div');d.className='tf';d.innerHTML='<span>'+(i+1)+'. '+t[0]+'</span>';
+    var r=document.createElement('div');r.className='row';
+    [['True',true],['False',false]].forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];
+      b.onclick=function(){tfSel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+    d.appendChild(r);box.appendChild(d)})}
+$('tfCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#tfList .tf').forEach(function(d,i){var bs=d.querySelectorAll('.opt');bs.forEach(function(b){b.classList.remove('ok','bad')});
+    if(tfSel[i]===null){empty++;return}var ch=tfSel[i]?bs[0]:bs[1];if(tfSel[i]===tf[i][1]){ch.classList.add('ok');s++}else ch.classList.add('bad')});
+  $('tfRes').textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+tf.length+(s===tf.length?'. Great reading! 📬':'');
+  if(!empty) setStars('tf',s)};
+$('tfReset').onclick=buildTF;
+buildTF();
+
+/* ---------- ACT 7 café ---------- */
+var MENU=[
+  {id:'tea',e:'🍵',one:'a cup of tea',many:'cups of tea',p:2},
+  {id:'choc',e:'☕',one:'a cup of hot chocolate',many:'cups of hot chocolate',p:3},
+  {id:'water',e:'💧',one:'a bottle of water',many:'bottles of water',p:1},
+  {id:'juice',e:'🧃',one:'a glass of orange juice',many:'glasses of orange juice',p:2},
+  {id:'soup',e:'🍲',one:'a bowl of soup',many:'bowls of soup',p:4},
+  {id:'porridge',e:'🥣',one:'a bowl of porridge',many:'bowls of porridge',p:3},
+  {id:'sandwich',e:'🥪',one:'a cheese sandwich',many:'cheese sandwiches',p:4},
+  {id:'cake',e:'🍰',one:'a piece of cake',many:'pieces of cake',p:3},
+  {id:'banana',e:'🍌',one:'a banana',many:'bananas',p:1}
+];
+var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+var TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function numWord(n){if(n<20)return NUMW[n];var t=Math.floor(n/10),u=n%10;return TENS[t]+(u?'-'+NUMW[u]:'')}
+function byId(id){for(var i=0;i<MENU.length;i++)if(MENU[i].id===id)return MENU[i]}
+function orderList(counts){var parts=[];MENU.forEach(function(m){var q=counts[m.id]||0;if(q)parts.push(q===1?m.one:numWord(q)+' '+m.many)});
+  if(parts.length<2)return parts.join('');return parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]}
+function total(counts){var t=0;for(var k in counts)t+=counts[k]*byId(k).p;return t}
+function pounds(n){return n===1?'one pound':numWord(n)+' pounds'}
+function makeMenu(menuId,trayId,counts,onChange){
+  var menu=$(menuId);menu.innerHTML='';
+  MENU.forEach(function(m){var b=document.createElement('button');b.type='button';b.className='mitem';b.dataset.id=m.id;
+    b.innerHTML='<span class="cnt"></span><span class="e">'+m.e+'</span><b>'+m.one.replace(/^an? /,'')+'</b><span class="pr">£'+m.p+'</span>';
+    b.onclick=function(){counts[m.id]=(counts[m.id]||0)+1;if(counts[m.id]>5)counts[m.id]=5;draw()};menu.appendChild(b)});
+  function draw(){
+    menu.querySelectorAll('.mitem').forEach(function(b){var q=counts[b.dataset.id]||0;b.classList.toggle('has',q>0);b.querySelector('.cnt').textContent=q});
+    var tray=$(trayId);tray.innerHTML='';var any=false;
+    MENU.forEach(function(m){var q=counts[m.id]||0;if(!q)return;any=true;
+      var l=document.createElement('div');l.className='tl';
+      l.innerHTML='<span>'+m.e+' '+(q===1?m.one:numWord(q)+' '+m.many)+'</span>';
+      var mb=document.createElement('button');mb.className='minus';mb.textContent='−';mb.setAttribute('aria-label','Убрать');
+      mb.onclick=function(){counts[m.id]--;if(counts[m.id]<=0)delete counts[m.id];draw()};l.appendChild(mb);tray.appendChild(l)});
+    if(!any)tray.innerHTML='<span class="task">Поднос пока пустой.</span>';
+    if(onChange)onChange();
+  }
+  draw();return draw;
+}
+$('dlgSay').onclick=function(){speak("Hello! What would you like? I'd like a cheese sandwich, please. Would you like anything to drink? Yes, please. Can I have a cup of tea? Here you are. How much is it? It's six pounds, please.")};
+
+/* waiter game */
+var ROUNDS=5,srvRound=0,srvSolved=0,srvOrder=null,srvDone=false,srvCounts={},srvDraw=null;
+function newOrder(){
+  var k=1+Math.floor(Math.random()*3),items=shuffle(MENU).slice(0,k),o={};
+  items.forEach(function(m){o[m.id]=Math.random()<0.7?1:2});return o;
+}
+function orderSpeech(o){return "Hello! I'd like "+orderList(o)+", please."}
+function sameOrder(a,b){var keys={};for(var x in a)keys[x]=1;for(var y in b)keys[y]=1;for(var k in keys)if((a[k]||0)!==(b[k]||0))return false;return true}
+function srvStart(){
+  if(srvRound>=ROUNDS){$('srvRound').textContent='Смена окончена!';$('srvRes').textContent='Выполнено заказов: '+srvSolved+' из '+ROUNDS+(srvSolved>=4?'. Best waiter in London! ☕':'. Нажми «Следующий заказ», чтобы начать новую смену.');
+    setStars('serve',srvSolved*2);srvRound=0;srvSolved=0;srvOrder=null;return}
+  srvRound++;srvDone=false;srvOrder=newOrder();for(var k in srvCounts)delete srvCounts[k];srvDraw();
+  $('srvRound').textContent='Заказ '+srvRound+' из '+ROUNDS;$('srvRes').textContent='';
+  var o=srvOrder;setTimeout(function(){if(srvOrder===o)speak(orderSpeech(o))},300);
+}
+srvDraw=makeMenu('srvMenu','srvTray',srvCounts,null);
+$('srvListen').onclick=function(){if(!srvOrder)srvStart();else speak(orderSpeech(srvOrder))};
+$('srvText').onclick=function(){if(srvOrder)$('srvRes').textContent='«'+orderSpeech(srvOrder)+'»'};
+$('srvCheck').onclick=function(){
+  if(!srvOrder){$('srvRes').textContent='Сначала нажми «Послушать заказ».';return}
+  if(sameOrder(srvOrder,srvCounts)){if(!srvDone){srvDone=true;srvSolved++}
+    $('srvRes').textContent='Here you are! That\'s '+pounds(total(srvOrder))+', please. 🎉';speak("Thank you! How much is it? It's "+pounds(total(srvOrder))+'.')}
+  else $('srvRes').textContent='Что-то не так. Послушай заказ еще раз или нажми «Показать текст».';
+};
+$('srvNext').onclick=srvStart;
+$('srvRound').textContent='Нажми «Послушать заказ», чтобы начать';
+
+/* my order */
+var BUDGET=12,myCounts=load('order')||{};
+function myUpdate(){
+  save('order',myCounts);var t=total(myCounts),list=orderList(myCounts);
+  if(!list){$('myOrder').textContent='Здесь появится твой заказ.';$('myBill').textContent='У тебя £'+BUDGET+'.';return}
+  $('myOrder').textContent="Hello! I'd like "+list+", please. How much is it?";
+  if(t>BUDGET)$('myBill').textContent='Итого £'+t+'. Ой, не хватает £'+(t-BUDGET)+'! Убери что-нибудь.';
+  else{$('myBill').textContent="It's "+pounds(t)+'. Остается £'+(BUDGET-t)+'.';setStars('order',3)}
+}
+var myDraw=makeMenu('myMenu','myTray',myCounts,myUpdate);
+$('mySay').onclick=function(){var t=$('myOrder').textContent;if(t.indexOf('Hello')===0)speak(t)};
+$('myReset').onclick=function(){for(var k in myCounts)delete myCounts[k];myDraw()};
+
+/* ---------- ACT 8 snack box ---------- */
+var SN=[
+  {e:'🍎',t:'an apple',pl:0,neg:"There isn't an apple."},{e:'🍌',t:'a banana',pl:0,neg:"There isn't a banana."},
+  {e:'🥜',t:'some nuts',pl:1,neg:"There aren't any nuts."},{e:'💧',t:'a bottle of water',pl:0,neg:"There isn't any water."},
+  {e:'🧃',t:'a carton of juice',pl:0,neg:"There isn't any juice."},{e:'🥪',t:'a cheese sandwich',pl:0,neg:"There isn't a sandwich."},
+  {e:'🍫',t:'a bar of chocolate',pl:0,neg:"There isn't any chocolate."},{e:'🍪',t:'some biscuits',pl:1,neg:"There aren't any biscuits."},
+  {e:'🍇',t:'some grapes',pl:1,neg:"There aren't any grapes."},{e:'🥛',t:'a yoghurt',pl:0,neg:"There isn't a yoghurt."},
+  {e:'🧀',t:'some cheese',pl:0,neg:"There isn't any cheese."},{e:'🥕',t:'some carrots',pl:1,neg:"There aren't any carrots."}
+];
+var snackOn=load('snack')||{};
+function snackText(){
+  var on=SN.filter(function(s){return snackOn[s.t]}),off=SN.filter(function(s){return !snackOn[s.t]});
+  if(!on.length){$('snackOut').textContent='Здесь появится твой рассказ.';return}
+  var list=on.map(function(s){return s.t});var joined=list.length<2?list[0]:list.slice(0,-1).join(', ')+' and '+list[list.length-1];
+  var txt='In my snack box there '+(on[0].pl?'are ':'is ')+joined+'.';
+  var negs=shuffle(off).slice(0,2).map(function(s){return s.neg});
+  if(negs.length)txt+=' '+negs.join(' ');
+  txt+=' I love my snack box!';
+  $('snackOut').textContent=txt;setStars('snack',3);
+}
+SN.forEach(function(s){var b=document.createElement('button');b.type='button';b.innerHTML='<span>'+s.e+'</span>'+s.t;if(snackOn[s.t])b.classList.add('on');
+  b.onclick=function(){if(snackOn[s.t])delete snackOn[s.t];else snackOn[s.t]=1;b.classList.toggle('on');save('snack',snackOn);snackText()};$('snack').appendChild(b)});
+snackText();
+$('snackSay').onclick=function(){var t=$('snackOut').textContent;if(t.indexOf('In my')===0)speak(t)};
+var cards=['What do you usually have for breakfast?','What do you have for lunch at the Academy?','What\'s in your snack box today?',
+  'What food do you love? What food do you hate?','How many apples do you eat a week?','How much water do you drink every day?',
+  'Is there a canteen at the Academy? Is the food good?','Can you cook? What can you cook?','What do you eat before a ballet class? And after?',
+  'Would you like to try English food? What?','What is there in your fridge at home right now?','What would you like for dinner tonight?'];
+var deck=[],cardCount=0;
+$('cardNew').onclick=function(){if(!deck.length)deck=shuffle(cards);var q=deck.pop();$('cardQ').textContent=q;speak(q);cardCount++;
+  $('cardRes').textContent='Карточек: '+cardCount;setStars('cards',Math.min(cardCount,6))};
+$('cardSay').onclick=function(){var t=$('cardQ').textContent;if(t.indexOf('🎴')!==0)speak(t)};
+
+/* ---------- ACT 9 hangman ---------- */
+var hwords=[
+  ['porridge','каша','breakfast'],['honey','мед','breakfast'],['yoghurt','йогурт','breakfast'],['breakfast','завтрак','meals'],
+  ['lunch','обед','meals'],['dinner','ужин','meals'],['sandwich','бутерброд','snacks'],['biscuits','печенье','snacks'],['snack','перекус','snacks'],
+  ['chocolate','шоколад','snacks'],['banana','банан','fruit and vegetables'],['carrot','морковь','fruit and vegetables'],['tomato','помидор','fruit and vegetables'],
+  ['vegetables','овощи','fruit and vegetables'],['grapes','виноград','fruit and vegetables'],['cheese','сыр','food'],['butter','сливочное масло','food'],
+  ['bread','хлеб','food'],['juice','сок','drinks'],['water','вода','drinks'],['bottle','бутылка','containers'],['slice','ломтик','containers'],
+  ['packet','пачка','containers'],['canteen','столовая','places'],['kitchen','кухня','places'],['fridge','холодильник','places'],
+  ['spoon','ложка','on the table'],['plate','тарелка','on the table']
+];
+var MAX=10,hDeck=[],hCur=null,hGuess={},hMiss=0,hOver=false,hWins=load('hwins')||0,hStreak=0;
+$('hWins').textContent=hWins;
+var parts=document.querySelectorAll('.hang svg .p');var kb=$('kb');
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(ch){var b=document.createElement('button');b.textContent=ch.toUpperCase();b.dataset.ch=ch;b.onclick=function(){guess(ch)};kb.appendChild(b)});
+function render(){
+  $('hWord').textContent=hCur[0].split('').map(function(c){return hGuess[c]||hOver?c.toUpperCase():'_'}).join('');
+  parts.forEach(function(p,i){p.classList.toggle('on',i<hMiss)});$('hLives').textContent='Ошибок: '+hMiss+' из '+MAX;
+}
+function newWord(){
+  if(!hDeck.length)hDeck=shuffle(hwords);hCur=hDeck.pop();hGuess={};hMiss=0;hOver=false;
+  $('hCat').textContent='Тема: '+hCur[2]+' · букв: '+hCur[0].length;$('hHint').textContent='';$('hRes').textContent='';
+  kb.querySelectorAll('button').forEach(function(b){b.disabled=false;b.className=''});render();
+}
+function guess(ch){
+  if(hOver||hGuess[ch]||!hCur)return;
+  var btn=kb.querySelector('[data-ch="'+ch+'"]');btn.disabled=true;hGuess[ch]=true;
+  if(hCur[0].indexOf(ch)>-1){btn.className='hit'}else{btn.className='miss';hMiss++}
+  var won=hCur[0].split('').every(function(c){return hGuess[c]});
+  if(won){hOver=true;hWins++;hStreak++;save('hwins',hWins);$('hRes').textContent='Yes! '+hCur[0].toUpperCase()+' = '+hCur[1]+' 🎉';speak(hCur[0]);setStars('hang',Math.min(hStreak,5))}
+  else if(hMiss>=MAX){hOver=true;hStreak=0;$('hRes').textContent='Человечек готов! Это слово '+hCur[0].toUpperCase()+' ('+hCur[1]+'). Попробуй новое.';speak(hCur[0])}
+  if(hOver)kb.querySelectorAll('button').forEach(function(b){b.disabled=true});
+  $('hWins').textContent=hWins;$('hStreak').textContent=hStreak;render();
+}
+$('hHintBtn').onclick=function(){if(hCur&&!hOver)$('hHint').textContent='Подсказка: '+hCur[1]};
+$('hNew').onclick=function(){if(hCur&&!hOver)hStreak=0;$('hStreak').textContent=hStreak;newWord()};
+document.addEventListener('keydown',function(e){if(!$('a9').classList.contains('active'))return;var t=e.target.tagName;if(t==='INPUT'||t==='TEXTAREA')return;if(/^[a-z]$/i.test(e.key)&&!e.metaKey&&!e.ctrlKey)guess(e.key.toLowerCase())});
+newWord();
+
+/* ---------- FINALE ---------- */
+var L=$('letter');L.value=load('letter')||'';
+function wc(){var n=(L.value.trim().match(/[A-Za-z']+/g)||[]).length;$('wc').textContent=n+' words'+(n>=60&&n<=80?' ✓':(n>80?' (можно чуть короче)':''));}
+L.oninput=function(){save('letter',L.value);wc()};wc();
+function flash(btn,msg,orig){btn.textContent=msg;setTimeout(function(){btn.textContent=orig},1800)}
+function copyText(t,btn,orig){
+  function fallback(){L.focus();L.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}flash(btn,ok?'Скопировано ✓':'Выдели текст и скопируй',orig)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){flash(btn,'Скопировано ✓',orig)},fallback)}else fallback();
+}
+$('copyLetter').onclick=function(){var t=L.value.trim();if(!t){flash($('copyLetter'),'Сначала напиши письмо','Скопировать');return}copyText(t,$('copyLetter'),'Скопировать')};
+$('shareLetter').onclick=function(){var t=L.value.trim();if(!t){flash($('shareLetter'),'Сначала напиши письмо','Отправить учителю');return}
+  if(navigator.share){navigator.share({title:'My letter to Emily about food',text:t}).catch(function(){})}else copyText(t,$('shareLetter'),'Отправить учителю')};
+var hwTasks=[
+  'Ответь Эмили про еду в Академии (от 60 до 80 слов) и отправь учителю кнопкой «Отправить учителю».',
+  'Собери в Act 8 свой настоящий ланчбокс и запиши голосовое: прочитай рассказ и добавь еще два предложения от себя.',
+  'Поработай официантом в Act 7: выполни целую смену из 5 заказов.',
+  'Угадай 5 слов в Hangman.'
+];
+var hwSaved=load('hw')||[];
+function hwProgress(){var all=document.querySelectorAll('#hwList input'),n=0;all.forEach(function(x){if(x.checked)n++});$('hwBar').style.width=(n/all.length*100)+'%'}
+hwTasks.forEach(function(t,i){var d=document.createElement('label');d.className='check-item';d.innerHTML='<input type="checkbox"><span>'+t+'</span>';
+  var c=d.querySelector('input');c.checked=!!hwSaved[i];
+  c.onchange=function(){save('hw',[].map.call(document.querySelectorAll('#hwList input'),function(x){return x.checked}));hwProgress()};$('hwList').appendChild(d)});
+hwProgress();
+})();
+</script>
+</body>
+</html>
