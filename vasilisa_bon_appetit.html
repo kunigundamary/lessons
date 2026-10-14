@@ -231,6 +231,14 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
 .kb button.hit{background:var(--grass);color:#fff}
 .kb button.miss{background:#E7DCD2;color:#B2A091}
 .hscore{display:flex;justify-content:center;gap:18px;font-weight:800;margin-top:8px}
+.dict-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.dict-cats .chip.sel{background:var(--velvet);color:#fff;outline:none}
+.dict{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.dict button{border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:8px 6px;font-family:inherit;font-size:1rem;font-weight:700;min-height:44px}
+.dict button .e{display:block;font-size:2rem;line-height:1.2}
+.dict button .ru{display:block;font-weight:600;color:var(--muted);font-size:.85rem;visibility:hidden}
+.dict button.open{border-color:var(--rose);background:var(--rose-soft)}
+.dict button.open .ru{visibility:visible}
 .cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
 .cheat div{background:var(--sky-soft);border-radius:14px;padding:10px 12px;font-size:.95rem}
 @media (max-width:620px){.basket-wrap{grid-template-columns:1fr}.kb{grid-template-columns:repeat(7,1fr)}.hword{font-size:1.6rem}}
@@ -243,7 +251,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
   <div class="stage-inner">
     <div class="swan" aria-hidden="true">🦢</div>
     <h1>Bon Appétit!</h1>
-    <p>Food, some and any, much and many</p>
+    <p>Food, some and any, a few and a little</p>
     <div class="stars">⭐ <span id="starCount">0</span> stars</div>
   </div>
 </header>
@@ -254,10 +262,11 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
   <button data-go="a3"><small>Act 3</small>A cup of...</button>
   <button data-go="a4"><small>Act 4</small>some & any</button>
   <button data-go="a5"><small>Act 5</small>much & many</button>
-  <button data-go="a6"><small>Act 6</small>Emily's lunch</button>
-  <button data-go="a7"><small>Act 7</small>Café</button>
-  <button data-go="a8"><small>Act 8</small>Snack box</button>
-  <button data-go="a9"><small>Act 9</small>Hangman</button>
+  <button data-go="a5b"><small>Act 6</small>a few & a little</button>
+  <button data-go="a6"><small>Act 7</small>Emily's lunch</button>
+  <button data-go="a7"><small>Act 8</small>Café</button>
+  <button data-go="a8"><small>Act 9</small>Snack box</button>
+  <button data-go="a9"><small>Act 10</small>Hangman</button>
   <button data-go="a10"><small>Finale</small>Homework</button>
 </nav>
 
@@ -267,11 +276,25 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
 <section id="a1" class="active">
   <div class="act-title"><span class="num">Act 1</span><h2>🥐 Food words</h2></div>
   <div class="odette"><div class="ava">🦢</div><div>Hello, Vasilisa! Dancers need a lot of energy. Today we talk about food! In your letter you wrote: «we have to take a snack». So what's in your snack box? Let's find out!</div></div>
-  <p class="task">Найди пары: нажми на английское слово, потом на перевод. Английское слово звучит при нажатии.</p>
   <div class="card">
+    <h3>1. Picture dictionary</h3>
+    <p class="task">Выбери группу и нажимай на картинки: слово прозвучит, а под ним появится перевод.</p>
+    <div class="dict-cats" id="dictCats"></div>
+    <div class="dict" id="dict"></div>
+  </div>
+  <div class="card">
+    <h3>2. Find the pairs</h3>
+    <p class="task">Нажми на английское слово, потом на перевод. Каждый раз 8 новых слов из словаря.</p>
     <div class="pairs"><div class="col" id="enCol"></div><div class="col" id="ruCol"></div></div>
     <div class="result" id="pairsRes"></div>
-    <div class="btns"><button class="btn again" id="pairsAgain">Еще раз</button></div>
+    <div class="btns"><button class="btn again" id="pairsAgain">Новые слова</button></div>
+  </div>
+  <div class="card">
+    <h3>3. Which one is different?</h3>
+    <p class="task">В каждом вопросе выбери слово, которое не подходит.</p>
+    <div id="oddList"></div>
+    <div class="btns"><button class="btn check" id="oddCheck">Проверить</button><button class="btn reset" id="oddReset">Сбросить</button></div>
+    <div class="result" id="oddRes"></div>
   </div>
 </section>
 
@@ -383,23 +406,64 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
   </div>
 </section>
 
+<!-- ============ ACT 6 (a few) ============ -->
+<section id="a5b">
+  <div class="act-title"><span class="num">Act 6</span><h2>🤏 a few & a little</h2></div>
+  <div class="rule-grid">
+    <div><b>😊 a few</b> + то, что считаем<br>a few apples, a few biscuits<br>= несколько, немного. Чуть-чуть, но есть!</div>
+    <div style="background:var(--rose-soft)"><b>😊 a little</b> + то, что не считаем<br>a little milk, a little honey<br>= немного</div>
+  </div>
+  <div class="card" style="background:#FFF4CF">
+    <b>😟 Без a смысл грустный: мало, почти нет.</b><br>
+    There are <b>few</b> apples. Яблок мало, почти нет.<br>
+    I have <b>little</b> time. У меня мало времени.<br>
+    <span class="task">В разговоре вместо few и little чаще говорят not many и not much: There aren't many apples.</span>
+  </div>
+  <div class="odette"><div class="ava">🦢</div><div>Маленькое слово a как маленькая улыбка 😊. Есть a, значит, немного есть. Нет a, значит, почти ничего 😟.</div></div>
+  <div class="card">
+    <h3>1. a few or a little?</h3>
+    <div id="fewList"></div>
+    <div class="btns"><button class="btn check" id="fewCheck">Проверить</button><button class="btn reset" id="fewReset">Сбросить</button></div>
+    <div class="result" id="fewRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Smile or sad face?</h3>
+    <p class="task">Смотри на лицо в начале предложения. 😊 значит «немного, и это хорошо», 😟 значит «мало, почти нет».</p>
+    <div id="moodList"></div>
+    <div class="btns"><button class="btn check" id="moodCheck">Проверить</button><button class="btn reset" id="moodReset">Сбросить</button></div>
+    <div class="result" id="moodRes"></div>
+  </div>
+  <div class="card">
+    <h3>3. too much, too many, enough</h3>
+    <div class="rules">
+      <div><b>too much</b>слишком много<br>то, что не считаем<br>too much sugar</div>
+      <div><b>too many</b>слишком много<br>то, что считаем<br>too many sweets</div>
+      <div><b>enough</b>достаточно<br>enough water<br>not enough time</div>
+    </div>
+    <p class="task">Enough ставим перед едой: enough water, enough apples.</p>
+    <div id="tooList"></div>
+    <div class="btns"><button class="btn check" id="tooCheck">Проверить</button><button class="btn reset" id="tooReset">Сбросить</button></div>
+    <div class="result" id="tooRes"></div>
+  </div>
+</section>
+
 <!-- ============ ACT 6 ============ -->
 <section id="a6">
-  <div class="act-title"><span class="num">Act 6</span><h2>📬 Emily's lunch</h2></div>
+  <div class="act-title"><span class="num">Act 7</span><h2>📬 Emily's lunch</h2></div>
   <p class="task">Эмили рассказывает, что едят в ее балетной школе. Прочитай. Потом нажми «Покажи цвета».</p>
   <div class="card">
     <div class="story" id="story">
       <p>Hi Vasilisa!</p>
       <p>You asked about food at my school. Dancers need <span class="mm">a lot of</span> energy, so we eat well!</p>
-      <p>For breakfast I usually have <span class="ct">a bowl of</span> porridge with <span class="sa">some</span> honey and a banana. I don't drink <span class="sa">any</span> coffee, but I love <span class="ct">a cup of</span> tea.</p>
+      <p>For breakfast I usually have <span class="ct">a bowl of</span> porridge with <span class="mm">a little</span> honey and a banana. I don't drink <span class="sa">any</span> coffee, but I love <span class="ct">a cup of</span> tea.</p>
       <p>At lunch we go to the canteen. There are <span class="mm">a lot of</span> vegetables, and there is always <span class="sa">some</span> soup, rice or pasta. I don't eat <span class="mm">much</span> meat, but I like fish.</p>
       <p>Our teacher says we mustn't eat <span class="mm">a lot of</span> sweets. Is there <span class="sa">any</span> chocolate in my bag right now? Yes, there is: a small <span class="ct">bar of</span> chocolate for after class! Shh!</p>
-      <p>In my snack box there is an apple, <span class="sa">some</span> nuts and <span class="ct">a bottle of</span> water. What's in your snack box? <span class="mm">How many</span> lessons do you have before lunch?</p>
+      <p>In my snack box there is an apple, <span class="mm">a few</span> nuts and <span class="ct">a bottle of</span> water. What's in your snack box? <span class="mm">How many</span> lessons do you have before lunch?</p>
       <p>Love,<br>Emily</p>
     </div>
     <div class="gloss">energy: энергия · canteen: столовая · vegetables: овощи · meat: мясо · sweets: сладости · nuts: орехи</div>
     <div class="btns"><button class="btn main" id="showColors">Покажи цвета</button><button class="btn say" id="storySay">🔊 Послушать</button><button class="btn reset" id="storyStop">⏹ Стоп</button></div>
-    <div class="legend"><span style="background:var(--sun)">some / any</span><span style="background:#BFE0F5">much / many / a lot of</span><span style="background:var(--rose)">a cup of...</span></div>
+    <div class="legend"><span style="background:var(--sun)">some / any</span><span style="background:#BFE0F5">much, many, a lot of, a few, a little</span><span style="background:var(--rose)">a cup of...</span></div>
   </div>
   <div class="card">
     <h3>True or False?</h3>
@@ -411,7 +475,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
 
 <!-- ============ ACT 7 ============ -->
 <section id="a7">
-  <div class="act-title"><span class="num">Act 7</span><h2>☕ Café Swan Lake</h2></div>
+  <div class="act-title"><span class="num">Act 8</span><h2>☕ Café Swan Lake</h2></div>
   <div class="card dialog">
     <h3>At the café</h3>
     <p><b>Waiter:</b> Hello! What would you like?</p>
@@ -446,7 +510,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
 
 <!-- ============ ACT 8 ============ -->
 <section id="a8">
-  <div class="act-title"><span class="num">Act 8</span><h2>🎒 My snack box</h2></div>
+  <div class="act-title"><span class="num">Act 9</span><h2>🎒 My snack box</h2></div>
   <div class="card">
     <h3>1. Pack your snack box</h3>
     <p class="task">Что ты обычно берешь с собой в Академию? Нажми на то, что лежит в твоем ланчбоксе, и прочитай рассказ вслух.</p>
@@ -465,7 +529,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
 
 <!-- ============ ACT 9 ============ -->
 <section id="a9">
-  <div class="act-title"><span class="num">Act 9</span><h2>🎯 Hangman: food</h2></div>
+  <div class="act-title"><span class="num">Act 10</span><h2>🎯 Hangman: food</h2></div>
   <p class="task">Угадай слово по буквам. За каждую неправильную букву появляется часть виселицы. Десять ошибок, и человечек готов. Все слова сегодня про еду.</p>
   <div class="card">
     <div class="hang">
@@ -505,6 +569,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
       <div><b>Упаковка:</b> a cup of tea, two cups of tea</div>
       <div><b>some:</b> There is some milk.<br><b>any:</b> Is there any milk? There isn't any milk.</div>
       <div><b>How many</b> apples? <b>How much</b> water?<br>I eat <b>a lot of</b> fruit.</div>
+      <div><b>a few</b> apples, <b>a little</b> milk: немного<br><b>few</b>, <b>little</b>: мало, почти нет<br><b>too much</b> sugar, <b>too many</b> sweets, <b>enough</b> water</div>
       <div><b>В кафе:</b> I'd like..., please. Can I have...? How much is it?</div>
     </div>
   </div>
@@ -513,7 +578,7 @@ textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2
     <p class="task">Ответь Эмили про еду в Академии. Постарайся написать от 60 до 80 слов.</p>
     <ol class="plan">
       <li>Поблагодари за письмо.</li>
-      <li>Что ты обычно ешь на завтрак и на обед? Используй a bowl of, a cup of.</li>
+      <li>Что ты обычно ешь на завтрак и на обед? Используй a bowl of, a cup of, a few, a little.</li>
       <li>Что есть и чего нет в столовой Академии: There is some..., There isn't any...</li>
       <li>Что лежит в твоем ланчбоксе?</li>
       <li>Ответь на вопрос Эмили: How many lessons do you have before lunch?</li>
@@ -592,11 +657,33 @@ function mcList(boxId,items,resId,block,okMsg){
   build();return {build:build,check:check};
 }
 
-/* ---------- ACT 1 pairs ---------- */
-var words=[['porridge','каша 🥣'],['honey','мед 🍯'],['cheese','сыр 🧀'],['bread','хлеб 🍞'],['nuts','орехи 🥜'],
-  ['carrot','морковь 🥕'],['biscuits','печенье 🍪'],['juice','сок 🧃'],['soup','суп 🍲'],['vegetables','овощи 🥦']];
+/* ---------- ACT 1 dictionary + pairs ---------- */
+var CATS=[['all','All'],['fruit','Fruit'],['veg','Vegetables'],['dairy','Milk and eggs'],['meat','Meat and fish'],['meals','Bread and meals'],['sweets','Sweets'],['drinks','Drinks']];
+var FOOD=[
+  ['apple','яблоко','🍎','fruit'],['pear','груша','🍐','fruit'],['banana','банан','🍌','fruit'],['orange','апельсин','🍊','fruit'],['lemon','лимон','🍋','fruit'],
+  ['peach','персик','🍑','fruit'],['cherries','вишня','🍒','fruit'],['strawberries','клубника','🍓','fruit'],['grapes','виноград','🍇','fruit'],['watermelon','арбуз','🍉','fruit'],
+  ['potato','картошка','🥔','veg'],['tomato','помидор','🍅','veg'],['cucumber','огурец','🥒','veg'],['carrot','морковь','🥕','veg'],['onion','лук','🧅','veg'],
+  ['cabbage','капуста','🥬','veg'],['pepper','перец','🫑','veg'],['mushrooms','грибы','🍄','veg'],['corn','кукуруза','🌽','veg'],['garlic','чеснок','🧄','veg'],
+  ['milk','молоко','🥛','dairy'],['cheese','сыр','🧀','dairy'],['butter','сливочное масло','🧈','dairy'],['yoghurt','йогурт','🥄','dairy'],['eggs','яйца','🥚','dairy'],
+  ['chicken','курица','🍗','meat'],['meat','мясо','🥩','meat'],['sausage','сосиска','🌭','meat'],['bacon','бекон','🥓','meat'],['fish','рыба','🐟','meat'],['prawns','креветки','🍤','meat'],
+  ['bread','хлеб','🍞','meals'],['rice','рис','🍚','meals'],['pasta','макароны','🍝','meals'],['porridge','каша','🥣','meals'],['buckwheat','гречка','🌾','meals'],
+  ['croissant','круассан','🥐','meals'],['pancakes','блины','🥞','meals'],['sandwich','бутерброд','🥪','meals'],['pizza','пицца','🍕','meals'],['soup','суп','🍲','meals'],
+  ['cake','торт','🍰','sweets'],['ice cream','мороженое','🍦','sweets'],['chocolate','шоколад','🍫','sweets'],['biscuits','печенье','🍪','sweets'],['sweets','конфеты','🍬','sweets'],
+  ['honey','мед','🍯','sweets'],['pie','пирог','🥧','sweets'],['doughnut','пончик','🍩','sweets'],
+  ['water','вода','💧','drinks'],['tea','чай','🍵','drinks'],['coffee','кофе','☕','drinks'],['juice','сок','🧃','drinks'],['lemonade','лимонад','🥤','drinks']
+];
+var dictCat='all';
+function drawDict(){var box=$('dict');box.innerHTML='';
+  FOOD.filter(function(f){return dictCat==='all'||f[3]===dictCat}).forEach(function(f){var b=document.createElement('button');b.type='button';
+    b.innerHTML='<span class="e">'+f[2]+'</span>'+f[0]+'<span class="ru">'+f[1]+'</span>';
+    b.onclick=function(){b.classList.add('open');speak(f[0])};box.appendChild(b)});}
+CATS.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip'+(c[0]==='all'?' sel':'');b.textContent=c[1];
+  b.onclick=function(){dictCat=c[0];document.querySelectorAll('#dictCats .chip').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');drawDict()};$('dictCats').appendChild(b)});
+drawDict();
+var words=[];
 var selEn=null,selRu=null,found=0,miss=0;
 function buildPairs(){
+  words=shuffle(FOOD).slice(0,8).map(function(f){return [f[0],f[1]+' '+f[2]]});
   selEn=selRu=null;found=0;miss=0;$('pairsRes').textContent='';
   var en=$('enCol'),ru=$('ruCol');en.innerHTML='';ru.innerHTML='';
   shuffle(words).forEach(function(w){var b=document.createElement('button');b.className='tile';b.textContent=w[0];b.dataset.id=w[0];
@@ -610,11 +697,21 @@ function tryPair(){
   if(!selEn||!selRu) return;
   var a=selEn,b=selRu;selEn=selRu=null;a.classList.remove('sel');b.classList.remove('sel');
   if(a.dataset.id===b.dataset.id){a.classList.add('done');b.classList.add('done');found++;
-    if(found===words.length){$('pairsRes').textContent='Все пары найдены! Ошибок: '+miss+'. 🥐';setStars('pairs',Math.max(3,10-miss));}
+    if(found===words.length){$('pairsRes').textContent='Все пары найдены! Ошибок: '+miss+'. Нажми «Новые слова», чтобы сыграть еще. 🥐';setStars('pairs',Math.max(3,8-miss));}
   } else {miss++;[a,b].forEach(function(x){x.classList.add('shake');setTimeout(function(){x.classList.remove('shake')},400)})}
 }
 $('pairsAgain').onclick=buildPairs;
 buildPairs();
+var odd=[
+  {q:'Which one is not a fruit?',o:['potato','pear','peach','cherries']},
+  {q:'Which one is not a vegetable?',o:['strawberries','onion','cabbage','cucumber']},
+  {q:'Which one can\'t you drink?',o:['butter','lemonade','juice','coffee']},
+  {q:'Which one is not made from milk?',o:['rice','butter','cheese','yoghurt']},
+  {q:'Which one is not meat or fish?',o:['pasta','chicken','prawns','sausage']},
+  {q:'Which one isn\'t sweet?',o:['cucumber','cake','honey','ice cream']}
+];
+var oddL=mcList('oddList',odd,'oddRes','odd','. Food expert! 🥐');
+$('oddCheck').onclick=oddL.check;$('oddReset').onclick=oddL.build;
 
 /* ---------- ACT 2 baskets ---------- */
 var cwords=[['apple','c'],['banana','c'],['egg','c'],['carrot','c'],['sandwich','c'],['orange','c'],['biscuit','c'],
@@ -690,6 +787,30 @@ var mm=[{q:'How ___ apples do you eat a day?',o:M,a:'many'},{q:'How ___ water do
 var mmL=selectList('mmList',mm,'mmRes','mm','. Excellent! ⚖️');
 $('mmCheck').onclick=mmL.check;$('mmReset').onclick=mmL.build;
 
+/* ---------- ACT 6 a few / a little ---------- */
+var FL=['a few','a little'];
+var fewQ=[{q:'Can I have ___ milk in my tea?',o:FL,a:'a little'},{q:'I eat ___ grapes after class.',o:FL,a:'a few'},
+  {q:'Put ___ honey on your porridge.',o:FL,a:'a little'},{q:'There are ___ biscuits in the packet.',o:FL,a:'a few'},
+  {q:'I need ___ minutes to get ready.',o:FL,a:'a few'},{q:'Would you like ___ cheese?',o:FL,a:'a little'},
+  {q:'We bought ___ strawberries at the market.',o:FL,a:'a few'},{q:'Add ___ salt to the soup.',o:FL,a:'a little'}];
+var fewL=selectList('fewList',fewQ,'fewRes','few','. Perfect! 🤏');
+$('fewCheck').onclick=fewL.check;$('fewReset').onclick=fewL.build;
+var moodQ=[{q:'😊 I have ___ friends at the Academy. It\'s great!',o:['a few','few'],a:'a few'},
+  {q:'😟 There is ___ milk. We can\'t make pancakes.',o:['a little','little'],a:'little'},
+  {q:'😊 There\'s ___ juice left. Would you like some?',o:['a little','little'],a:'a little'},
+  {q:'😟 ___ children like cabbage soup.',o:['A few','Few'],a:'Few'},
+  {q:'😊 I can cook ___ things: pancakes and pasta.',o:['a few','few'],a:'a few'},
+  {q:'😟 I have ___ free time on Saturdays. I have six lessons!',o:['a little','little'],a:'little'}];
+var moodL=selectList('moodList',moodQ,'moodRes','mood','. You read the faces well! 😊');
+$('moodCheck').onclick=moodL.check;$('moodReset').onclick=moodL.build;
+var TM=['too much','too many','enough'];
+var tooQ=[{q:'I can\'t eat this soup. There is ___ salt in it!',o:TM,a:'too much'},{q:'Don\'t eat ___ sweets before class.',o:TM,a:'too many'},
+  {q:'I\'m thirsty. There isn\'t ___ water in my bottle.',o:TM,a:'enough'},{q:'This tea is very sweet. You put ___ sugar in it.',o:TM,a:'too much'},
+  {q:'Ten bananas? That\'s ___ bananas for one girl!',o:TM,a:'too many'},{q:'Dancers need ___ energy for class.',o:TM,a:'enough'},
+  {q:'There are ___ people in the canteen. Let\'s eat later.',o:TM,a:'too many'}];
+var tooL=selectList('tooList',tooQ,'tooRes','too','. Brava! 🌟');
+$('tooCheck').onclick=tooL.check;$('tooReset').onclick=tooL.build;
+
 /* ---------- ACT 6 reading ---------- */
 $('showColors').onclick=function(){var on=$('story').classList.toggle('show');$('showColors').textContent=on?'Спрячь цвета':'Покажи цвета'};
 $('storySay').onclick=function(){speak($('story').innerText)};
@@ -721,7 +842,9 @@ var MENU=[
   {id:'porridge',e:'🥣',one:'a bowl of porridge',many:'bowls of porridge',p:3},
   {id:'sandwich',e:'🥪',one:'a cheese sandwich',many:'cheese sandwiches',p:4},
   {id:'cake',e:'🍰',one:'a piece of cake',many:'pieces of cake',p:3},
-  {id:'banana',e:'🍌',one:'a banana',many:'bananas',p:1}
+  {id:'banana',e:'🍌',one:'a banana',many:'bananas',p:1},
+  {id:'pancakes',e:'🥞',one:'a plate of pancakes',many:'plates of pancakes',p:4},
+  {id:'icecream',e:'🍦',one:'an ice cream',many:'ice creams',p:2}
 ];
 var NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
 var TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
@@ -798,7 +921,9 @@ var SN=[
   {e:'🧃',t:'a carton of juice',pl:0,neg:"There isn't any juice."},{e:'🥪',t:'a cheese sandwich',pl:0,neg:"There isn't a sandwich."},
   {e:'🍫',t:'a bar of chocolate',pl:0,neg:"There isn't any chocolate."},{e:'🍪',t:'some biscuits',pl:1,neg:"There aren't any biscuits."},
   {e:'🍇',t:'some grapes',pl:1,neg:"There aren't any grapes."},{e:'🥛',t:'a yoghurt',pl:0,neg:"There isn't a yoghurt."},
-  {e:'🧀',t:'some cheese',pl:0,neg:"There isn't any cheese."},{e:'🥕',t:'some carrots',pl:1,neg:"There aren't any carrots."}
+  {e:'🧀',t:'some cheese',pl:0,neg:"There isn't any cheese."},{e:'🥕',t:'some carrots',pl:1,neg:"There aren't any carrots."},
+  {e:'🍐',t:'a pear',pl:0,neg:"There isn't a pear."},{e:'🍓',t:'a few strawberries',pl:1,neg:"There aren't any strawberries."},
+  {e:'🥒',t:'a cucumber',pl:0,neg:"There isn't a cucumber."},{e:'🥧',t:'a piece of pie',pl:0,neg:"There isn't any pie."}
 ];
 var snackOn=load('snack')||{};
 function snackText(){
@@ -818,7 +943,8 @@ $('snackSay').onclick=function(){var t=$('snackOut').textContent;if(t.indexOf('I
 var cards=['What do you usually have for breakfast?','What do you have for lunch at the Academy?','What\'s in your snack box today?',
   'What food do you love? What food do you hate?','How many apples do you eat a week?','How much water do you drink every day?',
   'Is there a canteen at the Academy? Is the food good?','Can you cook? What can you cook?','What do you eat before a ballet class? And after?',
-  'Would you like to try English food? What?','What is there in your fridge at home right now?','What would you like for dinner tonight?'];
+  'Would you like to try English food? What?','What is there in your fridge at home right now?','What would you like for dinner tonight?',
+  'Do you drink enough water every day?','What do you eat too much of? What do you need to eat more of?','What fruit and vegetables do you like? What don\'t you like?','What do you put in your tea: a little sugar, a little milk or nothing?'];
 var deck=[],cardCount=0;
 $('cardNew').onclick=function(){if(!deck.length)deck=shuffle(cards);var q=deck.pop();$('cardQ').textContent=q;speak(q);cardCount++;
   $('cardRes').textContent='Карточек: '+cardCount;setStars('cards',Math.min(cardCount,6))};
@@ -832,7 +958,12 @@ var hwords=[
   ['vegetables','овощи','fruit and vegetables'],['grapes','виноград','fruit and vegetables'],['cheese','сыр','food'],['butter','сливочное масло','food'],
   ['bread','хлеб','food'],['juice','сок','drinks'],['water','вода','drinks'],['bottle','бутылка','containers'],['slice','ломтик','containers'],
   ['packet','пачка','containers'],['canteen','столовая','places'],['kitchen','кухня','places'],['fridge','холодильник','places'],
-  ['spoon','ложка','on the table'],['plate','тарелка','on the table']
+  ['spoon','ложка','on the table'],['plate','тарелка','on the table'],
+  ['strawberries','клубника','fruit and vegetables'],['watermelon','арбуз','fruit and vegetables'],['cucumber','огурец','fruit and vegetables'],
+  ['potato','картошка','fruit and vegetables'],['onion','лук','fruit and vegetables'],['cabbage','капуста','fruit and vegetables'],
+  ['mushrooms','грибы','fruit and vegetables'],['peach','персик','fruit and vegetables'],['sausage','сосиска','meat and fish'],
+  ['chicken','курица','meat and fish'],['pancakes','блины','food'],['croissant','круассан','food'],['buckwheat','гречка','food'],
+  ['lemonade','лимонад','drinks'],['doughnut','пончик','sweets']
 ];
 var MAX=10,hDeck=[],hCur=null,hGuess={},hMiss=0,hOver=false,hWins=load('hwins')||0,hStreak=0;
 $('hWins').textContent=hWins;
@@ -876,8 +1007,8 @@ $('shareLetter').onclick=function(){var t=L.value.trim();if(!t){flash($('shareLe
   if(navigator.share){navigator.share({title:'My letter to Emily about food',text:t}).catch(function(){})}else copyText(t,$('shareLetter'),'Отправить учителю')};
 var hwTasks=[
   'Ответь Эмили про еду в Академии (от 60 до 80 слов) и отправь учителю кнопкой «Отправить учителю».',
-  'Собери в Act 8 свой настоящий ланчбокс и запиши голосовое: прочитай рассказ и добавь еще два предложения от себя.',
-  'Поработай официантом в Act 7: выполни целую смену из 5 заказов.',
+  'Собери в Act 9 свой настоящий ланчбокс и запиши голосовое: прочитай рассказ и добавь еще два предложения от себя.',
+  'Поработай официантом в Act 8: выполни целую смену из 5 заказов.',
   'Угадай 5 слов в Hangman.'
 ];
 var hwSaved=load('hw')||[];
