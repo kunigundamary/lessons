@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let's Cook!</title>
+<style>
+
+
+
+:root{
+  --ivory:#FFF8EE; --paper:#FFFFFF; --rose:#F6B8C8; --rose-soft:#FDE6EC;
+  --velvet:#8C2F55; --velvet-dark:#5E1C38; --sky:#8EC5E8; --sky-soft:#E3F2FB;
+  --sun:#FFD66B; --grass:#6DBB72; --grass-soft:#E4F5E5; --coral:#FF8A70; --coral-soft:#FFE6E0;
+  --ink:#4A3428; --muted:#8A7163;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);
+  font-family:'Nunito','Comfortaa','Trebuchet MS','Segoe UI',sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:'Comfortaa','Nunito','Trebuchet MS',sans-serif;line-height:1.2;margin:0 0 .4em}
+button{font-family:inherit;font-size:1rem;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--velvet);outline-offset:2px}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 110%,#FFE9B8 0%,#F9D2DC 45%,#E9A8BE 100%);
+  padding:48px 20px 36px;text-align:center;border-bottom:10px solid var(--velvet-dark)}
+.stage:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;
+  background:repeating-radial-gradient(circle at 20px -6px,var(--velvet) 0 22px,transparent 23px) 0 0/40px 34px, var(--velvet-dark);}
+.curtain{position:absolute;top:0;bottom:0;width:52%;z-index:3;
+  background:repeating-linear-gradient(90deg,var(--velvet) 0 18px,var(--velvet-dark) 18px 24px,var(--velvet) 24px 44px);
+  transition:transform 1.6s cubic-bezier(.6,.05,.3,1)}
+.curtain.l{left:0}.curtain.r{right:0}
+.stage.open .curtain.l{transform:translateX(-88%)}
+.stage.open .curtain.r{transform:translateX(88%)}
+.stage-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.swan{font-size:64px;display:inline-block;transform-origin:50% 90%}
+.stage.open .swan{animation:bow 1.2s 1.4s ease-in-out 1}
+@keyframes bow{0%,100%{transform:rotate(0)}40%{transform:rotate(-14deg) translateY(4px)}}
+.stage h1{font-size:clamp(1.8rem,5vw,2.8rem);color:var(--velvet-dark)}
+.stage p{margin:.2em 0;color:var(--velvet-dark)}
+.stars{display:inline-block;margin-top:10px;background:var(--paper);border-radius:999px;padding:6px 18px;font-weight:800;
+  box-shadow:0 3px 0 var(--velvet-dark)}
+@media (prefers-reduced-motion:reduce){.curtain{transition:none}.stage.open .swan{animation:none}}
+
+/* ---------- programme (tabs) ---------- */
+.programme{position:sticky;top:0;z-index:10;background:var(--velvet-dark);padding:8px 10px;
+  display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.programme button{flex:0 0 auto;border:0;border-radius:14px;padding:8px 14px;background:transparent;color:#FBE3EA;
+  font-weight:700;white-space:nowrap}
+.programme button small{display:block;font-weight:600;opacity:.75;font-size:.72rem}
+.programme button.active{background:var(--rose);color:var(--velvet-dark)}
+
+main{max-width:880px;margin:0 auto;padding:22px 16px 60px}
+section{display:none}
+section.active{display:block}
+.act-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.act-title .num{font-family:'Comfortaa',sans-serif;font-weight:800;color:var(--velvet);font-size:.95rem;
+  border:2px solid var(--velvet);border-radius:10px;padding:2px 10px}
+.task{color:var(--muted);margin:0 0 16px}
+.card{background:var(--paper);border-radius:22px;padding:20px;margin:16px 0;border:2px solid #F3E3D6}
+.odette{display:flex;gap:12px;align-items:flex-start;background:var(--rose-soft);border-radius:18px;padding:12px 16px;margin:12px 0}
+.odette .ava{font-size:34px;line-height:1}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:10px 18px;font-weight:800;min-height:44px}
+.btn.check{background:var(--grass);color:#fff}
+.btn.reset{background:#EFE3D8;color:var(--ink)}
+.btn.again{background:var(--sky);color:#123}
+.btn.say{background:var(--sun);color:var(--ink)}
+.btn.main{background:var(--velvet);color:#fff}
+.result{margin-top:12px;font-weight:800;min-height:1.5em}
+.speak{border:0;background:var(--sun);border-radius:10px;padding:2px 8px;margin-left:6px;font-size:.9rem}
+
+/* quiz */
+.q{margin:14px 0}
+.q p{margin:0 0 8px;font-weight:700}
+.opt{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:8px 14px;min-height:44px}
+.opt.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.opt.ok{border-color:var(--grass);background:var(--grass-soft)}
+.opt.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* pairs */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pairs .col{display:flex;flex-direction:column;gap:8px}
+.tile{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:10px;min-height:48px;font-weight:700}
+.tile.sel{border-color:var(--velvet);background:var(--rose-soft)}
+.tile.done{border-color:var(--grass);background:var(--grass-soft);color:#2F6B33;cursor:default}
+.tile.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* clock */
+.clockwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:center}
+.clockwrap svg{width:200px;height:200px}
+.timeopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:260px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.rules div{background:var(--sky-soft);border-radius:14px;padding:10px;text-align:center}
+.rules b{display:block;font-size:1.1rem}
+
+/* reading */
+.story p{margin:0 0 .8em}
+.story{background:#FFFDF8;border-left:6px solid var(--rose);border-radius:0 18px 18px 0;padding:16px 18px}
+.tf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #EADBCD}
+.tf .row{flex:0 0 auto}
+.me-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;padding:6px 0}
+input[type=text],select{font-family:inherit;font-size:1rem;border:2px solid #E8D8CB;border-radius:12px;padding:8px 10px;background:#fff;min-height:44px;width:100%}
+input.ok{border-color:var(--grass);background:var(--grass-soft)}
+input.bad{border-color:var(--coral);background:var(--coral-soft)}
+
+/* grammar */
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-grid div{background:var(--sky-soft);border-radius:16px;padding:12px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;text-align:center;font-weight:700}
+.scale div{border-radius:12px;padding:8px 4px;font-size:.9rem}
+.gap-item{padding:8px 0;border-bottom:1px dashed #EADBCD}
+.builder .line{min-height:52px;border:2px dashed var(--rose);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;background:#FFFDF8}
+.builder .bank{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:0;border-radius:12px;padding:8px 12px;background:var(--sky-soft);font-weight:700;min-height:40px}
+.line .chip{background:var(--rose-soft)}
+.builder.ok .line{border-color:var(--grass);background:var(--grass-soft)}
+.builder.bad .line{border-color:var(--coral);background:var(--coral-soft)}
+.inline-in{width:auto!important;min-width:110px;display:inline-block;min-height:38px;padding:4px 8px}
+
+/* day builder */
+.act-row{display:grid;grid-template-columns:34px 1.4fr 1fr 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.act-row input[type=checkbox]{width:24px;height:24px}
+.free{color:var(--muted);font-size:.9rem}
+.fixed-mark{font-size:.8rem;background:var(--sky-soft);border-radius:8px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.out{background:#FFFDF8;border-radius:18px;padding:16px;border:2px solid var(--rose);min-height:60px;white-space:pre-wrap}
+
+/* interview */
+.mic{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.mic .card{margin:0;display:flex;flex-direction:column;gap:8px}
+.mic .help{color:var(--muted);font-size:.95rem}
+.mic .card.done{border-color:var(--grass);background:var(--grass-soft)}
+
+/* finale */
+.links a{color:var(--velvet);font-weight:800}
+.links li{margin:0 0 12px}
+.poster{margin-top:14px;text-align:center;border-radius:22px;padding:26px 18px;
+  background:radial-gradient(circle at 50% 0,#FFF3C4,#F9D2DC 60%,#E9A8BE);font-family:'Comfortaa',sans-serif;font-size:1.3rem;font-weight:800;color:var(--velvet-dark);display:none}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.check-item input{width:26px;height:26px;flex:0 0 auto;margin-top:2px}
+.bar{height:16px;background:#F1E4D8;border-radius:10px;overflow:hidden;margin-top:12px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .4s}
+
+@media (max-width:620px){
+  body{font-size:17px}
+  .rule-grid,.me-row{grid-template-columns:1fr}
+  .act-row{grid-template-columns:30px 1fr;}
+  .act-row select{grid-column:2}
+  .act-row .free{grid-column:2}
+  .timeopts{grid-template-columns:1fr;min-width:0;width:100%}
+  .tf{flex-direction:column;align-items:flex-start}
+}
+
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.now{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.scene{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.scene .card{margin:0}
+.scene .emo{font-size:40px;line-height:1}
+.story .pc,.story .ps,.story .md{border-radius:6px;transition:background .3s}
+.story.show .pc{background:var(--rose)}
+.story.show .ps{background:#BFE0F5}
+.story.show .md{background:var(--sun)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:.9rem}
+.legend span{border-radius:8px;padding:2px 8px}
+.gloss{font-size:.95rem;color:var(--muted);margin-top:10px}
+.sign{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px dashed #EADBCD}
+.sign .emo{font-size:34px;text-align:center}
+.clockbox{text-align:center}
+.bigtime{font-family:'Comfortaa',sans-serif;font-size:2.4rem;font-weight:800;color:var(--velvet)}
+.bq{font-size:1.25rem;font-weight:800;margin:14px 0}
+.bopts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+textarea{font-family:inherit;font-size:1rem;width:100%;min-height:260px;border:2px solid #E8D8CB;border-radius:14px;padding:12px;background:#FFFDF8;line-height:1.5}
+.plan li{margin-bottom:4px}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}}
+
+.mc .opts{display:flex;flex-direction:column;gap:8px}
+.mc .opt{text-align:left}
+.mc{padding:12px 0;border-bottom:1px dashed #EADBCD}
+.mc p{margin:0 0 8px}
+.chip.sel{outline:3px solid var(--velvet)}
+.chip.ok{background:var(--grass-soft)!important;color:#2F6B33}
+.chip.bad{background:var(--coral-soft)!important}
+.basket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.basket{border:3px dashed var(--sky);border-radius:18px;padding:10px;min-height:120px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:6px;cursor:pointer;font-family:inherit;font-size:1rem}
+.basket.un{border-color:var(--rose)}
+.basket h4{margin:0 0 4px;font-family:'Comfortaa',sans-serif}
+.basket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.fridge{background:linear-gradient(#EAF6FD,#D3ECFA);border:6px solid #B9D9EC;border-radius:26px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px;margin:0 auto}
+.fridge div{background:#fff;border-radius:14px;padding:8px;text-align:center;font-weight:700;font-size:.95rem}
+.fridge span{display:block;font-size:2rem;line-height:1.2}
+.story .cn,.story .un,.story .sa,.story .mm{border-radius:6px;transition:background .3s}
+.story.show .sa{background:var(--sun)}
+.story.show .mm{background:#BFE0F5}
+.story.show .ct{background:var(--rose)}
+/* cafe */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.mitem{position:relative;border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:10px 8px;text-align:center;font-family:inherit;font-size:.95rem;min-height:44px}
+.mitem .e{display:block;font-size:2rem;line-height:1.2}
+.mitem b{display:block}
+.mitem .pr{color:var(--velvet);font-weight:800}
+.mitem .cnt{position:absolute;top:-8px;right:-8px;background:var(--velvet);color:#fff;border-radius:999px;min-width:28px;height:28px;line-height:28px;font-weight:800;display:none}
+.mitem.has{border-color:var(--velvet);background:var(--rose-soft)}
+.mitem.has .cnt{display:block}
+.tray{background:#FFFDF8;border:2px dashed var(--rose);border-radius:16px;padding:10px;margin-top:12px;min-height:56px}
+.tray .tl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}
+.tray .minus{border:0;background:#EFE3D8;border-radius:10px;width:40px;height:40px;font-weight:800;font-size:1.2rem}
+.bill{font-family:'Comfortaa',sans-serif;font-weight:800;font-size:1.2rem;color:var(--velvet);margin-top:10px}
+.dialog p{margin:0 0 6px}
+.dialog b{color:var(--velvet)}
+.cardq{font-family:'Comfortaa',sans-serif;font-size:1.35rem;font-weight:800;text-align:center;padding:26px 14px;border-radius:20px;background:var(--sky-soft);min-height:110px;display:flex;align-items:center;justify-content:center}
+.snack{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.snack button{border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:10px 6px;font-family:inherit;font-size:.95rem;min-height:44px}
+.snack button span{display:block;font-size:1.9rem}
+.snack button.on{border-color:var(--grass);background:var(--grass-soft)}
+/* hangman */
+.hang{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center}
+.hang svg{width:200px;height:220px;flex:0 0 auto}
+.hang svg .p{opacity:0;transition:opacity .3s}
+.hang svg .p.on{opacity:1}
+.hword{font-family:'Comfortaa',monospace;font-size:2rem;font-weight:800;letter-spacing:.35em;text-align:center;color:var(--velvet-dark);word-break:break-all}
+.hinfo{text-align:center;color:var(--muted);margin:6px 0}
+.kb{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-top:14px}
+.kb button{border:0;border-radius:10px;min-height:44px;font-weight:800;font-size:1.05rem;background:var(--sky-soft);color:var(--ink)}
+.kb button.hit{background:var(--grass);color:#fff}
+.kb button.miss{background:#E7DCD2;color:#B2A091}
+.hscore{display:flex;justify-content:center;gap:18px;font-weight:800;margin-top:8px}
+.dict-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.dict-cats .chip.sel{background:var(--velvet);color:#fff;outline:none}
+.dict{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.dict button{border:2px solid #E8D8CB;background:#fff;border-radius:16px;padding:8px 6px;font-family:inherit;font-size:1rem;font-weight:700;min-height:44px}
+.dict button .e{display:block;font-size:2rem;line-height:1.2}
+.dict button .ru{display:block;font-weight:600;color:var(--muted);font-size:.85rem;visibility:hidden}
+.dict button.open{border-color:var(--rose);background:var(--rose-soft)}
+.dict button.open .ru{visibility:visible}
+.cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.cheat div{background:var(--sky-soft);border-radius:14px;padding:10px 12px;font-size:.95rem}
+@media (max-width:620px){.basket-wrap{grid-template-columns:1fr}.kb{grid-template-columns:repeat(7,1fr)}.hword{font-size:1.6rem}}
+
+.mc .orig{background:var(--coral-soft);border-radius:12px;padding:8px 12px;margin-bottom:8px;font-style:italic}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--sky-soft);color:var(--velvet);font-family:'Comfortaa',sans-serif;font-weight:800;font-size:1.1rem;margin:0 auto 2px}
+.tline{display:flex;flex-direction:column;gap:6px;min-height:64px;border:2px dashed var(--rose);border-radius:14px;padding:8px;background:#FFFDF8;margin:10px 0}
+.evbank{display:flex;flex-direction:column;gap:6px}
+.evbtn{text-align:left;border:2px solid #E8D8CB;background:#fff;border-radius:12px;padding:8px 10px;font-family:inherit;font-size:.95rem;min-height:44px;color:var(--ink)}
+.evbtn .n{font-weight:800;color:var(--velvet);margin-right:6px;display:none}
+.evbtn.ok{border-color:var(--grass);background:var(--grass-soft)}
+.evbtn.bad{border-color:var(--coral);background:var(--coral-soft)}
+.checked .evbtn .n{display:inline}
+.tl-hint{color:var(--muted);font-size:.9rem}
+.ticks{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.ticks button{border:2px solid #E8D8CB;background:#fff;border-radius:14px;padding:8px 6px;font-family:inherit;font-size:.95rem;min-height:44px}
+.ticks button span{display:block;font-size:1.8rem}
+.ticks button.on{border-color:var(--velvet);background:var(--rose-soft)}
+.ticks button.ok{border-color:var(--grass);background:var(--grass-soft)}
+.ticks button.bad{border-color:var(--coral);background:var(--coral-soft)}
+.ticks button.miss{border-color:var(--sun);border-style:dashed}
+.video{display:flex;gap:12px;align-items:center;background:var(--sky-soft);border-radius:16px;padding:12px;text-decoration:none;color:inherit}
+.video .play{font-size:2.2rem;line-height:1}
+.video b{color:var(--velvet-dark)}
+.stepline{display:grid;grid-template-columns:96px 140px 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #EADBCD}
+.stepline b{color:var(--velvet)}
+.show-frame p{margin:0 0 6px}
+@media (max-width:620px){.stepline{grid-template-columns:1fr 1fr}.stepline b{grid-column:1 / -1}}
+</style>
+</head>
+<body>
+
+<header class="stage" id="stage">
+  <div class="curtain l"></div><div class="curtain r"></div>
+  <div class="stage-inner">
+    <div class="swan" aria-hidden="true">🦢</div>
+    <h1>Let's Cook!</h1>
+    <p>Recipes and a cooking video</p>
+    <div class="stars">⭐ <span id="starCount">0</span> stars</div>
+  </div>
+</header>
+
+<nav class="programme" id="programme" aria-label="Lesson programme">
+  <button data-go="a1" class="active"><small>Act 1</small>Food review</button>
+  <button data-go="a2"><small>Act 2</small>In the kitchen</button>
+  <button data-go="a3"><small>Act 3</small>Cooking verbs</button>
+  <button data-go="a4"><small>Act 4</small>Recipes</button>
+  <button data-go="a5"><small>Act 5</small>Before you watch</button>
+  <button data-go="a6"><small>Act 6</small>Watch & listen</button>
+  <button data-go="a7"><small>Act 7</small>My cooking show</button>
+  <button data-go="a8"><small>Act 8</small>Hangman</button>
+  <button data-go="a9"><small>Finale</small>Homework</button>
+</nav>
+
+<main>
+
+<!-- ============ ACT 1 ============ -->
+<section id="a1" class="active">
+  <div class="act-title"><span class="num">Act 1</span><h2>🥐 Food review</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Brava, Vasilisa! You did all your homework. Let's check how much you remember: a cup of, some and any, a few and a little. Then we go to the kitchen and cook!</div></div>
+  <div class="card">
+    <h3>Quick quiz</h3>
+    <p class="task">Десять вопросов на все, что мы прошли про еду. Выбери ответ в каждом.</p>
+    <div id="revList"></div>
+    <div class="btns"><button class="btn check" id="revCheck">Проверить</button><button class="btn reset" id="revReset">Сбросить</button></div>
+    <div class="result" id="revRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 2 ============ -->
+<section id="a2">
+  <div class="act-title"><span class="num">Act 2</span><h2>🍳 In the kitchen</h2></div>
+  <div class="card">
+    <h3>1. Picture dictionary</h3>
+    <p class="task">Выбери группу и нажимай на карточки: слово прозвучит, а под ним появится перевод.</p>
+    <div class="dict-cats" id="dictCats"></div>
+    <div class="dict" id="dict"></div>
+  </div>
+  <div class="card">
+    <h3>2. Find the pairs</h3>
+    <p class="task">Нажми на английское слово, потом на перевод. Каждый раз 8 новых слов.</p>
+    <div class="pairs"><div class="col" id="enCol"></div><div class="col" id="ruCol"></div></div>
+    <div class="result" id="pairsRes"></div>
+    <div class="btns"><button class="btn again" id="pairsAgain">Новые слова</button></div>
+  </div>
+  <div class="card">
+    <h3>3. What do you need?</h3>
+    <p class="task">Что тебе понадобится? Выбери один предмет.</p>
+    <div id="needList"></div>
+    <div class="btns"><button class="btn check" id="needCheck">Проверить</button><button class="btn reset" id="needReset">Сбросить</button></div>
+    <div class="result" id="needRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 3 ============ -->
+<section id="a3">
+  <div class="act-title"><span class="num">Act 3</span><h2>🔪 Cooking verbs</h2></div>
+  <div class="card">
+    <h3>1. What do cooks do?</h3>
+    <p class="task">Нажимай на карточки: глагол прозвучит, а под ним появится перевод.</p>
+    <div class="dict" id="verbDict"></div>
+  </div>
+  <div class="card">
+    <h3>2. Find the pairs</h3>
+    <div class="pairs"><div class="col" id="vEn"></div><div class="col" id="vRu"></div></div>
+    <div class="result" id="vPairsRes"></div>
+    <div class="btns"><button class="btn again" id="vPairsAgain">Новые слова</button></div>
+  </div>
+  <div class="card">
+    <h3>3. Choose the verb</h3>
+    <div id="verbList"></div>
+    <div class="btns"><button class="btn check" id="verbCheck">Проверить</button><button class="btn reset" id="verbReset">Сбросить</button></div>
+    <div class="result" id="verbRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 4 ============ -->
+<section id="a4">
+  <div class="act-title"><span class="num">Act 4</span><h2>📜 The language of recipes</h2></div>
+  <div class="rule-grid">
+    <div><b>Рецепт говорит командами</b><br>Просто глагол в начале, без I и you:<br><b>Peel</b> the apples. <b>Mix</b> the flour and sugar.<br><b>Don't</b> touch the hot oven!</div>
+    <div style="background:var(--rose-soft)"><b>Слова-шаги</b><br><b>First,</b> wash your hands.<br><b>Then</b> / <b>Next,</b> cut the fruit.<br><b>After that,</b> mix it.<br><b>Finally,</b> serve it.</div>
+  </div>
+  <div class="card">
+    <h3>1. Make a fruit salad</h3>
+    <p class="task">Нажимай на шаги по порядку: что делаем сначала, что потом. Ошиблась? Нажми на шаг в рецепте, и он вернется вниз.</p>
+    <div class="tl-hint">⬇️ My recipe</div>
+    <div class="tline" id="fsLine"></div>
+    <div class="evbank" id="fsBank"></div>
+    <div class="btns"><button class="btn check" id="fsCheck">Проверить</button><button class="btn reset" id="fsReset">Сбросить</button></div>
+    <div class="result" id="fsRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Kitchen rules</h3>
+    <p class="task">Собери правила кухни. Нажимай на слова по порядку. Ошиблась? Нажми на слово в строке, и оно вернется обратно.</p>
+    <div id="builders"></div>
+    <div class="btns"><button class="btn check" id="buildCheck">Проверить</button><button class="btn reset" id="buildReset">Сбросить</button></div>
+    <div class="result" id="buildRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 5 ============ -->
+<section id="a5">
+  <div class="act-title"><span class="num">Act 5</span><h2>👀 Before you watch</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Soon we watch a video: a cooking show for kids from Britain. Lauren makes an <b>apple crumble</b>. It's a famous British dessert: baked apples with a sweet crumbly topping. Let's learn some words first!</div></div>
+  <div class="card">
+    <h3>1. Words from the video</h3>
+    <p class="task">Нажимай на карточки, чтобы услышать слово и увидеть перевод.</p>
+    <div class="dict" id="vidDict"></div>
+  </div>
+  <div class="card">
+    <h3>2. Guess!</h3>
+    <p class="task">Как ты думаешь, что нужно для apple crumble? Отметь продукты. Ответ узнаешь, когда посмотришь видео.</p>
+    <div class="ticks" id="guessTicks"></div>
+    <div class="result" id="guessRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 6 ============ -->
+<section id="a6">
+  <div class="act-title"><span class="num">Act 6</span><h2>🎬 Watch & listen</h2></div>
+  <div class="card">
+    <a class="video" href="https://realfood.tesco.com/videos/kids-cook-apple-crumble.html" target="_blank" rel="noopener"><span class="play">▶️</span><span><b>Kids Cook: Apple crumble</b><br>Tesco Real Food</span></a>
+    <p class="task" style="margin-top:12px">Смотрим видео два раза. В первый раз выполняем задание 1, во второй раз задания 2, 3 и 4. Задание 5 делаем после просмотра. Под видео на сайте есть рецепт, его можно читать после видео.</p>
+  </div>
+  <div class="card">
+    <h3>1. Tick the ingredients</h3>
+    <p class="task">Отметь все продукты, которые Лорен использует в видео. Лишние не отмечай.</p>
+    <div class="ticks" id="ingTicks"></div>
+    <div class="btns"><button class="btn check" id="ingCheck">Проверить</button><button class="btn reset" id="ingReset">Сбросить</button></div>
+    <div class="result" id="ingRes"></div>
+  </div>
+  <div class="card">
+    <h3>2. Put the steps in order</h3>
+    <p class="task">Нажимай на шаги в том порядке, в котором их делают в видео.</p>
+    <div class="tl-hint">⬇️ The recipe</div>
+    <div class="tline" id="acLine"></div>
+    <div class="evbank" id="acBank"></div>
+    <div class="btns"><button class="btn check" id="acCheck">Проверить</button><button class="btn reset" id="acReset">Сбросить</button></div>
+    <div class="result" id="acRes"></div>
+  </div>
+  <div class="card">
+    <h3>3. Numbers</h3>
+    <p class="task">Слушай цифры. Если в видео какую-то цифру не называют, найди ее в рецепте под видео.</p>
+    <div id="numList"></div>
+    <div class="btns"><button class="btn check" id="numCheck">Проверить</button><button class="btn reset" id="numReset">Сбросить</button></div>
+    <div class="result" id="numRes"></div>
+  </div>
+  <div class="card">
+    <h3>4. True or False?</h3>
+    <div id="tfList"></div>
+    <div class="btns"><button class="btn check" id="tfCheck">Проверить</button><button class="btn reset" id="tfReset">Сбросить</button></div>
+    <div class="result" id="tfRes"></div>
+  </div>
+  <div class="card">
+    <h3>5. Verbs from the recipe</h3>
+    <p class="task">Какой глагол подходит? Все они есть в рецепте.</p>
+    <div id="rvList"></div>
+    <div class="btns"><button class="btn check" id="rvCheck">Проверить</button><button class="btn reset" id="rvReset">Сбросить</button></div>
+    <div class="result" id="rvRes"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 7 ============ -->
+<section id="a7">
+  <div class="act-title"><span class="num">Act 7</span><h2>🎤 My cooking show</h2></div>
+  <div class="odette"><div class="ava">🦢</div><div>Now you are the star of a cooking show, like Lauren! Choose a dish and tell everyone how to make it.</div></div>
+  <div class="card">
+    <h3>1. Write your recipe</h3>
+    <p class="task">Впиши название блюда, выбери глаголы и допиши, что с чем делать. Потом нажми «Собрать рецепт».</p>
+    <div class="row" style="margin-bottom:8px"><b>Today we're going to make</b> <input type="text" id="dish" placeholder="pancakes" style="max-width:240px"></div>
+    <div class="row" style="margin-bottom:8px"><b>You need</b> <input type="text" id="needs" placeholder="two eggs, a glass of milk, some flour and a little sugar" style="max-width:100%"></div>
+    <div id="stepRows"></div>
+    <div class="btns"><button class="btn main" id="makeRecipe">Собрать рецепт</button><button class="btn say" id="sayRecipe">🔊 Послушать</button></div>
+    <textarea id="recipe" placeholder="Здесь появится твой рецепт. Его можно править и дописывать."></textarea>
+    <div id="wc" style="font-weight:800;margin-top:6px">0 words</div>
+    <div class="btns"><button class="btn check" id="shareRecipe">Отправить учителю</button><button class="btn reset" id="copyRecipe">Скопировать</button></div>
+  </div>
+  <div class="card">
+    <h3>2. Let's talk about cooking</h3>
+    <p class="task">Учитель тянет карточку, ты отвечаешь целым предложением. Потом поменяйтесь ролями.</p>
+    <div class="cardq" id="cardQ">🎴 Tap «New card»</div>
+    <div class="btns" style="justify-content:center"><button class="btn main" id="cardNew">New card</button><button class="btn say" id="cardSay">🔊</button></div>
+    <div class="result" id="cardRes" style="text-align:center"></div>
+  </div>
+</section>
+
+<!-- ============ ACT 8 ============ -->
+<section id="a8">
+  <div class="act-title"><span class="num">Act 8</span><h2>🎯 Hangman: in the kitchen</h2></div>
+  <p class="task">Угадай слово по буквам. За каждую неправильную букву появляется часть виселицы. Десять ошибок, и человечек готов.</p>
+  <div class="card">
+    <div class="hang">
+      <svg viewBox="0 0 200 220" aria-label="Виселица">
+        <line class="p" x1="20" y1="205" x2="140" y2="205" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="205" x2="50" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="50" y1="20" x2="135" y2="20" stroke="#8C2F55" stroke-width="7" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="20" x2="135" y2="48" stroke="#4A3428" stroke-width="4" stroke-linecap="round"/>
+        <circle class="p" cx="135" cy="66" r="18" fill="none" stroke="#4A3428" stroke-width="5"/>
+        <line class="p" x1="135" y1="84" x2="135" y2="140" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="112" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="100" x2="158" y2="122" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="115" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+        <line class="p" x1="135" y1="140" x2="155" y2="175" stroke="#4A3428" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div style="flex:1;min-width:240px">
+        <div class="hword" id="hWord"></div>
+        <div class="hinfo" id="hCat"></div>
+        <div class="hinfo" id="hLives"></div>
+        <div class="hinfo" id="hHint" style="font-weight:800;color:var(--velvet)"></div>
+      </div>
+    </div>
+    <div class="kb" id="kb"></div>
+    <div class="result" id="hRes" style="text-align:center"></div>
+    <div class="btns" style="justify-content:center"><button class="btn say" id="hHintBtn">Подсказка</button><button class="btn again" id="hNew">Новое слово</button></div>
+    <div class="hscore"><span>🏆 Угадано: <span id="hWins">0</span></span><span>🔥 Подряд: <span id="hStreak">0</span></span></div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="a9">
+  <div class="act-title"><span class="num">Finale</span><h2>🌹 Homework</h2></div>
+  <div class="card">
+    <h3>Шпаргалка урока</h3>
+    <div class="cheat">
+      <div><b>Глаголы:</b> peel, cut, chop, slice, grate, wash, mix, stir, whisk, pour, add, bake, boil, fry, serve</div>
+      <div><b>Рецепт:</b> Peel the apples. Don't touch the oven!</div>
+      <div><b>Шаги:</b> First, Then, Next, After that, Finally</div>
+      <div><b>На кухне:</b> bowl, spoon, knife, frying pan, saucepan, oven, baking dish</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🏠 Homework</h3>
+    <div id="hwList"></div>
+    <div class="bar"><div id="hwBar"></div></div>
+  </div>
+  <div class="result" id="finalRes" style="text-align:center;font-size:1.2rem"></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+function $(id){return document.getElementById(id)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+var canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+var voice=null;
+function pickVoice(){ if(!canSpeak)return; try{
+  var vs=window.speechSynthesis.getVoices().filter(function(v){return /^en[-_]GB/i.test(v.lang)});
+  var pref=['Sonia','Libby','Serena','Kate','Martha','Stephanie','Daniel','Arthur','Ryan'];
+  var bv=null,bs=-1;
+  vs.forEach(function(v){var s=0,n=v.name;
+    if(/Natural|Online|Neural/i.test(n))s+=5; if(/Premium/i.test(n))s+=4; if(/Enhanced/i.test(n))s+=3;
+    pref.forEach(function(p,i){if(n.indexOf(p)>-1)s+=2-(i*0.1)});
+    if(s>bs){bs=s;bv=v}});
+  voice=bv; }catch(e){} }
+if(canSpeak){pickVoice(); try{window.speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+function speak(text){ if(!canSpeak) return; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=0.9; if(voice)u.voice=voice; window.speechSynthesis.speak(u);}catch(e){} }
+function stopSpeak(){ if(canSpeak){ try{window.speechSynthesis.cancel()}catch(e){} } }
+function save(k,v){try{localStorage.setItem('letscook_'+k,JSON.stringify(v))}catch(e){}}
+function load(k){try{return JSON.parse(localStorage.getItem('letscook_'+k))}catch(e){return null}}
+
+var best={};
+function setStars(block,n){ if(!(block in best)||n>best[block]){best[block]=n} var t=0;for(var k in best)t+=best[k]; $('starCount').textContent=t; updateFinal(); }
+function starWord(n){var a=n%10,b=n%100;if(a===1&&b!==11)return 'звезда';if(a>=2&&a<=4&&(b<12||b>14))return 'звезды';return 'звезд'}
+function updateFinal(){var t=0;for(var k in best)t+=best[k];$('finalRes').textContent=t?('За урок у тебя '+t+' '+starWord(t)+'. Bravo, Vasilisa! 🌹'):''}
+
+window.addEventListener('load',function(){ setTimeout(function(){ $('stage').classList.add('open') },300) });
+var tabs=document.querySelectorAll('.programme button');
+tabs.forEach(function(b){ b.addEventListener('click',function(){
+  tabs.forEach(function(x){x.classList.remove('active')}); b.classList.add('active');
+  document.querySelectorAll('main section').forEach(function(s){s.classList.remove('active')});
+  $(b.dataset.go).classList.add('active'); stopSpeak();
+  window.scrollTo({top:$('stage').offsetHeight,behavior:'smooth'});
+})});
+
+/* ---------- generic helpers ---------- */
+function selectList(boxId,items,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    items.forEach(function(c,i){var d=document.createElement('div');d.className='gap-item';
+      var sel='<select class="inline-in" aria-label="Выбери вариант"><option value="">...</option>'+c.o.map(function(o){return '<option value="'+o+'">'+o+'</option>'}).join('')+'</select>';
+      d.innerHTML=(i+1)+'. '+c.q.replace('___',sel);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' select').forEach(function(sel,i){sel.classList.remove('ok','bad');
+      if(!sel.value){empty++;return} if(sel.value===items[i].a){sel.classList.add('ok');s++}else sel.classList.add('bad')});
+    $(resId).textContent=(empty?'Осталось выбрать '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+/* first option is the correct one; options are shuffled on screen */
+function mcList(boxId,items,resId,block,okMsg){
+  var sel=[];
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';sel=items.map(function(){return -1});
+    items.forEach(function(it,i){var d=document.createElement('div');d.className='mc';
+      d.innerHTML='<p><b>'+(i+1)+'. '+it.q+'</b></p>';
+      var r=document.createElement('div');r.className='opts';
+      shuffle(it.o.map(function(o,k){return [o,k]})).forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];b.dataset.k=p[1];
+        b.onclick=function(){sel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+      d.appendChild(r);box.appendChild(d)});}
+  function check(){var s=0,empty=0;
+    document.querySelectorAll('#'+boxId+' .mc').forEach(function(d,i){
+      d.querySelectorAll('.opt').forEach(function(b){b.classList.remove('ok','bad');
+        if(sel[i]===-1)return;
+        if(+b.dataset.k===0&&sel[i]===0)b.classList.add('ok');else if(+b.dataset.k===sel[i])b.classList.add('bad')});
+      if(sel[i]===-1)empty++;else if(sel[i]===0)s++});
+    $(resId).textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+items.length+(s===items.length?okMsg:'. Посмотри на красные и попробуй еще.');
+    if(!empty) setStars(block,s)}
+  build();return {build:build,check:check};
+}
+function icon(e,word){return e?'<span class="e">'+e+'</span>':'<span class="badge">'+word.charAt(0).toUpperCase()+'</span>'}
+function dictionary(boxId,list){var box=$(boxId);box.innerHTML='';
+  list.forEach(function(f){var b=document.createElement('button');b.type='button';
+    b.innerHTML=icon(f[2],f[0])+f[0]+'<span class="ru">'+f[1]+'</span>';
+    b.onclick=function(){b.classList.add('open');speak(f[0])};box.appendChild(b)});}
+function pairGame(enId,ruId,resId,againId,pool,block,emoji){
+  var words=[],selEn=null,selRu=null,found=0,miss=0;
+  function build(){
+    words=shuffle(pool).slice(0,8);selEn=selRu=null;found=0;miss=0;$(resId).textContent='';
+    var en=$(enId),ru=$(ruId);en.innerHTML='';ru.innerHTML='';
+    shuffle(words).forEach(function(w){var b=document.createElement('button');b.className='tile';b.textContent=w[0];b.dataset.id=w[0];
+      b.onclick=function(){if(b.classList.contains('done'))return;speak(w[0]);en.querySelectorAll('.tile').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');selEn=b;tryPair()};en.appendChild(b)});
+    shuffle(words).forEach(function(w){var b=document.createElement('button');b.className='tile';b.textContent=w[1]+(emoji&&w[2]?' '+w[2]:'');b.dataset.id=w[0];
+      b.onclick=function(){if(b.classList.contains('done'))return;ru.querySelectorAll('.tile').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');selRu=b;tryPair()};ru.appendChild(b)});
+  }
+  function tryPair(){
+    if(!selEn||!selRu)return;var a=selEn,b=selRu;selEn=selRu=null;a.classList.remove('sel');b.classList.remove('sel');
+    if(a.dataset.id===b.dataset.id){a.classList.add('done');b.classList.add('done');found++;
+      if(found===words.length){$(resId).textContent='Все пары найдены! Ошибок: '+miss+'. Нажми «Новые слова», чтобы сыграть еще. 🍳';setStars(block,Math.max(3,8-miss))}
+    }else{miss++;[a,b].forEach(function(x){x.classList.add('shake');setTimeout(function(){x.classList.remove('shake')},400)})}
+  }
+  $(againId).onclick=build;build();
+}
+function orderGame(lineId,bankId,checkId,resetId,resId,steps,block,okMsg){
+  function build(){$(resId).textContent='';$(lineId).innerHTML='';$(lineId).classList.remove('checked');var bank=$(bankId);bank.innerHTML='';
+    shuffle(steps.map(function(t,i){return [i,t]})).forEach(function(e){var b=document.createElement('button');b.type='button';b.className='evbtn';b.dataset.i=e[0];
+      b.innerHTML='<span class="n">'+(e[0]+1)+'.</span>'+e[1];
+      b.onclick=function(){$(lineId).classList.remove('checked');document.querySelectorAll('#'+lineId+' .evbtn,#'+bankId+' .evbtn').forEach(function(x){x.classList.remove('ok','bad')});
+        (b.parentNode===bank?$(lineId):bank).appendChild(b)};bank.appendChild(b)});}
+  $(checkId).onclick=function(){var items=$(lineId).querySelectorAll('.evbtn');
+    if(items.length<steps.length){$(resId).textContent='Поставь в рецепт все шаги. Осталось: '+(steps.length-items.length)+'.';return}
+    var s=0;items.forEach(function(b,i){b.classList.remove('ok','bad');if(+b.dataset.i===i){b.classList.add('ok');s++}else b.classList.add('bad')});
+    $(lineId).classList.add('checked');
+    $(resId).textContent='На своем месте: '+s+' из '+steps.length+(s===steps.length?okMsg:'. Теперь видны номера шагов. Передвинь красные и проверь еще раз.');
+    setStars(block,s)};
+  $(resetId).onclick=build;build();
+}
+function tickGame(boxId,items,checkId,resetId,resId,block,okMsg){
+  function build(){var box=$(boxId);box.innerHTML='';$(resId).textContent='';
+    shuffle(items).forEach(function(it){var b=document.createElement('button');b.type='button';b.dataset.ok=it[2]?1:0;
+      b.innerHTML='<span>'+it[1]+'</span>'+it[0];
+      b.onclick=function(){box.querySelectorAll('button').forEach(function(x){x.classList.remove('ok','bad','miss')});b.classList.toggle('on')};box.appendChild(b)});}
+  $(checkId).onclick=function(){var s=0,need=0,extra=0,missed=0;
+    $(boxId).querySelectorAll('button').forEach(function(b){b.classList.remove('ok','bad','miss');var on=b.classList.contains('on'),ok=b.dataset.ok==='1';
+      if(ok)need++; if(on&&ok){b.classList.add('ok');s++} else if(on&&!ok){b.classList.add('bad');extra++} else if(!on&&ok){b.classList.add('miss');missed++}});
+    $(resId).textContent='Нашла '+s+' из '+need+(s===need&&!extra?'':'.')+(extra?' Лишних: '+extra+' (красные).':'')+(missed?' Пропущено: '+missed+' (желтая рамка).':'')+(s===need&&!extra?okMsg:'');
+    setStars(block,Math.max(0,s-extra))};
+  $(resetId).onclick=build;build();
+}
+
+/* ---------- ACT 1 review ---------- */
+var rev=[
+  {q:"I'd like ___ apple, please.",o:['an','a','some']},
+  {q:'Can I have ___ water, please?',o:['some','a','many']},
+  {q:'How ___ eggs do we need?',o:['many','much','little']},
+  {q:"There isn't ___ milk in the fridge.",o:['any','some','a']},
+  {q:'a ___ of bread',o:['slice','bottle','cup']},
+  {q:'Put ___ honey in your tea.',o:['a little','a few','many']},
+  {q:'There are ___ biscuits. Would you like one?',o:['a few','a little','much']},
+  {q:"I can't eat this soup. There is ___ salt in it!",o:['too much','too many','enough']},
+  {q:'How ___ is the cake? It\'s three pounds.',o:['much','many','few']},
+  {q:'two ___',o:['cups of tea','cup of teas','cups of teas']}
+];
+var revL=mcList('revList',rev,'revRes','rev','. You remember everything! 🥐');
+$('revCheck').onclick=revL.check;$('revReset').onclick=revL.build;
+
+/* ---------- ACT 2 kitchen words ---------- */
+var KCATS=[['all','All'],['bake','Baking'],['tools','Kitchen things'],['fruit','Fruit and vegetables']];
+var KITCHEN=[
+  ['flour','мука','🌾','bake'],['sugar','сахар','','bake'],['butter','сливочное масло','🧈','bake'],['eggs','яйца','🥚','bake'],['salt','соль','🧂','bake'],
+  ['oats','овсяные хлопья','','bake'],['cinnamon','корица','','bake'],['custard','заварной крем','🍮','bake'],['cream','сливки','','bake'],['raisins','изюм','','bake'],
+  ['milk','молоко','🥛','bake'],['honey','мед','🍯','bake'],
+  ['bowl','миска','🥣','tools'],['spoon','ложка','🥄','tools'],['knife','нож','🔪','tools'],['fork','вилка','🍴','tools'],['plate','тарелка','🍽️','tools'],
+  ['frying pan','сковорода','🍳','tools'],['saucepan','кастрюля','🍲','tools'],['oven','духовка','','tools'],['fridge','холодильник','','tools'],['freezer','морозилка','🧊','tools'],
+  ['chopping board','разделочная доска','🪵','tools'],['baking dish','форма для запекания','','tools'],['grater','терка','','tools'],['peeler','овощечистка','','tools'],
+  ['scales','весы','⚖️','tools'],['timer','таймер','⏲️','tools'],['apron','фартук','','tools'],
+  ['apple','яблоко','🍎','fruit'],['lemon','лимон','🍋','fruit'],['strawberries','клубника','🍓','fruit'],['banana','банан','🍌','fruit'],['orange','апельсин','🍊','fruit'],
+  ['potato','картошка','🥔','fruit'],['carrot','морковь','🥕','fruit'],['tomato','помидор','🍅','fruit'],['onion','лук','🧅','fruit'],['cucumber','огурец','🥒','fruit']
+];
+var kcat='all';
+function drawK(){dictionary('dict',KITCHEN.filter(function(f){return kcat==='all'||f[3]===kcat}))}
+KCATS.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip'+(c[0]==='all'?' sel':'');b.textContent=c[1];
+  b.onclick=function(){kcat=c[0];document.querySelectorAll('#dictCats .chip').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');drawK()};$('dictCats').appendChild(b)});
+drawK();
+pairGame('enCol','ruCol','pairsRes','pairsAgain',KITCHEN,'kpairs',true);
+var need=[
+  {q:'You want to fry an egg.',o:['a frying pan','a grater','a fork']},
+  {q:'You want to bake a cake.',o:['an oven','a freezer','a timer']},
+  {q:'You want to cut bread.',o:['a knife','a spoon','a bowl']},
+  {q:'You want to eat soup.',o:['a spoon','a knife','a peeler']},
+  {q:'You want to grate cheese.',o:['a grater','scales','a plate']},
+  {q:'You want to keep the milk cold.',o:['a fridge','an oven','a saucepan']},
+  {q:"You don't want to get your clothes dirty.",o:['an apron','a chopping board','a fork']}
+];
+var needL=mcList('needList',need,'needRes','need','. Kitchen expert! 🍳');
+$('needCheck').onclick=needL.check;$('needReset').onclick=needL.build;
+
+/* ---------- ACT 3 verbs ---------- */
+var VERBS=[['peel','чистить (от кожуры)','🍏'],['cut','резать','🔪'],['chop','мелко резать','🥕'],['slice','нарезать ломтиками','🍞'],['grate','тереть на терке','🧀'],
+  ['wash','мыть','💧'],['mix','смешивать','🥣'],['stir','помешивать','🥄'],['whisk','взбивать','🥚'],['pour','наливать','🥛'],['add','добавлять','➕'],
+  ['sift','просеивать','🌾'],['melt','растапливать','🧈'],['boil','варить','♨️'],['fry','жарить','🍳'],['bake','печь','🥧'],['heat','нагревать','🔥'],
+  ['cool','остужать','❄️'],['sprinkle','посыпать','🧂'],['serve','подавать','🍽️']];
+dictionary('verbDict',VERBS);
+pairGame('vEn','vRu','vPairsRes','vPairsAgain',VERBS,'vpairs',false);
+var vq=[
+  {q:'___ the potatoes before you boil them.',o:['Peel','Pour','Whisk'],a:'Peel'},
+  {q:'___ the cheese for your pizza.',o:['Grate','Boil','Pour'],a:'Grate'},
+  {q:'___ the eggs with a fork.',o:['Whisk','Peel','Slice'],a:'Whisk'},
+  {q:'___ the milk into a glass.',o:['Pour','Chop','Grate'],a:'Pour'},
+  {q:'___ the bread for sandwiches.',o:['Slice','Whisk','Melt'],a:'Slice'},
+  {q:'___ the soup with a spoon.',o:['Stir','Sift','Peel'],a:'Stir'},
+  {q:'___ the cake in the oven for 30 minutes.',o:['Bake','Wash','Pour'],a:'Bake'},
+  {q:'___ your hands before you cook!',o:['Wash','Fry','Grate'],a:'Wash'},
+  {q:'___ the butter in a pan.',o:['Melt','Peel','Sift'],a:'Melt'},
+  {q:'___ the eggs in a frying pan.',o:['Fry','Sift','Grate'],a:'Fry'}
+];
+var vqL=selectList('verbList',vq,'verbRes','verbs','. You can cook! 🔪');
+$('verbCheck').onclick=vqL.check;$('verbReset').onclick=vqL.build;
+
+/* ---------- ACT 4 recipes ---------- */
+orderGame('fsLine','fsBank','fsCheck','fsReset','fsRes',[
+  'Wash your hands and the fruit.','Peel the banana and the orange.','Cut the fruit into small pieces.',
+  'Put the fruit in a big bowl.','Add a little honey and mix.','Serve the salad with yoghurt.'],'fs','. Yummy fruit salad! 🍓');
+var rules=[['Wash','your','hands','first.'],["Don't",'touch','the','hot','oven!'],['Ask','an','adult','to','help.'],["Don't",'run','in','the','kitchen.']];
+function buildBuilders(){
+  var box=$('builders');box.innerHTML='';$('buildRes').textContent='';
+  rules.forEach(function(s,i){
+    var w=document.createElement('div');w.className='builder';w.dataset.i=i;
+    w.innerHTML='<div style="font-weight:700">'+(i+1)+'.</div><div class="line"></div><div class="bank"></div>';
+    var line=w.querySelector('.line'),bank=w.querySelector('.bank');
+    var order=shuffle(s);var guard=0;while(order.join(' ')===s.join(' ')&&guard++<10)order=shuffle(s);
+    order.forEach(function(word){var c=document.createElement('button');c.className='chip';c.textContent=word;
+      c.onclick=function(){w.classList.remove('ok','bad');(c.parentNode===bank?line:bank).appendChild(c)};bank.appendChild(c)});
+    box.appendChild(w)});
+}
+$('buildCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#builders .builder').forEach(function(w){w.classList.remove('ok','bad');
+    var i=+w.dataset.i,got=[].map.call(w.querySelectorAll('.line .chip'),function(c){return c.textContent});
+    if(got.length<rules[i].length){empty++;return}
+    if(got.join(' ')===rules[i].join(' ')){w.classList.add('ok');s++}else w.classList.add('bad')});
+  $('buildRes').textContent=(empty?'Не все правила собраны. ':'')+'Верно: '+s+' из '+rules.length+(s===rules.length?'. Safe and smart! ✨':'');
+  if(!empty) setStars('build',s)};
+$('buildReset').onclick=buildBuilders;
+buildBuilders();
+
+/* ---------- ACT 5 before watching ---------- */
+dictionary('vidDict',[
+  ['crumble','крамбл: запеченные фрукты под сладкой крошкой','🥧'],['cooking apples','кислые яблоки для готовки','🍏'],['rolled oats','овсяные хлопья','🌾'],
+  ['cinnamon','корица',''],['custard','заварной крем, сладкий соус','🍮'],['topping','верхний слой, посыпка',''],['breadcrumbs','хлебные крошки','🍞'],
+  ['core','сердцевина; вырезать сердцевину','🍎'],['wedges','дольки',''],['preheat the oven','заранее разогреть духовку','🔥'],
+  ['rub in','растереть пальцами (масло с мукой)','👐'],['golden brown','золотисто-коричневый',''],['bubbling','пузырится, кипит','♨️'],['an adult','взрослый','🧑']]);
+var ING=[['flour','🌾',1],['butter','🧈',1],['oats','🥣',1],['sugar','🍬',1],['apples','🍏',1],['cinnamon','🟤',1],['apple juice','🧃',1],['custard','🍮',1],
+  ['eggs','🥚',0],['milk','🥛',0],['chocolate','🍫',0],['lemon','🍋',0],['raisins','🍇',0],['honey','🍯',0]];
+var guess=load('guess')||{};
+function drawGuess(){var box=$('guessTicks');box.innerHTML='';
+  ING.forEach(function(it){var b=document.createElement('button');b.type='button';b.innerHTML='<span>'+it[1]+'</span>'+it[0];if(guess[it[0]])b.classList.add('on');
+    b.onclick=function(){if(guess[it[0]])delete guess[it[0]];else guess[it[0]]=1;b.classList.toggle('on');save('guess',guess);
+      var n=Object.keys(guess).length;$('guessRes').textContent=n?'Твоя догадка: '+n+'. Проверим после видео!':''};box.appendChild(b)});}
+drawGuess();
+
+/* ---------- ACT 6 listening ---------- */
+tickGame('ingTicks',ING,'ingCheck','ingReset','ingRes','ing','. Great listening! 🎧');
+var ingCheckOrig=$('ingCheck').onclick;
+$('ingCheck').onclick=function(){ingCheckOrig();var g=Object.keys(guess);if(!g.length)return;
+  var right=g.filter(function(k){for(var i=0;i<ING.length;i++)if(ING[i][0]===k)return ING[i][2]===1;return false}).length;
+  $('ingRes').textContent+=' А до видео ты угадала '+right+' из 8.'};
+orderGame('acLine','acBank','acCheck','acReset','acRes',[
+  'An adult turns on the oven.','Sift the flour into a bowl.','Rub in the butter with your fingers.','Stir in the oats and the sugar.',
+  'Peel and core the apples and cut them into wedges.','Put the apples in a dish with cinnamon and apple juice.',
+  'Spread the crumble topping over the apples.','Bake the crumble.','Serve it with warm custard.'],'ac','. You are a real chef! 👩‍🍳');
+var nums=[
+  {q:'flour: ___',o:['50 grams','5 grams','500 grams'],a:'50 grams'},
+  {q:'oats: ___',o:['40 grams','4 grams','400 grams'],a:'40 grams'},
+  {q:'sugar: ___',o:['20 grams','2 grams','200 grams'],a:'20 grams'},
+  {q:'cooking apples: ___',o:['2','3','6'],a:'2'},
+  {q:'apple juice: ___',o:['3 tablespoons','3 glasses','3 bottles'],a:'3 tablespoons'},
+  {q:'oven: ___',o:['180 °C','100 °C','250 °C'],a:'180 °C'},
+  {q:'bake for: ___',o:['30 to 35 minutes','5 minutes','2 hours'],a:'30 to 35 minutes'},
+  {q:'It serves ___ people.',o:['4','2','10'],a:'4'}
+];
+var numL=selectList('numList',nums,'numRes','nums','. Brava! 🔢');
+$('numCheck').onclick=numL.check;$('numReset').onclick=numL.build;
+var tf=[['An adult helps with the oven and the knife.',true],['You need eggs for the topping.',false],['The topping looks like rough breadcrumbs.',true],
+  ['You cut the apples into wedges.',true],['You bake the crumble for ten minutes.',false],['You serve the crumble with ice cream.',false]];
+var tfSel=[];
+function buildTF(){var box=$('tfList');box.innerHTML='';tfSel=tf.map(function(){return null});$('tfRes').textContent='';
+  tf.forEach(function(t,i){var d=document.createElement('div');d.className='tf';d.innerHTML='<span>'+(i+1)+'. '+t[0]+'</span>';
+    var r=document.createElement('div');r.className='row';
+    [['True',true],['False',false]].forEach(function(p){var b=document.createElement('button');b.className='opt';b.textContent=p[0];
+      b.onclick=function(){tfSel[i]=p[1];r.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel','ok','bad')});b.classList.add('sel')};r.appendChild(b)});
+    d.appendChild(r);box.appendChild(d)})}
+$('tfCheck').onclick=function(){var s=0,empty=0;
+  document.querySelectorAll('#tfList .tf').forEach(function(d,i){var bs=d.querySelectorAll('.opt');bs.forEach(function(b){b.classList.remove('ok','bad')});
+    if(tfSel[i]===null){empty++;return}var ch=tfSel[i]?bs[0]:bs[1];if(tfSel[i]===tf[i][1]){ch.classList.add('ok');s++}else ch.classList.add('bad')});
+  $('tfRes').textContent=(empty?'Осталось ответить на '+empty+'. ':'')+'Верно: '+s+' из '+tf.length+(s===tf.length?'. Great listening! 🎧':'');
+  if(!empty) setStars('tf',s)};
+$('tfReset').onclick=buildTF;
+buildTF();
+var rv=[
+  {q:'___ the flour into a bowl.',o:['Sift','Pour','Fry'],a:'Sift'},
+  {q:'___ the butter into the flour with your fingers.',o:['Rub in','Peel','Boil'],a:'Rub in'},
+  {q:'___ in the oats and half the sugar.',o:['Stir','Slice','Grate'],a:'Stir'},
+  {q:'___ and core the apples.',o:['Peel','Whisk','Melt'],a:'Peel'},
+  {q:'___ the topping over the apples.',o:['Spread','Pour','Wash'],a:'Spread'},
+  {q:'___ the crumble until it is golden brown.',o:['Bake','Fry','Chop'],a:'Bake'},
+  {q:'___ it with warm custard.',o:['Serve','Sift','Peel'],a:'Serve'}
+];
+var rvL=selectList('rvList',rv,'rvRes','rv','. Perfect! 🥧');
+$('rvCheck').onclick=rvL.check;$('rvReset').onclick=rvL.build;
+
+/* ---------- ACT 7 my cooking show ---------- */
+var SEQ=['First,','Then','Next,','After that,','Finally,'];
+var VOPTS=['wash','peel','cut','chop','slice','grate','mix','stir','whisk','pour','add','put','melt','boil','fry','bake','sprinkle','serve'];
+var defaults=[['wash','your hands'],['mix','the flour, the eggs and the milk'],['heat','a frying pan'],['pour','some of the mix into the pan'],['serve','the pancakes with honey']];
+SEQ.forEach(function(sq,i){var r=document.createElement('div');r.className='stepline';
+  var sel='<select aria-label="Глагол">'+VOPTS.concat(['heat']).filter(function(v,k,a){return a.indexOf(v)===k}).map(function(v){return '<option'+(v===defaults[i][0]?' selected':'')+'>'+v+'</option>'}).join('')+'</select>';
+  r.innerHTML='<b>'+sq+'</b>'+sel+'<input type="text" placeholder="'+defaults[i][1]+'">';$('stepRows').appendChild(r)});
+var RC=$('recipe');RC.value=load('recipe')||'';
+function wc(){var n=(RC.value.trim().match(/[A-Za-z']+/g)||[]).length;$('wc').textContent=n+' words'+(n>=60&&n<=80?' ✓':(n>80?' (можно чуть короче)':''));}
+RC.oninput=function(){save('recipe',RC.value);wc()};wc();
+$('makeRecipe').onclick=function(){
+  var dish=$('dish').value.trim()||'pancakes',needs=$('needs').value.trim()||'two eggs, a glass of milk, some flour and a little sugar';
+  var lines=[];document.querySelectorAll('#stepRows .stepline').forEach(function(r,i){var v=r.querySelector('select').value,o=r.querySelector('input').value.trim()||r.querySelector('input').placeholder;
+    lines.push(SEQ[i]+' '+v+' '+o.replace(/[.!]+$/,'')+'.')});
+  var txt="Hi! I'm Vasilisa, and this is my cooking show! Today we're going to make "+dish+'.\n\nYou need '+needs+'.\n\n'+lines.join(' ')+"\n\nIt's delicious! Bon appétit!";
+  RC.value=txt;save('recipe',txt);wc();setStars('recipe',3)};
+$('sayRecipe').onclick=function(){if(RC.value.trim())speak(RC.value)};
+function flash(btn,msg,orig){btn.textContent=msg;setTimeout(function(){btn.textContent=orig},1800)}
+function copyText(t,btn,orig){
+  function fallback(){RC.focus();RC.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}flash(btn,ok?'Скопировано ✓':'Выдели текст и скопируй',orig)}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(function(){flash(btn,'Скопировано ✓',orig)},fallback)}else fallback();
+}
+$('copyRecipe').onclick=function(){var t=RC.value.trim();if(!t){flash($('copyRecipe'),'Сначала собери рецепт','Скопировать');return}copyText(t,$('copyRecipe'),'Скопировать')};
+$('shareRecipe').onclick=function(){var t=RC.value.trim();if(!t){flash($('shareRecipe'),'Сначала собери рецепт','Отправить учителю');return}
+  if(navigator.share){navigator.share({title:'My recipe',text:t}).catch(function(){})}else copyText(t,$('shareRecipe'),'Отправить учителю')};
+var cards=['Can you cook? What can you cook?','Who cooks in your family?','What is your favourite dessert?','Do you help in the kitchen at home? What do you do?',
+  'What kitchen rules do you know?','Which is better: apple crumble or apple pie? Why?','What do you need to make pancakes?','Do you like cooking or eating more?',
+  'What food can you make without an oven?','Would you like to make apple crumble at home? Who can help you?'];
+var deck=[],cardCount=0;
+$('cardNew').onclick=function(){if(!deck.length)deck=shuffle(cards);var q=deck.pop();$('cardQ').textContent=q;speak(q);cardCount++;
+  $('cardRes').textContent='Карточек: '+cardCount;setStars('cards',Math.min(cardCount,6))};
+$('cardSay').onclick=function(){var t=$('cardQ').textContent;if(t.indexOf('🎴')!==0)speak(t)};
+
+/* ---------- ACT 8 hangman ---------- */
+var hwords=[['peel','чистить','cooking verbs'],['chop','мелко резать','cooking verbs'],['slice','нарезать ломтиками','cooking verbs'],['grate','тереть на терке','cooking verbs'],
+  ['whisk','взбивать','cooking verbs'],['stir','помешивать','cooking verbs'],['bake','печь','cooking verbs'],['pour','наливать','cooking verbs'],['sprinkle','посыпать','cooking verbs'],
+  ['oven','духовка','kitchen'],['bowl','миска','kitchen'],['spoon','ложка','kitchen'],['knife','нож','kitchen'],['saucepan','кастрюля','kitchen'],['apron','фартук','kitchen'],
+  ['grater','терка','kitchen'],['kitchen','кухня','kitchen'],['recipe','рецепт','kitchen'],['flour','мука','ingredients'],['sugar','сахар','ingredients'],
+  ['cinnamon','корица','ingredients'],['custard','заварной крем','ingredients'],['crumble','крамбл','ingredients'],['oats','овсяные хлопья','ingredients']];
+var MAX=10,hDeck=[],hCur=null,hGuess={},hMiss=0,hOver=false,hWins=load('hwins')||0,hStreak=0;
+$('hWins').textContent=hWins;
+var parts=document.querySelectorAll('.hang svg .p');var kb=$('kb');
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function(ch){var b=document.createElement('button');b.textContent=ch.toUpperCase();b.dataset.ch=ch;b.onclick=function(){hguess(ch)};kb.appendChild(b)});
+function render(){$('hWord').textContent=hCur[0].split('').map(function(c){return hGuess[c]||hOver?c.toUpperCase():'_'}).join('');
+  parts.forEach(function(p,i){p.classList.toggle('on',i<hMiss)});$('hLives').textContent='Ошибок: '+hMiss+' из '+MAX;}
+function newWord(){if(!hDeck.length)hDeck=shuffle(hwords);hCur=hDeck.pop();hGuess={};hMiss=0;hOver=false;
+  $('hCat').textContent='Тема: '+hCur[2]+' · букв: '+hCur[0].length;$('hHint').textContent='';$('hRes').textContent='';
+  kb.querySelectorAll('button').forEach(function(b){b.disabled=false;b.className=''});render();}
+function hguess(ch){
+  if(hOver||hGuess[ch]||!hCur)return;
+  var btn=kb.querySelector('[data-ch="'+ch+'"]');btn.disabled=true;hGuess[ch]=true;
+  if(hCur[0].indexOf(ch)>-1){btn.className='hit'}else{btn.className='miss';hMiss++}
+  var won=hCur[0].split('').every(function(c){return hGuess[c]});
+  if(won){hOver=true;hWins++;hStreak++;save('hwins',hWins);$('hRes').textContent='Yes! '+hCur[0].toUpperCase()+' = '+hCur[1]+' 🎉';speak(hCur[0]);setStars('hang',Math.min(hStreak,5))}
+  else if(hMiss>=MAX){hOver=true;hStreak=0;$('hRes').textContent='Человечек готов! Это слово '+hCur[0].toUpperCase()+' ('+hCur[1]+'). Попробуй новое.';speak(hCur[0])}
+  if(hOver)kb.querySelectorAll('button').forEach(function(b){b.disabled=true});
+  $('hWins').textContent=hWins;$('hStreak').textContent=hStreak;render();
+}
+$('hHintBtn').onclick=function(){if(hCur&&!hOver)$('hHint').textContent='Подсказка: '+hCur[1]};
+$('hNew').onclick=function(){if(hCur&&!hOver)hStreak=0;$('hStreak').textContent=hStreak;newWord()};
+document.addEventListener('keydown',function(e){if(!$('a8').classList.contains('active'))return;var t=e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;if(/^[a-z]$/i.test(e.key)&&!e.metaKey&&!e.ctrlKey)hguess(e.key.toLowerCase())});
+newWord();
+
+/* ---------- FINALE ---------- */
+var hwTasks=[
+  'Напиши рецепт своего любимого блюда в Act 7 (от 60 до 80 слов) со словами First, Then, Next, After that, Finally. Отправь учителю кнопкой «Отправить учителю».',
+  'Запиши голосовое «My cooking show» на 30 секунд: начни как Лорен: Hi! Today we\'re going to make...',
+  'Сыграй два раза в пары с глаголами в Act 3 и угадай 5 слов в Hangman.',
+  'Бонус: приготовь apple crumble дома вместе со взрослым и пришли учителю фото!'
+];
+var hwSaved=load('hw')||[];
+function hwProgress(){var all=document.querySelectorAll('#hwList input'),n=0;all.forEach(function(x){if(x.checked)n++});$('hwBar').style.width=(n/all.length*100)+'%'}
+hwTasks.forEach(function(t,i){var d=document.createElement('label');d.className='check-item';d.innerHTML='<input type="checkbox"><span>'+t+'</span>';
+  var c=d.querySelector('input');c.checked=!!hwSaved[i];
+  c.onchange=function(){save('hw',[].map.call(document.querySelectorAll('#hwList input'),function(x){return x.checked}));hwProgress()};$('hwList').appendChild(d)});
+hwProgress();
+})();
+</script>
+</body>
+</html>
