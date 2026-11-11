@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF8EC;--sky:#7EC8E3;--sky-l:#E3F4FA;--grass:#7BC67E;--grass-l:#E6F5E6;--coral:#FF8A80;--coral-l:#FFE5E2;--sun:#FFD166;--sun-l:#FFF3D1;--brown:#6D4C41;--brown-l:#A1887F;--pink:#F48FB1;--pink-l:#FCE4EC;--violet:#B39DDB;--violet-l:#EDE7F6;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--brown);font-family:"Nunito","Trebuchet MS",Verdana,sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:"Comfortaa","Nunito",sans-serif;margin:0 0 .5em}
+header{background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;text-align:center;padding:18px 14px;position:relative;overflow:hidden}
+header h1{font-size:1.6em;text-shadow:0 2px 0 rgba(0,0,0,.12)}
+.conf{position:absolute;top:-20px;font-size:18px;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(240px) rotate(360deg);opacity:.2}}
+.voice-panel{margin:12px auto 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-weight:700;font-size:15px;position:relative;z-index:2}
+.voice-panel select{font:inherit;font-size:15px;border:none;border-radius:12px;padding:8px 10px;max-width:220px;color:var(--brown)}
+.vbtn{border:none;font:inherit;font-weight:800;font-size:15px;padding:8px 12px;border-radius:12px;cursor:pointer;background:#fff;color:var(--brown);min-height:40px}
+.vbtn[aria-pressed="true"]{background:var(--sun)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--cream);border-bottom:3px solid var(--pink);display:flex;gap:6px;overflow-x:auto;padding:10px;z-index:5}
+nav button{flex:0 0 auto;border:none;background:var(--pink-l);color:var(--brown);font:inherit;font-weight:800;font-size:15px;padding:10px 14px;border-radius:14px;cursor:pointer}
+nav button.active{background:var(--pink);color:#fff;box-shadow:0 3px 0 #D4728F}
+main{max-width:900px;margin:0 auto;padding:18px 14px 50px}
+section{display:none;background:#fff;border-radius:24px;padding:20px 16px;border:3px solid var(--pink-l)}
+section.active{display:block}
+.stage{display:inline-block;background:var(--sun);color:var(--brown);font-weight:800;font-size:13px;border-radius:10px;padding:3px 10px;margin-bottom:8px}
+.rules{background:var(--sun-l);border-left:6px solid var(--sun);border-radius:12px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+.tip{background:var(--sky-l);border-radius:12px;padding:10px 14px;margin:14px 0;font-weight:600}
+.fox-say{display:flex;gap:10px;align-items:flex-start;margin:14px 0}
+.fox-say .fox{font-size:40px;line-height:1}
+.fox-say .bubble{background:var(--grass-l);border-radius:18px;padding:10px 14px;font-weight:600}
+.btn{border:none;font:inherit;font-weight:800;padding:12px 20px;border-radius:16px;cursor:pointer;min-height:48px}
+.btn.go{background:var(--grass);color:#fff;box-shadow:0 3px 0 #58A45B}
+.btn.alt{background:var(--sky-l);color:var(--brown)}
+.btn.sun{background:var(--sun);color:var(--brown);box-shadow:0 3px 0 #E0A93A}
+.btn.pink{background:var(--pink);color:#fff;box-shadow:0 3px 0 #D4728F}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.en{font-weight:800}
+.stat{font-weight:800;text-align:center;margin-top:10px;min-height:1.6em}
+.stat.good{color:#3D8B40}.stat.warn{color:#C0463C}.stat.mid{color:#C77B00}
+
+/* карточки слов */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin:10px 0}
+.vcard{border:2px solid var(--pink-l);border-radius:16px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff}
+.vcard:hover{background:var(--sun-l)}
+.vcard .e{font-size:28px;display:block;line-height:1.1}
+.vcard b{display:block;font-size:15px}
+.vcard .ipa{color:#3D8B40;font-weight:700;font-size:12px;display:block}
+.vcard small{color:var(--brown-l);font-weight:700;font-size:12px}
+
+/* торт со свечами */
+.cake{text-align:center;margin:14px 0}
+.cake .flames{font-size:22px;letter-spacing:3px;min-height:30px}
+.cake .flames span{cursor:pointer}
+.cake .flames span.out{opacity:.3}
+.cake .big{font-size:64px;line-height:1}
+
+/* месяцы */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0;min-height:48px}
+.chip{background:var(--violet-l);border:2px solid var(--violet);border-radius:12px;padding:8px 12px;font:inherit;font-weight:800;cursor:pointer;font-size:15px}
+.chip.done{background:var(--grass-l);border-color:var(--grass);color:var(--brown-l);cursor:default}
+.chip.shake{animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.slotline{display:flex;flex-wrap:wrap;gap:6px;border:3px dashed var(--pink);border-radius:14px;padding:8px;background:var(--pink-l);min-height:52px}
+.slotline span{background:#fff;border-radius:10px;padding:6px 10px;font-weight:800;font-size:14px}
+
+/* даты */
+.date-card{border:3px solid var(--sun);border-radius:20px;background:var(--sun-l);padding:16px;margin:12px 0;text-align:center}
+.date-card .d{font-size:1.8em;font-weight:800;font-family:"Comfortaa",sans-serif}
+.reveal{display:none;margin-top:10px;background:#fff;border-radius:14px;padding:10px 12px;font-weight:700}
+.reveal.on{display:block}
+table{border-collapse:collapse;width:100%;margin:8px 0}
+.tbl-wrap{overflow-x:auto}
+th,td{border:2px solid var(--pink-l);padding:6px 9px;text-align:left;font-size:15px}
+th{background:var(--pink);color:#fff;font-family:"Comfortaa",sans-serif;font-size:.9em}
+.ipa{color:#3D8B40;font-weight:700}
+
+/* подарок */
+.qbtns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.qbtn{border:2px solid var(--sky);background:#fff;color:var(--brown);font:inherit;font-weight:700;padding:9px 14px;border-radius:14px;cursor:pointer;min-height:46px}
+.qbtn.used{opacity:.5}
+.guesses{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.guess{border:3px solid var(--pink-l);border-radius:16px;padding:10px 4px;text-align:center;cursor:pointer;background:#fff;font-weight:700;font-size:14px;min-height:74px}
+.guess .e{font-size:24px;display:block}
+.guess.no{background:var(--coral-l);border-color:var(--coral);opacity:.6}
+.guess.yes{background:var(--grass-l);border-color:var(--grass)}
+.answer{border:3px solid var(--sky);border-radius:16px;background:var(--sky-l);padding:12px;margin:10px 0;font-weight:800;min-height:56px}
+
+/* диалог */
+.dlg{border:2px solid var(--pink-l);border-radius:16px;padding:10px 14px;margin:8px 0;cursor:pointer}
+.dlg:hover{background:var(--sun-l)}
+.dlg b{display:block}
+.dlg small{color:var(--brown-l);font-weight:700}
+.dlg.me{background:var(--grass-l);border-color:var(--grass)}
+
+/* говорение и домашка */
+.card-big{border:3px solid var(--sun);border-radius:20px;padding:16px;background:var(--sun-l);margin:12px 0}
+.card-big .big{font-size:1.2em;font-weight:800;margin-bottom:6px}
+.card-ru{color:var(--brown-l);font-weight:700}
+.check-item{display:flex;gap:12px;align-items:flex-start;border:2px solid #F1E6D4;border-radius:16px;padding:12px;margin:10px 0;cursor:pointer}
+.check-item input{width:26px;height:26px;flex:0 0 auto;accent-color:var(--grass);margin-top:2px}
+.check-item.done{background:var(--grass-l);border-color:var(--grass)}
+.ex{display:block;font-size:.9em;color:var(--brown-l);font-weight:700}
+.bar{height:18px;background:var(--sun-l);border-radius:10px;overflow:hidden;margin:6px 0 14px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .3s}
+
+@media (max-width:560px){
+  body{font-size:17px}header h1{font-size:1.3em}
+  .guesses{grid-template-columns:repeat(2,1fr)}
+  .cake .big{font-size:52px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+</style>
+</head>
+<body>
+<header id="hdr">
+  <h1>🎉 Happy Birthday, Frosya!</h1>
+  <div>You are nine today! 🦊🎂</div>
+  <div class="voice-panel">
+    <label for="voice-sel">🔊 Голос:</label>
+    <select id="voice-sel"><option>ищу голоса...</option></select>
+    <button class="vbtn" id="voice-test">Послушать</button>
+    <button class="vbtn" id="voice-slow" aria-pressed="false">🐢 Медленнее</button>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button data-tab="party" class="active">🎂 Праздник</button>
+  <button data-tab="months">📅 Месяцы</button>
+  <button data-tab="dates">🔢 Даты</button>
+  <button data-tab="gift">🎁 Угадай подарок</button>
+  <button data-tab="invite">✉️ Приглашение</button>
+  <button data-tab="talk">🗣️ Говорим</button>
+  <button data-tab="hw">📝 Домашка</button>
+</nav>
+
+<main>
+
+<!-- ПРАЗДНИК -->
+<section id="party" class="active">
+  <span class="stage">Шаг 1, слова праздника</span>
+  <h2>🎂 Birthday party</h2>
+  <div class="rules">Сегодня особенный урок: тебе девять. Нажимай на карточки, слушай и повторяй вслух. Потом задуй свечи на торте, считая их по-английски.</div>
+  <div class="cards" id="party-cards"></div>
+
+  <h3 style="margin-top:18px">Задуй свечи</h3>
+  <div class="rules">Сначала посчитай свечи вслух: one, two, three... nine. Потом нажимай на каждую свечу и гаси ее. На последней загадай желание и скажи: I am nine!</div>
+  <div class="cake">
+    <div class="flames" id="flames"></div>
+    <div class="big">🎂</div>
+    <div class="stat" id="cake-stat">Свечей горит: 9</div>
+  </div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn pink" id="cake-new">Зажечь свечи снова</button>
+    <button class="btn alt" id="cake-count">🔊 Послушать счет</button>
+  </div>
+
+  <div class="fox-say"><div class="fox">🦊</div><div class="bubble">Запомни две главные фразы дня: <b>How old are you?</b> и ответ <b>I am nine.</b> А еще <b>Happy birthday!</b> и вежливое <b>Thank you!</b></div></div>
+</section>
+
+<!-- МЕСЯЦЫ -->
+<section id="months">
+  <span class="stage">Шаг 2, игра на месяцы</span>
+  <h2>📅 Двенадцать месяцев</h2>
+  <div class="rules">Нажимай месяцы по порядку, с января. Если ошибешься, карточка качнется и останется на месте. Собери все двенадцать и посмотри, за сколько секунд получилось.</div>
+  <div class="slotline" id="m-line"></div>
+  <div class="chips" id="m-pool"></div>
+  <div class="stat" id="m-stat">Нажми «Начать»</div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn go" id="m-go">Начать</button>
+    <button class="btn alt" id="m-say">🔊 Послушать все месяцы</button>
+  </div>
+  <div class="tbl-wrap"><table id="m-table"></table></div>
+  <div class="tip">Названия месяцев в английском всегда пишутся с большой буквы: <b>January</b>, <b>May</b>, <b>December</b>.</div>
+</section>
+
+<!-- ДАТЫ -->
+<section id="dates">
+  <span class="stage">Шаг 3, порядковые числа</span>
+  <h2>🔢 When is your birthday?</h2>
+  <div class="rules">Нажимай «Другая дата», читай дату вслух полным предложением, и только потом открывай образец. Правило простое: сначала <b>the</b>, потом порядковое число, потом <b>of</b> и месяц.</div>
+  <div class="date-card">
+    <div class="d" id="date-num">?</div>
+    <div class="card-ru" id="date-ru">Нажми «Другая дата»</div>
+    <div class="reveal" id="date-ans"></div>
+  </div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn pink" id="date-go">Другая дата</button>
+    <button class="btn sun" id="date-show">Проверить себя</button>
+    <button class="btn alt" id="date-say">🔊 Послушать</button>
+  </div>
+  <h3 style="margin-top:18px">Порядковые числа</h3>
+  <div class="cards" id="ord-cards"></div>
+  <div class="tip">Хитрые: <b>first</b>, <b>second</b>, <b>third</b>, <b>fifth</b>, <b>eighth</b>, <b>ninth</b>, <b>twelfth</b>. Остальные просто получают хвостик <b>-th</b>.</div>
+</section>
+
+<!-- ПОДАРОК -->
+<section id="gift">
+  <span class="stage">Шаг 4, игра на вопросы</span>
+  <h2>🎁 Угадай подарок</h2>
+  <div class="rules">Фоксик приготовил тебе подарок, но не говорит какой. Задавай вопросы вслух и нажимай их на кнопках, Фоксик ответит Yes или No. Когда поймешь, что это, нажми нужную картинку. Чем меньше вопросов, тем лучше.</div>
+  <div class="qbtns" id="qbtns"></div>
+  <div class="answer" id="gift-answer">Нажми «Новый подарок» и начинай спрашивать.</div>
+  <div class="guesses" id="guesses"></div>
+  <div class="stat" id="gift-stat"></div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn pink" id="gift-new">Новый подарок</button>
+  </div>
+  <div class="tip">Потом поменяйтесь: теперь ты загадываешь подарок, а Фоксик спрашивает. Отвечай только <b>Yes, it is</b>, <b>No, it isn't</b>, <b>Yes, you can</b>, <b>No, you can't</b>.</div>
+</section>
+
+<!-- ПРИГЛАШЕНИЕ -->
+<section id="invite">
+  <span class="stage">Шаг 5, ролевая игра</span>
+  <h2>✉️ Приглашаем на праздник</h2>
+  <div class="rules">Прочитайте диалог по ролям: ты за именинницу, Фоксик за гостя. Нажми на реплику, чтобы послушать. Потом закройте текст и попробуйте по памяти, своими словами.</div>
+  <div id="dialogue"></div>
+  <div class="controls">
+    <button class="btn go" id="d-all">🔊 Послушать весь диалог</button>
+    <button class="btn alt" id="d-hide">Спрятать перевод</button>
+  </div>
+
+  <h3 style="margin-top:22px">Собери свое приглашение</h3>
+  <div class="rules">Заполни пропуски вслух, а потом запиши приглашение в тетрадь и нарисуй рамку.</div>
+  <div class="card-big">
+    <div class="big">Dear ______,</div>
+    <div class="big">Come to my birthday party!</div>
+    <div class="big">It is on ______ , the ______ of ______ .</div>
+    <div class="big">At ______ o'clock.</div>
+    <div class="big">Love, Frosya</div>
+  </div>
+  <div class="controls"><button class="btn alt" id="inv-say">🔊 Послушать образец</button></div>
+</section>
+
+<!-- ГОВОРИМ -->
+<section id="talk">
+  <span class="stage">Шаг 6, говорение</span>
+  <h2>🗣️ Вопросы от Фоксика</h2>
+  <div class="rules">Отвечай полным предложением. Сначала скажи сама, потом открывай образец и сравни.</div>
+  <div class="card-big">
+    <div class="big" id="q-en">Нажми «Другой вопрос»</div>
+    <div class="card-ru" id="q-ru"></div>
+    <div class="reveal" id="q-sample"></div>
+  </div>
+  <div class="controls">
+    <button class="btn go" id="q-next">Другой вопрос</button>
+    <button class="btn alt" id="q-say">🔊 Послушать</button>
+    <button class="btn sun" id="q-show">Образец ответа</button>
+  </div>
+  <div class="fox-say"><div class="fox">🦊</div><div class="bubble">А в конце урока спой Happy birthday вместе с учителем и расскажи, что было на твоем празднике. Три предложения уже отлично!</div></div>
+</section>
+
+<!-- ДОМАШКА -->
+<section id="hw">
+  <span class="stage">После урока</span>
+  <h2>📝 Домашка</h2>
+  <div class="bar"><div id="bar"></div></div>
+  <div id="items"></div>
+  <div class="stat" id="hw-stat"></div>
+  <div class="controls"><button class="btn alt" id="clear">Снять все галочки</button></div>
+</section>
+
+</main>
+
+<script>
+/* ---------- голос ---------- */
+const canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+const NOVELTY=/albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|fred|good news|hysterical|jester|junior|organ|pipe|ralph|superstar|trinoids|whisper|wobble|zarvox|espeak/i;
+const GOOD_NAMES=/sonia|libby|maisie|ryan|thomas|serena|kate|daniel|martha|arthur|stephanie|oliver|aria|jenny|ava|samantha|emma|brian|andrew|michelle/i;
+let voices=[],voice=null,slow=false;
+function scoreVoice(v){
+  let sc=0;const n=v.name;
+  if(NOVELTY.test(n))return -999;
+  if(/natural/i.test(n))sc+=60;
+  if(/enhanced|premium|neural/i.test(n))sc+=50;
+  if(/online/i.test(n))sc+=30;
+  if(/google/i.test(n))sc+=25;
+  if(GOOD_NAMES.test(n))sc+=20;
+  if(/^en[-_]GB/i.test(v.lang))sc+=12;else if(/^en[-_](US|IE|AU)/i.test(v.lang))sc+=6;
+  return sc;
+}
+function loadVoices(){
+  if(!canSpeak)return;
+  voices=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)&&scoreVoice(v)>-999).sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+  const sel=document.getElementById('voice-sel');
+  if(!voices.length){sel.innerHTML='<option>английских голосов нет</option>';return;}
+  let saved=null;try{saved=localStorage.getItem('foxy-voice');}catch(e){}
+  voice=voices.find(v=>v.name===saved)||voices[0];
+  sel.innerHTML=voices.map((v,i)=>'<option value="'+i+'"'+(v===voice?' selected':'')+'>'+v.name.replace(/Microsoft |Google /,'').replace(/ Online \(Natural\)/,' ✨')+' ('+v.lang+')</option>').join('');
+}
+if(canSpeak){loadVoices();speechSynthesis.addEventListener?speechSynthesis.addEventListener('voiceschanged',loadVoices):(speechSynthesis.onvoiceschanged=loadVoices);setTimeout(loadVoices,700);}
+else{document.querySelector('.voice-panel').innerHTML='<span>Этот браузер не умеет читать вслух</span>';}
+function speak(t){
+  if(!canSpeak||!t)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    if(voice){u.voice=voice;u.lang=voice.lang;}else u.lang='en-GB';
+    const natural=voice&&/natural|enhanced|premium|neural|online/i.test(voice.name);
+    u.rate=slow?0.7:(natural?0.95:0.88);u.pitch=1;
+    setTimeout(()=>speechSynthesis.speak(u),60);
+  }catch(e){}
+}
+document.addEventListener('change',e=>{if(e.target.id==='voice-sel'){voice=voices[+e.target.value];try{localStorage.setItem('foxy-voice',voice.name);}catch(err){}speak('Happy birthday! You are nine today!');}});
+document.addEventListener('click',e=>{
+  if(e.target.id==='voice-test'){speak('Happy birthday, Frosya! You are nine today!');return;}
+  if(e.target.id==='voice-slow'){slow=!slow;e.target.setAttribute('aria-pressed',slow);return;}
+  const b=e.target.closest('[data-say]');if(b)speak(b.dataset.say);
+});
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickOne(a){return a[Math.floor(Math.random()*a.length)];}
+function plural(n,one,few,many){const d=n%100;if(d>=11&&d<=14)return many;const e=n%10;return e===1?one:(e>=2&&e<=4?few:many);}
+
+/* ---------- вкладки ---------- */
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');
+  try{window.scrollTo({top:0});}catch(e){}
+}));
+
+/* ---------- конфетти в шапке ---------- */
+(function(){
+  const h=document.getElementById('hdr'),e=['🎈','🎊','⭐','🎁','🧁'];
+  for(let i=0;i<14;i++){
+    const s=document.createElement('span');s.className='conf';s.textContent=pickOne(e);
+    s.style.left=(Math.random()*96)+'%';
+    s.style.animationDuration=(3+Math.random()*4)+'s';
+    s.style.animationDelay=(Math.random()*4)+'s';
+    h.appendChild(s);
+  }
+})();
+
+/* ================= ПРАЗДНИК ================= */
+(function(){
+  const words=[
+    ['🎂','a cake','/keɪk/','торт'],
+    ['🕯️','candles','/ˈkændlz/','свечи'],
+    ['🎁','a present','/ˈpreznt/','подарок'],
+    ['🎈','balloons','/bəˈluːnz/','шарики'],
+    ['💌','a card','/kɑːd/','открытка'],
+    ['👧','guests','/ɡests/','гости'],
+    ['🥳','a party hat','/ˈpɑːti hæt/','колпак'],
+    ['🍬','sweets','/swiːts/','конфеты'],
+    ['🧃','juice','/dʒuːs/','сок'],
+    ['✨','a wish','/wɪʃ/','желание'],
+    ['💨','to blow out','/bləʊ aʊt/','задуть'],
+    ['✉️','to invite','/ɪnˈvaɪt/','приглашать']
+  ];
+  document.getElementById('party-cards').innerHTML=words.map(w=>
+    '<div class="vcard" data-say="'+w[1].replace(/^(a|an|to) /,'')+'"><span class="e">'+w[0]+'</span><b>'+w[1]+'</b><span class="ipa">'+w[2]+'</span><small>'+w[3]+'</small></div>').join('');
+
+  const nums=['one','two','three','four','five','six','seven','eight','nine'];
+  const fl=document.getElementById('flames'),stat=document.getElementById('cake-stat');
+  let out=0;
+  function light(){
+    out=0;fl.innerHTML='';
+    for(let i=0;i<9;i++){
+      const s=document.createElement('span');s.textContent='🕯️';s.dataset.i=i;
+      s.onclick=()=>{
+        if(s.classList.contains('out'))return;
+        s.classList.add('out');out++;
+        speak(nums[out-1]);
+        if(out===9){
+          stat.className='stat good';stat.textContent='Все свечи задуты! Скажи: I am nine! Make a wish! 🦊';
+          speak('Nine! Happy birthday! Make a wish!');
+        }else{
+          stat.className='stat';stat.textContent='Свечей горит: '+(9-out);
+        }
+      };
+      fl.appendChild(s);
+    }
+    stat.className='stat';stat.textContent='Свечей горит: 9';
+  }
+  document.getElementById('cake-new').onclick=light;
+  document.getElementById('cake-count').onclick=()=>speak(nums.join(', ')+'. Nine candles!');
+  light();
+})();
+
+/* ================= МЕСЯЦЫ ================= */
+const MONTHS=[
+  ['January','/ˈdʒænjuəri/','январь'],['February','/ˈfebruəri/','февраль'],['March','/mɑːtʃ/','март'],
+  ['April','/ˈeɪprəl/','апрель'],['May','/meɪ/','май'],['June','/dʒuːn/','июнь'],
+  ['July','/dʒuˈlaɪ/','июль'],['August','/ˈɔːɡəst/','август'],['September','/sepˈtembə/','сентябрь'],
+  ['October','/ɒkˈtəʊbə/','октябрь'],['November','/nəʊˈvembə/','ноябрь'],['December','/dɪˈsembə/','декабрь']
+];
+(function(){
+  document.getElementById('m-table').innerHTML='<tr><th>Месяц</th><th>Транскрипция</th><th>Перевод</th></tr>'+
+    MONTHS.map(m=>'<tr><td class="en" style="cursor:pointer" data-say="'+m[0]+'">'+m[0]+'</td><td class="ipa">'+m[1]+'</td><td>'+m[2]+'</td></tr>').join('');
+  const line=document.getElementById('m-line'),pool=document.getElementById('m-pool'),stat=document.getElementById('m-stat');
+  let next=0,t0=0,timer=null;
+  function build(){
+    next=0;line.innerHTML='';
+    pool.innerHTML=shuffle(MONTHS).map(m=>'<button class="chip" data-m="'+m[0]+'">'+m[0]+'</button>').join('');
+    pool.querySelectorAll('.chip').forEach(b=>b.onclick=()=>hit(b));
+    t0=Date.now();clearInterval(timer);
+    timer=setInterval(()=>{stat.className='stat';stat.textContent='Собрано: '+next+' из 12, прошло секунд: '+Math.round((Date.now()-t0)/1000);},1000);
+    stat.className='stat';stat.textContent='Собрано: 0 из 12';
+  }
+  function hit(b){
+    if(b.classList.contains('done'))return;
+    if(b.dataset.m===MONTHS[next][0]){
+      b.classList.add('done');speak(b.dataset.m);
+      const s=document.createElement('span');s.textContent=(next+1)+'. '+b.dataset.m;line.appendChild(s);
+      next++;
+      if(next===12){
+        clearInterval(timer);
+        stat.className='stat good';
+        stat.textContent='Все двенадцать по порядку за '+Math.round((Date.now()-t0)/1000)+' секунд! 🦊';
+        speak('Excellent! Twelve months!');
+      }
+    }else{
+      b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),320);
+      stat.className='stat warn';stat.textContent='Не этот. Нужен месяц номер '+(next+1)+'.';
+    }
+  }
+  document.getElementById('m-go').onclick=build;
+  document.getElementById('m-say').onclick=()=>speak(MONTHS.map(m=>m[0]).join(', '));
+  pool.innerHTML=MONTHS.map(m=>'<button class="chip">'+m[0]+'</button>').join('');
+})();
+
+/* ================= ДАТЫ ================= */
+const ORD={1:['first','/fɜːst/'],2:['second','/ˈsekənd/'],3:['third','/θɜːd/'],4:['fourth','/fɔːθ/'],5:['fifth','/fɪfθ/'],
+6:['sixth','/sɪksθ/'],7:['seventh','/ˈsevnθ/'],8:['eighth','/eɪtθ/'],9:['ninth','/naɪnθ/'],10:['tenth','/tenθ/'],
+11:['eleventh','/ɪˈlevnθ/'],12:['twelfth','/twelfθ/'],13:['thirteenth','/ˌθɜːˈtiːnθ/'],20:['twentieth','/ˈtwentiəθ/'],
+21:['twenty-first','/ˌtwenti ˈfɜːst/'],25:['twenty-fifth','/ˌtwenti ˈfɪfθ/'],30:['thirtieth','/ˈθɜːtiəθ/'],31:['thirty-first','/ˌθɜːti ˈfɜːst/']};
+(function(){
+  document.getElementById('ord-cards').innerHTML=Object.keys(ORD).map(k=>
+    '<div class="vcard" data-say="'+ORD[k][0]+'"><b>'+k+'</b><b>'+ORD[k][0]+'</b><span class="ipa">'+ORD[k][1]+'</span></div>').join('');
+  const keys=Object.keys(ORD).map(Number);
+  const num=document.getElementById('date-num'),ru=document.getElementById('date-ru'),ans=document.getElementById('date-ans');
+  let cur=null;
+  function phrase(){return 'My birthday is on the '+ORD[cur[0]][0]+' of '+cur[1][0]+'.';}
+  function next(){
+    cur=[pickOne(keys),pickOne(MONTHS)];
+    num.textContent=cur[0]+' '+cur[1][0];
+    ru.textContent='Скажи вслух: My birthday is on the ... of ...';
+    ans.className='reveal';ans.innerHTML='<span class="en">'+phrase()+'</span>';
+  }
+  document.getElementById('date-go').onclick=next;
+  document.getElementById('date-show').onclick=()=>{if(cur){ans.classList.add('on');speak(phrase());}};
+  document.getElementById('date-say').onclick=()=>{if(cur)speak(phrase());};
+})();
+
+/* ================= ПОДАРОК ================= */
+(function(){
+  const gifts=[
+    ['📚','a book',{big:0,soft:0,eat:0,read:1,play:0,alive:0,round:0,ride:0}],
+    ['🧸','a teddy bear',{big:1,soft:1,eat:0,read:0,play:1,alive:0,round:0,ride:0}],
+    ['🚲','a bike',{big:1,soft:0,eat:0,read:0,play:0,alive:0,round:0,ride:1}],
+    ['🎂','a cake',{big:1,soft:1,eat:1,read:0,play:0,alive:0,round:1,ride:0}],
+    ['⚽','a ball',{big:0,soft:0,eat:0,read:0,play:1,alive:0,round:1,ride:0}],
+    ['🎨','paints',{big:0,soft:0,eat:0,read:0,play:1,alive:0,round:0,ride:0}],
+    ['🐶','a puppy',{big:0,soft:1,eat:0,read:0,play:1,alive:1,round:0,ride:0}],
+    ['🍬','sweets',{big:0,soft:1,eat:1,read:0,play:0,alive:0,round:1,ride:0}],
+    ['🛴','a scooter',{big:1,soft:0,eat:0,read:0,play:1,alive:0,round:0,ride:1}]
+  ];
+  const qs=[
+    ['Is it big?','big'],['Is it soft?','soft'],['Can you eat it?','eat'],['Can you read it?','read'],
+    ['Can you play with it?','play'],['Is it alive?','alive'],['Is it round?','round'],['Can you ride it?','ride']
+  ];
+  const qbox=document.getElementById('qbtns'),gbox=document.getElementById('guesses'),
+        ansEl=document.getElementById('gift-answer'),stat=document.getElementById('gift-stat');
+  let cur=null,asked=0,done=false;
+  qs.forEach(q=>{
+    const b=document.createElement('button');b.className='qbtn';b.textContent=q[0];
+    b.onclick=()=>{
+      if(!cur||done)return;
+      asked++;b.classList.add('used');
+      speak(q[0]);
+      const yes=cur[2][q[1]]===1;
+      const isCan=q[0].indexOf('Can')===0;
+      const reply=yes?(isCan?'Yes, you can.':'Yes, it is.'):(isCan?"No, you can't.":"No, it isn't.");
+      setTimeout(()=>{
+        ansEl.innerHTML='<span class="en">'+q[0]+'</span> &rarr; <span class="en">'+reply+'</span>';
+        speak(reply);
+      },700);
+      stat.className='stat';stat.textContent='Вопросов задано: '+asked;
+    };
+    qbox.appendChild(b);
+  });
+  function build(){
+    cur=pickOne(gifts);asked=0;done=false;
+    ansEl.innerHTML='Фоксик спрятал подарок. Спрашивай! Начни с <span class="en">Is it big?</span>';
+    stat.className='stat';stat.textContent='Вопросов задано: 0';
+    qbox.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('used'));
+    gbox.innerHTML='';
+    gifts.forEach(g=>{
+      const d=document.createElement('div');d.className='guess';
+      d.innerHTML='<span class="e">🎁</span>'+g[1];
+      d.onclick=()=>{
+        if(done||d.classList.contains('no'))return;
+        speak('Is it '+g[1]+'?');
+        setTimeout(()=>{
+          if(g[1]===cur[1]){
+            done=true;d.classList.add('yes');d.innerHTML='<span class="e">'+g[0]+'</span>'+g[1];
+            ansEl.innerHTML='<span class="en">Yes, it is! It is '+g[1]+'. Happy birthday!</span>';
+            speak('Yes, it is! It is '+g[1]+'. Happy birthday!');
+            stat.className='stat good';stat.textContent='Угадала за '+asked+' '+plural(asked,'вопрос','вопроса','вопросов')+'!';
+          }else{
+            d.classList.add('no');
+            ansEl.innerHTML='<span class="en">No, it isn\'t.</span> Спрашивай дальше.';
+            speak("No, it isn't.");
+            asked++;stat.className='stat mid';stat.textContent='Вопросов задано: '+asked;
+          }
+        },600);
+      };
+      gbox.appendChild(d);
+    });
+    speak('I have got a present for you! What is it?');
+  }
+  document.getElementById('gift-new').onclick=build;
+  gbox.innerHTML=gifts.map(g=>'<div class="guess"><span class="e">🎁</span>'+g[1]+'</div>').join('');
+})();
+
+/* ================= ПРИГЛАШЕНИЕ ================= */
+(function(){
+  const lines=[
+    ['Frosya','Hi, Tom! I have got a birthday party on Saturday. Can you come?','Привет, Том! У меня в субботу праздник. Ты сможешь прийти?',1],
+    ['Tom','Yes, I can! Thank you. How old are you?','Да, смогу! Спасибо. Сколько тебе лет?',0],
+    ['Frosya','I am nine today!','Мне сегодня девять!',1],
+    ['Tom','Happy birthday! What time is the party?','С днем рождения! Во сколько праздник?',0],
+    ['Frosya','At four o\'clock. We have got a big cake and balloons.','В четыре часа. У нас большой торт и шарики.',1],
+    ['Tom','Great! I have got a present for you.','Здорово! У меня есть для тебя подарок.',0],
+    ['Frosya','Thank you so much! See you on Saturday!','Спасибо большое! Увидимся в субботу!',1]
+  ];
+  const host=document.getElementById('dialogue');
+  host.innerHTML=lines.map(l=>
+    '<div class="dlg'+(l[3]?' me':'')+'" data-say="'+l[1].replace(/"/g,'')+'"><b>'+l[0]+': '+l[1]+'</b><small class="tr">'+l[2]+'</small></div>').join('');
+  document.getElementById('d-all').onclick=()=>speak(lines.map(l=>l[1]).join(' '));
+  let hidden=false;
+  document.getElementById('d-hide').onclick=()=>{
+    hidden=!hidden;
+    host.querySelectorAll('.tr').forEach(t=>t.style.display=hidden?'none':'block');
+    document.getElementById('d-hide').textContent=hidden?'Показать перевод':'Спрятать перевод';
+  };
+  document.getElementById('inv-say').onclick=()=>speak('Dear Tom, come to my birthday party! It is on Saturday, the ninth of November, at four o\'clock. Love, Frosya.');
+})();
+
+/* ================= ГОВОРИМ ================= */
+(function(){
+  const cards=[
+    ['How old are you?','Сколько тебе лет?','I am nine.'],
+    ['When is your birthday?','Когда у тебя день рождения?','My birthday is on the ninth of November.'],
+    ['What presents do you like?','Какие подарки тебе нравятся?','I like books and sweets.'],
+    ['Who do you invite to your party?','Кого ты зовешь на праздник?','I invite my sister and my friends.'],
+    ['What do you usually eat at a party?','Что вы обычно едите на празднике?','We usually eat cake and sweets.'],
+    ['Do you like balloons?','Тебе нравятся шарики?','Yes, I do. I like big red balloons.'],
+    ['What present do you want?','Какой подарок ты хочешь?','I want a new bike.'],
+    ['When is your mum\'s birthday?','Когда день рождения у мамы?','Her birthday is in March.'],
+    ['How many candles are on your cake?','Сколько свечей на твоем торте?','There are nine candles on my cake.'],
+    ['What do you say to a friend on his birthday?','Что ты говоришь другу в его день рождения?','I say: Happy birthday! Many presents for you!']
+  ];
+  let deck=[],cur=null;
+  const en=document.getElementById('q-en'),ru=document.getElementById('q-ru'),sam=document.getElementById('q-sample');
+  function next(){
+    if(!deck.length)deck=shuffle(cards);
+    cur=deck.pop();en.textContent=cur[0];ru.textContent=cur[1];
+    sam.className='reveal';sam.innerHTML='Так мог бы ответить Фоксик: <span class="en">'+cur[2]+'</span>';
+    speak(cur[0]);
+  }
+  document.getElementById('q-next').onclick=next;
+  document.getElementById('q-say').onclick=()=>{if(cur)speak(cur[0]);};
+  document.getElementById('q-show').onclick=()=>{if(cur){sam.classList.add('on');speak(cur[2]);}};
+})();
+
+/* ================= ДОМАШКА ================= */
+(function(){
+  const tasks=[
+    ['Выучить двенадцать месяцев и собрать их по порядку меньше чем за минуту','Вкладка «Месяцы», кнопка «Начать».'],
+    ['Написать в тетради даты рождения пяти родных','Например: My mum\'s birthday is on the third of May.'],
+    ['Нарисовать и подписать приглашение на свой праздник','Образец на вкладке «Приглашение».'],
+    ['Назвать десять слов про праздник без подсказки','Проверь себя по карточкам на первой вкладке.'],
+    ['Записать три предложения о том, что вы делаете на дне рождения','Со словами always, usually, never: We always eat cake.'],
+    ['Загадать подарок и дать маме угадать его по вопросам','Вопросы только по-английски: Is it big? Can you eat it?']
+  ];
+  const box=document.getElementById('items'),bar=document.getElementById('bar'),stat=document.getElementById('hw-stat');
+  tasks.forEach(t=>{
+    const l=document.createElement('label');l.className='check-item';
+    l.innerHTML='<input type="checkbox"><span><b>'+t[0]+'</b><span class="ex">'+t[1]+'</span></span>';
+    l.querySelector('input').addEventListener('change',update);box.appendChild(l);
+  });
+  function update(){
+    const all=box.querySelectorAll('input'),n=[...all].filter(x=>x.checked).length;
+    box.querySelectorAll('.check-item').forEach(l=>l.classList.toggle('done',l.querySelector('input').checked));
+    bar.style.width=(n/all.length*100)+'%';
+    stat.className='stat good';
+    stat.textContent=n===all.length?'Вся домашка сделана! 🦊🎉':(n?'Сделано '+n+' из '+all.length+'.':'');
+  }
+  document.getElementById('clear').onclick=()=>{box.querySelectorAll('input').forEach(x=>x.checked=false);update();};
+})();
+</script>
+</body>
+</html>
