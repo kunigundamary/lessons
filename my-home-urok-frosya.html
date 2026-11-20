@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF8EC;--sky:#7EC8E3;--sky-l:#E3F4FA;--grass:#7BC67E;--grass-l:#E6F5E6;--coral:#FF8A80;--coral-l:#FFE5E2;--sun:#FFD166;--sun-l:#FFF3D1;--brown:#6D4C41;--brown-l:#A1887F;--violet:#B39DDB;--violet-l:#EDE7F6;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--brown);font-family:"Nunito","Trebuchet MS",Verdana,sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:"Comfortaa","Nunito",sans-serif;margin:0 0 .5em}
+header{background:var(--grass);color:#fff;text-align:center;padding:16px 14px}
+header h1{font-size:1.5em}
+.voice-panel{margin:12px auto 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.voice-panel select{font:inherit;font-size:15px;border:none;border-radius:12px;padding:8px 10px;max-width:220px;color:var(--brown)}
+.vbtn{border:none;font:inherit;font-weight:800;font-size:15px;padding:8px 12px;border-radius:12px;cursor:pointer;background:#fff;color:var(--brown);min-height:40px}
+.vbtn[aria-pressed="true"]{background:var(--sun)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--cream);border-bottom:3px solid var(--grass);display:flex;gap:6px;overflow-x:auto;padding:10px;z-index:5}
+nav button{flex:0 0 auto;border:none;background:var(--grass-l);color:var(--brown);font:inherit;font-weight:800;font-size:15px;padding:10px 14px;border-radius:14px;cursor:pointer}
+nav button.active{background:var(--grass);color:#fff;box-shadow:0 3px 0 #58A45B}
+main{max-width:900px;margin:0 auto;padding:18px 14px 50px}
+section{display:none;background:#fff;border-radius:24px;padding:20px 16px;border:3px solid var(--grass-l)}
+section.active{display:block}
+.stage{display:inline-block;background:var(--sun);color:var(--brown);font-weight:800;font-size:13px;border-radius:10px;padding:3px 10px;margin-bottom:8px}
+.rules{background:var(--sun-l);border-left:6px solid var(--sun);border-radius:12px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+.tip{background:var(--sky-l);border-radius:12px;padding:10px 14px;margin:14px 0;font-weight:600}
+.fox-say{display:flex;gap:10px;align-items:flex-start;margin:14px 0}
+.fox-say .fox{font-size:40px;line-height:1}
+.fox-say .bubble{background:var(--grass-l);border-radius:18px;padding:10px 14px;font-weight:600}
+.btn{border:none;font:inherit;font-weight:800;padding:12px 20px;border-radius:16px;cursor:pointer;min-height:48px}
+.btn.go{background:var(--grass);color:#fff;box-shadow:0 3px 0 #58A45B}
+.btn.alt{background:var(--sky-l);color:var(--brown)}
+.btn.sun{background:var(--sun);color:var(--brown);box-shadow:0 3px 0 #E0A93A}
+.btn.vio{background:var(--violet);color:#fff;box-shadow:0 3px 0 #8E79BE}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.en{font-weight:800}
+.stat{font-weight:800;text-align:center;margin-top:10px;min-height:1.6em}
+.stat.good{color:#3D8B40}.stat.warn{color:#C0463C}.stat.mid{color:#C77B00}
+
+/* план дома */
+.plan{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.room{border:3px solid var(--sky-l);border-radius:16px;padding:10px 6px;text-align:center;cursor:pointer;background:#fff}
+.room:hover{background:var(--sun-l)}
+.room.on{background:var(--grass-l);border-color:var(--grass)}
+.room .e{font-size:28px;display:block;line-height:1.1}
+.room b{display:block;font-size:15px}
+.room small{color:var(--brown-l);font-weight:700;font-size:12px}
+.furn{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;min-height:40px}
+.chip{background:var(--sky-l);border:none;border-radius:12px;padding:7px 12px;font:inherit;font-weight:700;cursor:pointer;font-size:15px}
+.chip:hover{background:var(--sun-l)}
+.chip small{color:var(--brown-l);font-weight:700;display:block;font-size:11px;line-height:1.2}
+
+/* комната с котом */
+.scene{position:relative;z-index:0;height:250px;border:3px solid var(--brown-l);border-radius:18px;background:linear-gradient(#FDF3E3 62%,#E9D7C2 62%);margin:12px 0;overflow:hidden}
+.obj{position:absolute;font-size:46px;line-height:1;user-select:none;z-index:0}
+.obj small{position:absolute;left:50%;transform:translateX(-50%);bottom:-15px;font-size:11px;font-weight:800;color:var(--brown-l);white-space:nowrap}
+#kitty{position:absolute;font-size:30px;line-height:1;transition:left .3s,top .3s}
+.optrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opt{border:2px solid var(--sky);background:#fff;color:var(--brown);font:inherit;font-weight:700;padding:9px 14px;border-radius:14px;cursor:pointer;min-height:46px}
+.opt.ok{background:var(--grass-l);border-color:var(--grass)}
+.opt.bad{background:var(--coral-l);border-color:var(--coral)}
+
+/* слот */
+.slot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.reel{border:3px solid var(--violet);border-radius:16px;background:var(--violet-l);padding:14px 6px;text-align:center;font-weight:800;min-height:84px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.reel.spin{animation:blur .1s infinite}
+@keyframes blur{50%{opacity:.45}}
+.sentence{border:3px solid var(--sun);border-radius:18px;background:var(--sun-l);padding:14px;margin:10px 0;min-height:70px}
+.sentence .big{font-size:1.2em;font-weight:800}
+.sentence .ru{color:var(--brown-l);font-weight:700}
+.hide{display:none}
+
+/* прятки */
+.spots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.spot{border:3px solid var(--sky-l);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer;background:#fff;font-weight:700;font-size:15px;min-height:76px}
+.spot .e{font-size:24px;display:block}
+.spot.no{background:var(--coral-l);border-color:var(--coral);opacity:.75}
+.spot.yes{background:var(--grass-l);border-color:var(--grass)}
+
+/* чтение */
+.text-read{font-size:1.08em;line-height:1.9}
+.rs{cursor:pointer;border-radius:8px;padding:1px 2px}
+.rs:hover{background:var(--sun-l)}
+.item{border:2px solid #F1E6D4;border-radius:16px;padding:12px;margin:10px 0}
+.item.ok{background:var(--grass-l);border-color:var(--grass)}
+.item.bad{background:var(--coral-l);border-color:var(--coral)}
+.num{display:inline-block;min-width:28px;height:28px;border-radius:50%;background:var(--sun);text-align:center;font-weight:800;margin-right:6px;font-size:15px;line-height:28px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.hint{display:none;font-size:.9em;margin-top:6px;color:#B24A40}
+.item.bad .hint{display:block}
+.fb{margin-top:12px;font-weight:800;min-height:1.5em}
+.fb.good{color:#3D8B40}.fb.mid{color:#C77B00}.fb.low{color:#C0463C}
+.card-big{border:3px solid var(--sun);border-radius:20px;padding:16px;background:var(--sun-l);margin:12px 0}
+.card-big .big{font-size:1.2em;font-weight:800;margin-bottom:6px}
+.card-ru{color:var(--brown-l);font-weight:700}
+.reveal{display:none;margin-top:10px;background:#fff;border-radius:14px;padding:10px 12px;font-weight:700}
+.reveal.on{display:block}
+
+/* домашка */
+.check-item{display:flex;gap:12px;align-items:flex-start;border:2px solid #F1E6D4;border-radius:16px;padding:12px;margin:10px 0;cursor:pointer}
+.check-item input{width:26px;height:26px;flex:0 0 auto;accent-color:var(--grass);margin-top:2px}
+.check-item.done{background:var(--grass-l);border-color:var(--grass)}
+.ex{display:block;font-size:.9em;color:var(--brown-l);font-weight:700}
+.bar{height:18px;background:var(--sun-l);border-radius:10px;overflow:hidden;margin:6px 0 14px}
+.bar div{height:100%;width:0;background:var(--grass);transition:width .3s}
+
+@media (max-width:560px){
+  body{font-size:17px}header h1{font-size:1.3em}
+  .plan{grid-template-columns:repeat(2,1fr)}
+  .slot{grid-template-columns:1fr;gap:6px}
+  .reel{min-height:56px;padding:10px}
+  .scene{height:215px}
+  .obj{font-size:38px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 My Home</h1>
+  <div>Дом, комнаты и домашние дела 🦊</div>
+  <div class="voice-panel">
+    <label for="voice-sel">🔊 Голос:</label>
+    <select id="voice-sel"><option>ищу голоса...</option></select>
+    <button class="vbtn" id="voice-test">Послушать</button>
+    <button class="vbtn" id="voice-slow" aria-pressed="false">🐢 Медленнее</button>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button data-tab="house" class="active">🏠 Дом</button>
+  <button data-tab="cat">🐱 Где кот</button>
+  <button data-tab="slot">🎰 Кто что делает</button>
+  <button data-tab="seek">🔍 Прятки</button>
+  <button data-tab="read">📖 Читаем</button>
+  <button data-tab="talk">🗣️ Говорим</button>
+  <button data-tab="hw">📝 Домашка</button>
+</nav>
+
+<main>
+
+<!-- ДОМ -->
+<section id="house" class="active">
+  <span class="stage">Шаг 1, новые слова</span>
+  <h2>🏠 Дом Фоксика</h2>
+  <div class="rules">Нажимай на комнату: услышишь название и увидишь, что внутри. Нажимай на каждый предмет и повторяй вслух. Кухню ты уже знаешь после готовки, с нее и начни.</div>
+  <div class="plan" id="plan"></div>
+  <h3 id="room-title" style="margin-top:14px">Выбери комнату</h3>
+  <div class="furn" id="furn"></div>
+
+  <div class="tip">Чтобы сказать, что в доме есть, нужна конструкция <b>have got</b>:<br>
+  We <b>have got</b> a big kitchen. My room <b>has got</b> two windows. (у he, she, it будет <b>has got</b>)</div>
+
+  <h3 style="margin-top:18px">Предлоги места</h3>
+  <div class="furn" id="preps"></div>
+  <div class="fox-say"><div class="fox">🦊</div><div class="bubble">Правило простое: <b>in</b> это внутри, <b>on</b> это сверху, <b>under</b> это снизу. А <b>next to</b> значит рядом, <b>behind</b> позади, <b>in front of</b> перед, <b>between</b> между двумя предметами.</div></div>
+</section>
+
+<!-- ГДЕ КОТ -->
+<section id="cat">
+  <span class="stage">Шаг 2, игра на предлоги</span>
+  <h2>🐱 Где кот?</h2>
+  <div class="rules">Кот прячется по комнате. Сначала скажи вслух полным предложением: The cat is... Потом нажми нужный вариант и проверь себя. Пять правильных подряд это победа.</div>
+  <div class="scene" id="scene">
+    <div class="obj" style="left:6%;top:42%">🛏️<small>bed</small></div>
+    <div class="obj" style="left:38%;top:44%">🪑<small>chair</small></div>
+    <div class="obj" style="left:60%;top:46%">📦<small>box</small></div>
+    <div class="obj" style="left:80%;top:40%">🪟<small>window</small></div>
+    <div id="kitty">🐱</div>
+  </div>
+  <div class="optrow" id="cat-opts"></div>
+  <div class="stat" id="cat-stat">Нажми «Спрятать кота»</div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn go" id="cat-go">Спрятать кота</button>
+    <button class="btn alt" id="cat-say">🔊 Послушать ответ</button>
+  </div>
+</section>
+
+<!-- СЛОТ -->
+<section id="slot">
+  <span class="stage">Шаг 3, обязанности и Present Simple</span>
+  <h2>🎰 Кто что делает по дому</h2>
+  <div class="rules">Нажимай «Крутить». Выпадут человек, слово-маркер и дело по дому. Составь предложение вслух и не забудь хвостик -s, если речь о маме, папе, брате или сестре. Потом нажми «Проверить себя».</div>
+  <div class="slot">
+    <div class="reel" id="r1">кто</div>
+    <div class="reel" id="r2">как часто</div>
+    <div class="reel" id="r3">что делает</div>
+  </div>
+  <div class="controls" style="justify-content:center;margin-top:4px">
+    <button class="btn vio" id="spin">Крутить</button>
+    <button class="btn sun" id="slot-show">Проверить себя</button>
+    <button class="btn alt" id="slot-say">🔊 Послушать</button>
+  </div>
+  <div class="sentence">
+    <div class="big hide" id="slot-en">&nbsp;</div>
+    <div class="ru" id="slot-ru">Сначала скажи сама, потом открывай.</div>
+  </div>
+  <div class="stat" id="slot-stat">Собрано предложений: 0</div>
+  <div class="tip">Усложняем: скажи то же предложение в отрицании (<b>My mum doesn't wash the dishes.</b>) или задай вопрос (<b>Does your mum wash the dishes?</b>).</div>
+</section>
+
+<!-- ПРЯТКИ -->
+<section id="seek">
+  <span class="stage">Шаг 4, игра на вопросы</span>
+  <h2>🔍 Прятки: найди ключ</h2>
+  <div class="rules">Фоксик спрятал ключ в одном из девяти мест. Спрашивай вслух: Is it under the bed? И только после этого нажимай на место. Фоксик ответит сам. Постарайся найти ключ меньше чем за четыре вопроса.</div>
+  <div class="spots" id="spots"></div>
+  <div class="stat" id="seek-stat">Нажми «Спрятать ключ»</div>
+  <div class="controls" style="justify-content:center">
+    <button class="btn go" id="seek-go">Спрятать ключ</button>
+  </div>
+  <div class="tip">Когда найдешь, поменяйтесь ролями: теперь ты прячешь ключ у себя в комнате, а Фоксик, то есть учитель, задает вопросы.</div>
+</section>
+
+<!-- ЧТЕНИЕ -->
+<section id="read">
+  <span class="stage">Шаг 5, чтение</span>
+  <h2>📖 Foxy's house</h2>
+  <div class="rules">Сначала послушай весь текст, потом прочитай вслух сама. Нажми на любое предложение, чтобы послушать его отдельно.</div>
+  <div class="controls" style="margin-top:0"><button class="btn alt" id="r-all">🔊 Послушать весь текст</button></div>
+  <p class="text-read" id="story"></p>
+  <div class="tip" id="gloss"></div>
+  <h3>Вопросы по тексту</h3>
+  <div id="rq">
+    <div class="items"></div>
+    <div class="controls"><button class="btn go check">Проверить</button><button class="btn alt reset">Сбросить</button><button class="btn alt again">Еще раз</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- ГОВОРИМ -->
+<section id="talk">
+  <span class="stage">Шаг 6, говорение</span>
+  <h2>🗣️ Экскурсия по моей комнате</h2>
+  <div class="rules">Возьми телефон и правда пройдись по комнате, показывая предметы. На каждый пункт скажи хотя бы одно предложение. Если забыла слово, спроси: How do you say it in English?</div>
+  <div id="tour"></div>
+
+  <h3 style="margin-top:24px">Вопрос от Фоксика</h3>
+  <div class="card-big">
+    <div class="big" id="q-en">Нажми «Другой вопрос»</div>
+    <div class="card-ru" id="q-ru"></div>
+    <div class="reveal" id="q-sample"></div>
+  </div>
+  <div class="controls">
+    <button class="btn go" id="q-next">Другой вопрос</button>
+    <button class="btn alt" id="q-say">🔊 Послушать</button>
+    <button class="btn sun" id="q-show">Образец ответа</button>
+  </div>
+</section>
+
+<!-- ДОМАШКА -->
+<section id="hw">
+  <span class="stage">После урока</span>
+  <h2>📝 Домашка</h2>
+  <div class="bar"><div id="bar"></div></div>
+  <div id="items"></div>
+  <div class="stat" id="hw-stat"></div>
+  <div class="controls"><button class="btn alt" id="clear">Снять все галочки</button></div>
+  <div class="fox-say"><div class="fox">🦊</div><div class="bubble">Самое главное задание это третье: пять предложений про то, кто что делает у вас дома. Там сразу и хвостик -s, и слова-маркеры, и новые слова про дом.</div></div>
+</section>
+
+</main>
+
+<script>
+/* ---------- голос ---------- */
+const canSpeak=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+const NOVELTY=/albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|fred|good news|hysterical|jester|junior|organ|pipe|ralph|superstar|trinoids|whisper|wobble|zarvox|espeak/i;
+const GOOD_NAMES=/sonia|libby|maisie|ryan|thomas|serena|kate|daniel|martha|arthur|stephanie|oliver|aria|jenny|ava|samantha|emma|brian|andrew|michelle/i;
+let voices=[],voice=null,slow=false;
+function scoreVoice(v){
+  let sc=0;const n=v.name;
+  if(NOVELTY.test(n))return -999;
+  if(/natural/i.test(n))sc+=60;
+  if(/enhanced|premium|neural/i.test(n))sc+=50;
+  if(/online/i.test(n))sc+=30;
+  if(/google/i.test(n))sc+=25;
+  if(GOOD_NAMES.test(n))sc+=20;
+  if(/^en[-_]GB/i.test(v.lang))sc+=12;else if(/^en[-_](US|IE|AU)/i.test(v.lang))sc+=6;
+  return sc;
+}
+function loadVoices(){
+  if(!canSpeak)return;
+  voices=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)&&scoreVoice(v)>-999).sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+  const sel=document.getElementById('voice-sel');
+  if(!voices.length){sel.innerHTML='<option>английских голосов нет</option>';return;}
+  let saved=null;try{saved=localStorage.getItem('foxy-voice');}catch(e){}
+  voice=voices.find(v=>v.name===saved)||voices[0];
+  sel.innerHTML=voices.map((v,i)=>'<option value="'+i+'"'+(v===voice?' selected':'')+'>'+v.name.replace(/Microsoft |Google /,'').replace(/ Online \(Natural\)/,' ✨')+' ('+v.lang+')</option>').join('');
+}
+if(canSpeak){loadVoices();speechSynthesis.addEventListener?speechSynthesis.addEventListener('voiceschanged',loadVoices):(speechSynthesis.onvoiceschanged=loadVoices);setTimeout(loadVoices,700);}
+else{document.querySelector('.voice-panel').innerHTML='<span>Этот браузер не умеет читать вслух</span>';}
+function speak(t){
+  if(!canSpeak||!t)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    if(voice){u.voice=voice;u.lang=voice.lang;}else u.lang='en-GB';
+    const natural=voice&&/natural|enhanced|premium|neural|online/i.test(voice.name);
+    u.rate=slow?0.7:(natural?0.95:0.88);u.pitch=1;
+    setTimeout(()=>speechSynthesis.speak(u),60);
+  }catch(e){}
+}
+document.addEventListener('change',e=>{if(e.target.id==='voice-sel'){voice=voices[+e.target.value];try{localStorage.setItem('foxy-voice',voice.name);}catch(err){}speak('Welcome to my house!');}});
+document.addEventListener('click',e=>{
+  if(e.target.id==='voice-test'){speak('Welcome to my house! This is my bedroom.');return;}
+  if(e.target.id==='voice-slow'){slow=!slow;e.target.setAttribute('aria-pressed',slow);return;}
+  const b=e.target.closest('[data-say]');if(b)speak(b.dataset.say);
+});
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickOne(a){return a[Math.floor(Math.random()*a.length)];}
+
+/* ---------- вкладки ---------- */
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');
+  try{window.scrollTo({top:0});}catch(e){}
+}));
+
+/* ================= ПЛАН ДОМА ================= */
+(function(){
+  const rooms=[
+    ['🍳','a kitchen','/ˈkɪtʃɪn/','кухня',[['a fridge','/frɪdʒ/','холодильник'],['a cooker','/ˈkʊkə/','плита'],['a table','/ˈteɪbl/','стол'],['a chair','/tʃeə/','стул'],['a cupboard','/ˈkʌbəd/','шкафчик']]],
+    ['🛋️','a living room','/ˈlɪvɪŋ ruːm/','гостиная',[['a sofa','/ˈsəʊfə/','диван'],['a TV','/ˌtiː ˈviː/','телевизор'],['a carpet','/ˈkɑːpɪt/','ковер'],['a lamp','/læmp/','лампа'],['a picture','/ˈpɪktʃə/','картина']]],
+    ['🛏️','a bedroom','/ˈbedruːm/','спальня',[['a bed','/bed/','кровать'],['a wardrobe','/ˈwɔːdrəʊb/','шкаф'],['a shelf','/ʃelf/','полка'],['a pillow','/ˈpɪləʊ/','подушка'],['a toy box','/tɔɪ bɒks/','ящик с игрушками']]],
+    ['🛁','a bathroom','/ˈbɑːθruːm/','ванная',[['a bath','/bɑːθ/','ванна'],['a mirror','/ˈmɪrə/','зеркало'],['a towel','/ˈtaʊəl/','полотенце'],['soap','/səʊp/','мыло']]],
+    ['🚪','a hall','/hɔːl/','прихожая',[['a door','/dɔː/','дверь'],['a key','/kiː/','ключ'],['shoes','/ʃuːz/','обувь'],['a coat','/kəʊt/','пальто']]],
+    ['🌳','a garden','/ˈɡɑːdn/','сад',[['a tree','/triː/','дерево'],['flowers','/ˈflaʊəz/','цветы'],['grass','/ɡrɑːs/','трава'],['a bench','/bentʃ/','скамейка']]]
+  ];
+  const preps=[['in','/ɪn/','в, внутри'],['on','/ɒn/','на'],['under','/ˈʌndə/','под'],['next to','/nekst tuː/','рядом с'],['behind','/bɪˈhaɪnd/','за, позади'],['in front of','/ɪn frʌnt ɒv/','перед'],['between','/bɪˈtwiːn/','между']];
+  const plan=document.getElementById('plan'),furn=document.getElementById('furn'),title=document.getElementById('room-title');
+  rooms.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='room';
+    d.innerHTML='<span class="e">'+r[0]+'</span><b>'+r[1]+'</b><small>'+r[3]+'</small>';
+    d.onclick=()=>{
+      plan.querySelectorAll('.room').forEach(x=>x.classList.remove('on'));d.classList.add('on');
+      speak(r[1]);title.textContent=r[0]+' '+r[1]+' ('+r[3]+')';
+      furn.innerHTML=r[4].map(f=>'<button class="chip" data-say="'+f[0]+'">'+f[0]+'<small>'+f[1]+' '+f[2]+'</small></button>').join('');
+    };
+    plan.appendChild(d);
+  });
+  document.getElementById('preps').innerHTML=preps.map(p=>'<button class="chip" data-say="'+p[0]+'">'+p[0]+'<small>'+p[1]+' '+p[2]+'</small></button>').join('');
+})();
+
+/* ================= ГДЕ КОТ ================= */
+(function(){
+  const spots=[
+    ['on the bed',6,37,1],
+    ['under the bed',10,66,1],
+    ['next to the bed',21,54,1],
+    ['on the chair',38,36,1],
+    ['under the chair',41,66,1],
+    ['between the chair and the box',49,54,1],
+    ['in the box',61,48,1],
+    ['behind the box',62,40,-1],
+    ['next to the window',74,50,1],
+    ['under the window',81,62,1]
+  ];  const cat=document.getElementById('kitty'),row=document.getElementById('cat-opts'),stat=document.getElementById('cat-stat');
+  let cur=null,streak=0,best=0;
+  function hide(){
+    cur=pickOne(spots);
+    cat.style.left=cur[1]+'%';cat.style.top=cur[2]+'%';cat.style.zIndex=cur[3];
+    const others=shuffle(spots.filter(s=>s[0]!==cur[0])).slice(0,3);
+    const opts=shuffle([cur].concat(others));
+    row.innerHTML='';
+    opts.forEach(o=>{
+      const b=document.createElement('button');b.className='opt';b.textContent='The cat is '+o[0]+'.';
+      b.onclick=()=>{
+        if(b.classList.contains('ok')||b.classList.contains('bad'))return;
+        if(o[0]===cur[0]){
+          b.classList.add('ok');streak++;best=Math.max(best,streak);
+          speak('Yes! The cat is '+cur[0]+'.');
+          stat.className='stat good';
+          stat.textContent=streak>=5?('Пять подряд, победа! Лучший результат: '+best):('Верно! Подряд: '+streak+'. Нажми «Спрятать кота».');
+        }else{
+          b.classList.add('bad');streak=0;
+          speak('No, look again.');
+          stat.className='stat warn';stat.textContent='Не тут. Посмотри внимательнее и попробуй другой вариант.';
+        }
+      };
+      row.appendChild(b);
+    });
+    stat.className='stat';stat.textContent='Скажи вслух, где кот, и выбери вариант.';
+  }
+  document.getElementById('cat-go').onclick=hide;
+  document.getElementById('cat-say').onclick=()=>{if(cur)speak('The cat is '+cur[0]+'.');};
+})();
+
+/* ================= СЛОТ ================= */
+(function(){
+  const people=[['I','я',false],['My mum','мама',true],['My dad','папа',true],['My sister','сестра',true],['My brother','брат',true],['We','мы',false],['My grandma','бабушка',true]];
+  const marks=[['always','всегда'],['usually','обычно'],['often','часто'],['sometimes','иногда'],['never','никогда']];
+  const chores=[
+    ['wash the dishes','washes the dishes','мыть посуду'],
+    ['make the bed','makes the bed','заправлять кровать'],
+    ['clean the room','cleans the room','убирать комнату'],
+    ['water the flowers','waters the flowers','поливать цветы'],
+    ['feed the cat','feeds the cat','кормить кота'],
+    ['lay the table','lays the table','накрывать на стол'],
+    ['tidy up the toys','tidies up the toys','убирать игрушки'],
+    ['take out the rubbish','takes out the rubbish','выносить мусор'],
+    ['help in the kitchen','helps in the kitchen','помогать на кухне'],
+    ['walk the dog','walks the dog','гулять с собакой']
+  ];
+  const r1=document.getElementById('r1'),r2=document.getElementById('r2'),r3=document.getElementById('r3'),
+        en=document.getElementById('slot-en'),ru=document.getElementById('slot-ru'),stat=document.getElementById('slot-stat');
+  let cur=null,count=0,spinning=false;
+  function roll(){
+    if(spinning)return;spinning=true;
+    [r1,r2,r3].forEach(r=>r.classList.add('spin'));
+    en.classList.add('hide');ru.textContent='Сначала скажи сама, потом открывай.';
+    const t=setInterval(()=>{
+      r1.textContent=pickOne(people)[0];r2.textContent=pickOne(marks)[0];r3.textContent=pickOne(chores)[0];
+    },80);
+    setTimeout(()=>{
+      clearInterval(t);
+      const p=pickOne(people),m=pickOne(marks),c=pickOne(chores);
+      cur={p,m,c};
+      r1.textContent=p[0];r2.textContent=m[0];r3.textContent=c[0];
+      [r1,r2,r3].forEach(r=>r.classList.remove('spin'));
+      count++;stat.textContent='Собрано предложений: '+count;
+      spinning=false;
+    },900);
+  }
+  function sentence(){
+    if(!cur)return'';
+    return cur.p[0]+' '+cur.m[0]+' '+(cur.p[2]?cur.c[1]:cur.c[0])+'.';
+  }
+  document.getElementById('spin').onclick=roll;
+  document.getElementById('slot-show').onclick=()=>{
+    if(!cur){ru.textContent='Сначала нажми «Крутить».';return;}
+    en.textContent=sentence();en.classList.remove('hide');
+    ru.textContent='Слова: '+cur.p[1]+' / '+cur.m[1]+' / '+cur.c[2]+'. '+(cur.p[2]?'Нужен хвостик -s, речь об одном человеке.':'Хвостик -s не нужен.');
+    speak(sentence());
+  };
+  document.getElementById('slot-say').onclick=()=>{if(cur)speak(sentence());};
+})();
+
+/* ================= ПРЯТКИ ================= */
+(function(){
+  const places=[
+    ['🛏️','under the bed'],['🚪','behind the door'],['📚','on the shelf'],
+    ['🛋️','under the sofa'],['📦','in the box'],['🪟','next to the window'],
+    ['🧥','in the wardrobe'],['🪑','under the chair'],['🧊','in the fridge']
+  ];
+  const host=document.getElementById('spots'),stat=document.getElementById('seek-stat');
+  let key=null,tries=0,found=false;
+  function build(){
+    key=Math.floor(Math.random()*places.length);tries=0;found=false;
+    host.innerHTML='';
+    places.forEach((p,i)=>{
+      const d=document.createElement('div');d.className='spot';
+      d.innerHTML='<span class="e">'+p[0]+'</span>'+p[1];
+      d.onclick=()=>{
+        if(found||d.classList.contains('no'))return;
+        tries++;
+        speak('Is it '+p[1]+'?');
+        setTimeout(()=>{
+          if(i===key){
+            found=true;d.classList.add('yes');d.innerHTML='<span class="e">🔑</span>'+p[1];
+            speak('Yes, it is! Well done!');
+            stat.className='stat good';
+            stat.textContent='Нашла за '+tries+(tries===1?' вопрос':(tries<5?' вопроса':' вопросов'))+'! Скажи: It is '+p[1]+'.';
+          }else{
+            d.classList.add('no');
+            speak("No, it isn't.");
+            stat.className='stat mid';
+            stat.textContent='No, it isn\'t. Вопросов задано: '+tries+'. Спрашивай дальше.';
+          }
+        },500);
+      };
+      host.appendChild(d);
+    });
+    stat.className='stat';stat.textContent='Ключ спрятан. Спроси вслух: Is it ...?';
+    speak('I have hidden the key. Where is it?');
+  }
+  document.getElementById('seek-go').onclick=build;
+  places.forEach(()=>{});
+  host.innerHTML=places.map(p=>'<div class="spot"><span class="e">'+p[0]+'</span>'+p[1]+'</div>').join('');
+})();
+
+/* ================= ЧТЕНИЕ ================= */
+function choiceBlock(root,items,shuffleOpts){
+  const list=root.querySelector('.items'),fb=root.querySelector('.fb');
+  let state=[];
+  function render(re){
+    const arr=re?shuffle(items):(state.length?state.map(s=>s.it):items);
+    state=arr.map(it=>({it,pick:null}));
+    list.innerHTML='';fb.textContent='';fb.className='fb';
+    state.forEach((s,i)=>{
+      const row=document.createElement('div');row.className='item';
+      row.innerHTML='<div><span class="num">'+(i+1)+'</span><span class="en">'+s.it.q+'</span></div><div class="opts"></div>'+(s.it.hint?'<div class="hint">'+s.it.hint+'</div>':'');
+      const ob=row.querySelector('.opts');
+      (shuffleOpts?shuffle(s.it.opts):s.it.opts).forEach(o=>{
+        const b=document.createElement('button');b.className='opt';b.textContent=o;
+        b.onclick=()=>{s.pick=o;ob.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel','ok','bad'));b.classList.add('ok');row.classList.remove('ok','bad');};
+        ob.appendChild(b);
+      });
+      s.row=row;list.appendChild(row);
+    });
+  }
+  root.querySelector('.check').onclick=()=>{
+    if(state.some(s=>s.pick===null)){fb.className='fb mid';fb.textContent='Ответь на все пункты, а потом нажми «Проверить».';return;}
+    let sc=0;state.forEach(s=>{const ok=s.pick===s.it.a;if(ok)sc++;s.row.classList.toggle('ok',ok);s.row.classList.toggle('bad',!ok);});
+    fb.className='fb '+(sc===state.length?'good':sc>=Math.ceil(state.length*0.7)?'mid':'low');
+    fb.textContent=sc===state.length?'Все верно! 🦊':('Верно '+sc+' из '+state.length+'. Посмотри на красные строчки.');
+  };
+  root.querySelector('.reset').onclick=()=>render(false);
+  root.querySelector('.again').onclick=()=>render(true);
+  render(true);
+}
+(function(){
+  const story=[
+    "This is my house. It is small but very cosy.",
+    "We have got four rooms: a kitchen, a living room, a bedroom and a bathroom.",
+    "My bedroom is my favourite room.",
+    "There is a bed next to the window and a big toy box under the bed.",
+    "My books are on the shelf, and my cat Tim usually sleeps on my pillow.",
+    "In the living room we have got a green sofa and a soft carpet.",
+    "My mum always waters the flowers in the morning.",
+    "My dad often cooks dinner, and I sometimes help him in the kitchen.",
+    "I never tidy up my toys on Monday, because Monday is a busy day!",
+    "Welcome to my house!"
+  ];
+  document.getElementById('story').innerHTML=story.map(x=>'<span class="rs" data-say="'+x.replace(/"/g,'')+'">'+x+'</span> ').join('');
+  document.getElementById('r-all').onclick=()=>speak(story.join(' '));
+  document.getElementById('gloss').innerHTML='<b>Слова-помощники:</b> cosy (уютный), a room (комната), favourite (любимый), soft (мягкий), busy (занятой, напряженный), Welcome! (добро пожаловать).';
+  choiceBlock(document.getElementById('rq'),[
+    {q:'How many rooms has the house got?',opts:['Four.','Two.','Six.'],a:'Four.'},
+    {q:'Where is the toy box?',opts:['Under the bed.','On the shelf.','Next to the sofa.'],a:'Under the bed.'},
+    {q:'Where does the cat sleep?',opts:['On the pillow.','Under the bed.','In the kitchen.'],a:'On the pillow.'},
+    {q:'Who waters the flowers?',opts:['Mum.','Dad.','The cat.'],a:'Mum.',hint:'В тексте: My mum always waters the flowers.'},
+    {q:'How often does Foxy tidy up the toys on Monday?',opts:['Never.','Always.','Usually.'],a:'Never.'}
+  ],true);
+})();
+
+/* ================= ГОВОРИМ ================= */
+(function(){
+  const tour=[
+    ['🚪','Start at the door','Начни от двери: This is my room. It is big and light.'],
+    ['🛏️','Your bed','Скажи, где стоит кровать: My bed is next to the window.'],
+    ['📚','Your books and toys','Где книги и игрушки: My books are on the shelf.'],
+    ['🪟','The window','Что видно в окно: I can see a tree in front of my window.'],
+    ['❤️','Your favourite thing','Любимая вещь и почему: My favourite thing is... because...'],
+    ['🧹','Your chores','Что ты делаешь в комнате: I usually clean my room on Saturday.']
+  ];
+  document.getElementById('tour').innerHTML=tour.map(t=>
+    '<div class="check-item"><span style="font-size:24px">'+t[0]+'</span><span><b>'+t[1]+'</b><span class="ex">'+t[2]+'</span></span></div>').join('');
+  const cards=[
+    ['How many rooms have you got in your flat?','Сколько у вас комнат?','We have got three rooms.'],
+    ['What is your favourite room? Why?','Какая комната любимая и почему?','My favourite room is my bedroom, because my toys are there.'],
+    ['What is next to your bed?','Что рядом с твоей кроватью?','A small table is next to my bed.'],
+    ['Who cleans the kitchen in your family?','Кто у вас убирает кухню?','My mum usually cleans the kitchen.'],
+    ['What do you never do at home?','Чего ты никогда не делаешь дома?','I never wash the dishes, but I often lay the table.'],
+    ['Have you got a garden or a balcony?','У вас есть сад или балкон?','Yes, we have got a small garden.'],
+    ['Where is your cat or your toy now?','Где сейчас твой кот или игрушка?','My toy is under the chair.'],
+    ['What do you do in the living room?','Что вы делаете в гостиной?','We usually watch TV and talk in the living room.']
+  ];
+  let deck=[],cur=null;
+  const en=document.getElementById('q-en'),ru=document.getElementById('q-ru'),sam=document.getElementById('q-sample');
+  function next(){
+    if(!deck.length)deck=shuffle(cards);
+    cur=deck.pop();en.textContent=cur[0];ru.textContent=cur[1];
+    sam.className='reveal';sam.innerHTML='Так мог бы ответить Фоксик: <span class="en">'+cur[2]+'</span>';
+    speak(cur[0]);
+  }
+  document.getElementById('q-next').onclick=next;
+  document.getElementById('q-say').onclick=()=>{if(cur)speak(cur[0]);};
+  document.getElementById('q-show').onclick=()=>{if(cur){sam.classList.add('on');speak(cur[2]);}};
+})();
+
+/* ================= ДОМАШКА ================= */
+(function(){
+  const tasks=[
+    ['Выучить названия комнат и по пять предметов в каждой','Открой вкладку «Дом» и нажимай на карточки.'],
+    ['Сыграть в «Где кот» до пяти правильных подряд','Каждый раз говори вслух полным предложением.'],
+    ['Написать пять предложений: кто что делает у вас дома','Например: My mum always waters the flowers.'],
+    ['Нарисовать план своей комнаты и подписать предметы по-английски','Подпиши хотя бы шесть предметов.'],
+    ['Спрятать дома игрушку и попросить маму найти ее по вопросам','Вопросы только по-английски: Is it under the table?'],
+    ['Прочитать текст Foxy\'s house вслух два раза','Второй раз старайся читать без остановок.']
+  ];
+  const box=document.getElementById('items'),bar=document.getElementById('bar'),stat=document.getElementById('hw-stat');
+  tasks.forEach(t=>{
+    const l=document.createElement('label');l.className='check-item';
+    l.innerHTML='<input type="checkbox"><span><b>'+t[0]+'</b><span class="ex">'+t[1]+'</span></span>';
+    l.querySelector('input').addEventListener('change',update);box.appendChild(l);
+  });
+  function update(){
+    const all=box.querySelectorAll('input'),n=[...all].filter(x=>x.checked).length;
+    box.querySelectorAll('.check-item').forEach(l=>l.classList.toggle('done',l.querySelector('input').checked));
+    bar.style.width=(n/all.length*100)+'%';
+    stat.className='stat good';
+    stat.textContent=n===all.length?'Вся домашка сделана! 🦊🎉':(n?'Сделано '+n+' из '+all.length+'.':'');
+  }
+  document.getElementById('clear').onclick=()=>{box.querySelectorAll('input').forEach(x=>x.checked=false);update();};
+})();
+</script>
+</body>
+</html>
