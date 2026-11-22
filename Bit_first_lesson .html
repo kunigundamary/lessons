@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Первый урок: Level 1 с роботом Битом</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF8EC;--sky:#8FD3F4;--grass:#7BC67B;--coral:#FF7F6B;--sun:#FFD25A;--brown:#8B5E3C;--ink:#3b2a1e;--muted:#9b7f66;--shadow:0 5px 0 rgba(139,94,60,.10),0 10px 24px rgba(139,94,60,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Nunito','Trebuchet MS',Arial,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:'Comfortaa','Nunito',sans-serif;margin:.2em 0 .4em;line-height:1.2}
+h2{font-size:30px}h3{font-size:22px}
+header.top{position:sticky;top:0;z-index:30;background:rgba(255,248,236,.96);border-bottom:3px dashed #f1dcc0;padding:6px 12px}
+.toprow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;max-width:1100px;margin:0 auto}
+.brand{font:800 20px 'Comfortaa',sans-serif}
+.stars{font-size:24px;font-weight:900;background:#fff;border-radius:30px;padding:4px 16px;box-shadow:var(--shadow)}
+details.settings{position:relative}
+details.settings summary{list-style:none;cursor:pointer;font-size:24px;background:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;box-shadow:var(--shadow)}
+details.settings summary::-webkit-details-marker{display:none}
+.setbox{position:absolute;right:0;top:52px;background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);width:min(92vw,360px);font-size:15px;z-index:40}
+.setbox label{display:block;margin:6px 0}
+.setbox select,.setbox input{width:100%;font:inherit;padding:6px;border-radius:10px;border:2px solid #eadcc8}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 4px;max-width:1100px;margin:0 auto;scrollbar-width:thin}
+.tabbtn{flex:0 0 auto;border:none;border-radius:18px;padding:8px 14px;font:800 15px 'Nunito',sans-serif;background:#fff;color:var(--ink);box-shadow:0 3px 0 #ead6bb;cursor:pointer}
+.tabbtn.active{background:var(--sun)}
+main{max-width:1000px;margin:0 auto;padding:12px 14px 60px}
+.tab{display:none}
+.tab.active{display:block;animation:fadein .35s}
+.card{background:#fff;border-radius:28px;padding:20px;margin:16px 0;box-shadow:var(--shadow)}
+.btn{border:none;border-radius:20px;padding:12px 20px;font:800 18px 'Nunito',sans-serif;cursor:pointer;background:var(--sky);color:#16324a;box-shadow:0 4px 0 rgba(0,0,0,.15);transition:transform .08s;touch-action:manipulation}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.btn.sun{background:var(--sun);color:#4a3300}.btn.coral{background:var(--coral);color:#fff}.btn.grass{background:var(--grass);color:#fff}.btn.ghost{background:#f4ece0;color:var(--ink)}
+.btn.small{padding:7px 12px;font-size:15px;border-radius:14px}
+.btn.next{display:block;margin:24px auto 0;font-size:22px;background:var(--grass);color:#fff;padding:14px 34px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.center{text-align:center}.small{font-size:15px}.muted{color:var(--muted)}
+.hint{background:#FFF3D6;border-left:6px solid var(--sun);border-radius:14px;padding:10px 14px;margin:10px 0}
+.teacher{background:#EEF7FB;border-left:6px solid var(--sky);border-radius:14px;padding:10px 14px;margin:10px 0;font-size:16px}
+.teacher::before{content:'Для учителя: ';font-weight:900}
+.tr{color:#b0612e;font-weight:700}
+.bubble{position:relative;background:#fff;border:3px solid var(--ink);border-radius:24px;padding:10px 18px;font:800 22px 'Nunito',sans-serif;display:inline-block}
+.bubble.left::after{content:'';position:absolute;left:-16px;top:24px;border:8px solid transparent;border-right-color:var(--ink)}
+.mascot{cursor:pointer;user-select:none}
+input.field,textarea.field{font:inherit;font-size:20px;padding:10px 14px;border-radius:16px;border:3px solid #eadcc8;background:#fffdf8;width:100%;max-width:360px}
+textarea.field{max-width:100%;min-height:90px;font-size:16px}
+.tile{background:#fff;border:3px solid #f0e2cf;border-radius:22px;padding:12px;text-align:center;cursor:pointer;user-select:none;transition:transform .12s;touch-action:manipulation}
+.tile:hover{transform:translateY(-3px)}
+.tile.sel{border-color:var(--coral);background:#FFF0EC}
+.tile .em{font-size:54px;line-height:1.1}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.grid.sm{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+.shake{animation:shake .45s}.bounce{animation:bounce .6s}.wiggle{animation:wiggle .6s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes bounce{0%,100%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.95)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fall{from{transform:translateY(0) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}
+.confetti{position:fixed;top:-50px;font-size:32px;pointer-events:none;z-index:99;animation:fall 2s linear forwards}
+.toast{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%) scale(.4);font:900 56px 'Comfortaa',sans-serif;color:var(--coral);text-shadow:0 4px 0 #fff,0 0 24px #fff;opacity:0;pointer-events:none;z-index:100;transition:.25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.karaoke .k-lines{margin:14px 0;padding:10px;background:#FFFCF5;border-radius:20px}
+.k-line{font-size:28px;font-weight:800;padding:6px 12px;border-radius:14px;cursor:pointer;line-height:1.6}
+.k-line:hover{background:#FFF3D6}
+.syl{border-radius:8px;transition:background .1s}
+.syl.on{background:var(--sun);box-shadow:0 0 0 4px var(--sun);color:#000}
+.syl.done{color:#b9a18a}
+.k-ctrl select{font:inherit;border-radius:10px;padding:4px}
+.progress{height:14px;background:#f3e6d3;border-radius:10px;overflow:hidden}
+.progress>div{height:100%;background:var(--grass);width:0;transition:width .3s}
+table.words{border-collapse:collapse;width:100%;font-size:17px}
+table.words td,table.words th{border-bottom:2px dashed #eadcc8;padding:7px 8px;text-align:left}
+.check{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:16px;background:#FFFCF5;margin:8px 0;cursor:pointer;font-size:18px}
+.check input{width:28px;height:28px;accent-color:var(--grass)}
+@media(max-width:620px){body{font-size:16px}h2{font-size:24px}.k-line{font-size:21px}.tile .em{font-size:44px}.btn{font-size:16px;padding:10px 16px}.toast{font-size:38px}}
+@media print{
+  body.printing{background:#fff}
+  body.printing header.top,body.printing .noprint{display:none!important}
+  body.printing *{visibility:hidden}
+  body.printing .print-target,body.printing .print-target *{visibility:visible}
+  body.printing .print-target{position:absolute;left:0;top:0;width:100%;box-shadow:none;margin:0;padding:0 6mm}
+  @page{size:A4;margin:12mm}
+}
+
+/* ===== lesson 8 ===== */
+.bit{width:170px;height:190px}
+.bit .eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+.bit .ant{animation:glow 1.5s infinite alternate}
+.bit.talk{animation:jump .5s}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes glow{from{fill:#FF7F6B}to{fill:#FFD25A}}
+@keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-24px)}}
+.lvl{background:#fff;border-radius:30px;padding:4px 14px;box-shadow:var(--shadow);font-weight:900;display:flex;align-items:center;gap:8px}
+.lvl .bar{width:90px;height:12px;background:#f3e6d3;border-radius:8px;overflow:hidden}
+.lvl .bar div{height:100%;background:var(--grass);width:0;transition:width .3s}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+.player{background:linear-gradient(135deg,#2E5E8C,#4A90E2);color:#fff;border-radius:26px;padding:18px;position:sticky;top:120px;box-shadow:var(--shadow)}
+.player h3{color:#FFD25A;margin-top:0}
+.player .av{font-size:70px;text-align:center;background:rgba(255,255,255,.15);border-radius:20px;padding:6px}
+.player .pl{margin:6px 0;font-size:17px}
+.player .pl b{color:#FFD25A;font-family:'Comfortaa',sans-serif}
+.q{background:#FFFCF5;border-radius:18px;padding:12px 14px;margin:10px 0}
+.q h4{margin:0 0 8px;font-size:18px}
+.chip{display:inline-block;border:2px solid #eadcc8;background:#fff;border-radius:16px;padding:6px 12px;margin:3px;cursor:pointer;font-weight:800;user-select:none}
+.chip.sel{background:var(--sun);border-color:var(--sun)}
+.flip{perspective:800px;cursor:pointer;min-height:150px}
+.flip .in{position:relative;width:100%;height:100%;min-height:150px;transition:transform .5s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center}
+.flip .f{background:#fff;border:3px solid #f0e2cf;font:900 28px 'Comfortaa',sans-serif}
+.flip .b{background:#FFF3D6;transform:rotateY(180deg);font-size:16px}
+.flip.big{min-height:210px}.flip.big .in{min-height:210px}
+.flip.big .f{font-size:22px}.flip.big .f .em{font-size:56px}
+.yn{display:flex;gap:6px;margin-top:6px}
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px}
+.lt{background:#fff;border:3px solid #f0e2cf;border-radius:18px;text-align:center;padding:8px 2px;cursor:pointer;font:900 30px 'Comfortaa',sans-serif;user-select:none;transition:transform .1s}
+.lt small{display:block;font:800 13px 'Nunito',sans-serif;color:#b0612e}
+.lt.vow{background:#FFF0EC}
+.lt.on{background:var(--sun);transform:scale(1.12);border-color:var(--sun)}
+.lpanel{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;min-height:130px}
+.lpanel .L{font:900 90px 'Comfortaa',sans-serif;color:var(--coral)}
+.lpanel .em{font-size:80px}
+.lpanel .w{font:900 34px 'Comfortaa',sans-serif}
+.qbig{font:900 70px 'Comfortaa',sans-serif;text-align:center;min-height:100px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:10px}
+.opt{background:#fff;border:3px solid #eadcc8;border-radius:20px;padding:14px;font:900 28px 'Comfortaa',sans-serif;text-align:center;cursor:pointer;user-select:none}
+.opt.right{background:#DDF5DD;border-color:var(--grass)}
+.opt.ru{font:800 20px 'Nunito',sans-serif}
+.phr{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.ph{background:#fff;border:3px solid #f0e2cf;border-radius:22px;padding:12px 14px;cursor:pointer}
+.ph .en{font:900 22px 'Comfortaa',sans-serif}
+.ph .h{font-size:14px;color:var(--muted);margin-top:4px}
+.chat{background:#E9F3FA;border-radius:24px;padding:14px;min-height:280px;max-height:460px;overflow-y:auto}
+.msg{width:fit-content;max-width:78%;padding:10px 14px;border-radius:20px;margin:8px 0;font-weight:800;font-size:19px;animation:fadein .3s}
+.msg.bot{background:#fff;border-bottom-left-radius:4px}
+.msg.me{background:var(--grass);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.replies{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.slots{min-height:64px;border:3px dashed #eadcc8;border-radius:18px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#FFFCF5}
+.wt{background:var(--sky);color:#16324a;border-radius:14px;padding:8px 14px;font:900 22px 'Comfortaa',sans-serif;cursor:pointer;user-select:none;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.wt.used{visibility:hidden}
+.timer{height:16px;background:#f3e6d3;border-radius:10px;overflow:hidden;margin:10px 0}
+.timer div{height:100%;background:var(--coral);width:100%;transition:width 1s linear}
+.testsheet{font-size:16px}
+.testsheet .line{border-bottom:2px solid #555;display:inline-block;min-width:200px;height:22px}
+.testsheet .box{display:inline-block;width:34px;height:34px;border:2px solid #555;border-radius:6px;margin:0 3px;vertical-align:middle}
+.testsheet table td{padding:6px 10px;font-size:17px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="toprow">
+    <div class="brand">🤖 Level 1 с роботом Битом</div>
+    <div class="row">
+      <div class="lvl"><span>Level <span id="lvlN">1</span></span><div class="bar"><div id="lvlBar"></div></div><span>⭐ <span class="starCount">0</span></span></div>
+      <details class="settings noprint">
+        <summary title="Настройки">⚙️</summary>
+        <div class="setbox">
+          <label>Голос<select id="voiceSel"></select></label>
+          <label>Скорость речи<select id="rateSel"><option value="0.7">очень медленно</option><option value="0.85">спокойно</option><option value="1">обычно</option></select></label>
+          <label>Имя учителя (по-английски)<input id="teacherName" value="Maria"></label>
+          <button class="btn small ghost" id="resetStars">Обнулить очки</button>
+          <p class="small muted">Каждые 10 звезд: новый уровень. Голос и скорость запоминаются.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tabbtn">🤖 Знакомство</button>
+    <button class="tabbtn">🌍 Зачем английский</button>
+    <button class="tabbtn">🔤 Алфавит</button>
+    <button class="tabbtn">🕵️ Игры с буквами</button>
+    <button class="tabbtn">💬 Первые фразы</button>
+    <button class="tabbtn">⏱ Битва на время</button>
+    <button class="tabbtn">🏠 Домашка</button>
+    <button class="tabbtn">📋 Учителю</button>
+  </nav>
+</header>
+
+<main>
+<!-- ============ 1. ABOUT ME ============ -->
+<section class="tab">
+  <details class="card noprint">
+    <summary><b>План урока на 45 минут</b> (для учителя, нажми, чтобы открыть)</summary>
+    <ol>
+      <li>Знакомство и «Карточка игрока»: 8 минут</li>
+      <li>Зачем нужен английский: разговор и игра «Ты уже знаешь английский»: 8 минут</li>
+      <li>Алфавит и песенка ABC: 8 минут</li>
+      <li>Игры с буквами: шпионы, «поймай букву», «первая буква»: 8 минут</li>
+      <li>Первые фразы и чат с роботом: 8 минут</li>
+      <li>Битва на время и домашка: 5 минут</li>
+    </ol>
+    <p>Главное на первом уроке: узнать ученика, показать, что английский нужен ему самому, и дать почувствовать успех. Если урок 30 минут, сократи алфавит до песенки и одной игры, а «Битву на время» оставь на следующий раз.</p>
+  </details>
+
+  <div class="card center">
+    <div class="row" style="justify-content:center">
+      <div class="mascot" id="bit1"></div>
+      <div class="bubble left" id="bitSay">Hello! I'm Bit, a robot!</div>
+    </div>
+    <p class="muted">Я робот Бит. Я говорю только по-английски, поэтому мне нужен помощник. Это ты!</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn sun" id="tHello">👩‍🏫 Hello! My name is <span class="tName">Maria</span>.</button>
+      <button class="btn" id="bitHello">🤖 Hello! I'm Bit!</button>
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <div class="card">
+        <h2>Карточка игрока</h2>
+        <p>Расскажи о себе, а карточка заполнится сама. В конце Бит прочитает ее по-английски!</p>
+        <div class="q"><h4>Как тебя зовут?</h4><input class="field" id="pName" placeholder="Имя"></div>
+        <div class="q"><h4>Выбери аватар</h4><div id="avatars"></div></div>
+        <div class="q"><h4>Сколько тебе лет?</h4><div id="pAge"></div></div>
+        <div class="q"><h4>В каком ты классе?</h4><div id="pClass"></div></div>
+        <div class="q"><h4>Что ты любишь делать?</h4><div id="pLikes"></div><input class="field" id="pLikesOwn" placeholder="Свое (пишет учитель)" style="margin-top:6px"></div>
+        <div class="q"><h4>Любимый мультик, игра или блогер?</h4><input class="field" id="pFav" placeholder="Например: ..."></div>
+        <div class="q"><h4>Любимое животное?</h4><div id="pPet"></div></div>
+        <div class="q"><h4>Кем хочешь стать?</h4><input class="field" id="pDream" placeholder="Кем?"></div>
+        <div class="q"><h4>Какую суперсилу ты бы выбрал?</h4><div id="pPower"></div></div>
+        <div class="q"><h4>Какие английские слова ты уже знаешь?</h4><input class="field" id="pKnow" placeholder="Любые!"></div>
+        <div class="q"><h4>Что нравится на английском в школе, а что трудно?</h4><input class="field" id="pSchool" placeholder="Честно-честно"></div>
+      </div>
+    </div>
+    <div>
+      <div class="player" id="playerCard"></div>
+      <div class="row" style="margin-top:12px;justify-content:center">
+        <button class="btn sun" id="readCard">🤖 Бит, прочитай мою карточку!</button>
+      </div>
+    </div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 2. WHY ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🎮 Ты уже знаешь английский!</h2>
+    <p>Эти слова ты точно где-то видел. Переверни карточку: знал или нет?</p>
+    <div class="grid" id="knowCards"></div>
+    <p style="font-size:22px;text-align:center;margin-top:16px">Ты уже знаешь <b id="knowN">0</b> английских слов. А ведь мы только начали!</p>
+  </div>
+  <div class="card">
+    <h2>🌍 Где живет английский?</h2>
+    <p>Открывай карточки по очереди и обсуждаем.</p>
+    <div class="grid" id="whereCards"></div>
+  </div>
+  <div class="card">
+    <h2>🎯 А тебе зачем английский?</h2>
+    <p>Выбери все, что подходит. Можно придумать свое.</p>
+    <div id="goals"></div>
+    <input class="field" id="goalOwn" placeholder="Мое: ..." style="margin-top:8px">
+    <div class="teacher">Вопросы для разговора: Где ты уже встречал английские слова? В какой стране хотел бы побывать? Если бы ты завтра проснулся и знал английский идеально, что бы сделал первым? Что тебе нравится на уроках в школе, а что нет?</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 3. ALPHABET ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🔤 Английский алфавит</h2>
+    <div class="hint">В русском алфавите 33 буквы, а в английском всего 26. Он короче! У каждой буквы есть имя, как она называется в алфавите. Сегодня знакомимся с именами букв. Розовые буквы: гласные, они «поют».</div>
+    <div class="lpanel" id="lpanel"><div class="muted">Нажми на любую букву</div></div>
+    <div class="letters" id="letters"></div>
+  </div>
+  <div class="card">
+    <h3>🎵 Песенка ABC</h3>
+    <div class="hint">Мелодия как у «Twinkle, Twinkle, Little Star». Буквы в таблице выше подсвечиваются, когда до них доходит песня. Обрати внимание: британцы называют последнюю букву Z «зэд».</div>
+    <div id="kAbc"></div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 4. LETTER GAMES ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🕵️ Буквы-шпионы</h2>
+    <p>Эти буквы притворяются русскими, но у них другие имена! Как эта буква зовется по-английски?</p>
+    <div class="qbig" id="spyL">?</div>
+    <div class="opts" id="spyOpts"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="spyStart">▶ Ловить шпионов</button><b id="spyInfo"></b></div>
+  </div>
+  <div class="card">
+    <h2>👂 Поймай букву</h2>
+    <p>Бит называет букву. Найди ее!</p>
+    <div class="opts" id="catchOpts"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="catchStart">▶ Начать</button><button class="btn" id="catchRep">🔊 Еще раз</button><b id="catchInfo"></b></div>
+  </div>
+  <div class="card">
+    <h2>🍎 Первая буква</h2>
+    <p>Послушай слово. С какой буквы оно начинается?</p>
+    <div class="qbig" id="firstPic">❔</div>
+    <div class="center" id="firstWord" style="font:900 26px Comfortaa"></div>
+    <div class="opts" id="firstOpts"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="firstStart">▶ Начать</button><button class="btn" id="firstRep">🔊 Еще раз</button><b id="firstInfo"></b></div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 5. PHRASES ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>💬 Первые фразы</h2>
+    <p>Нажми на фразу, послушай и повтори как робот, а потом как диктор новостей.</p>
+    <div class="phr" id="phrases"></div>
+  </div>
+  <div class="card">
+    <h2>📱 Чат с Битом</h2>
+    <p>Бит пишет тебе сообщения. Выбери правильный ответ!</p>
+    <div class="chat" id="chat"></div>
+    <div class="replies" id="replies"></div>
+    <div class="row" style="margin-top:12px"><button class="btn sun" id="chatStart">▶ Начать чат</button></div>
+  </div>
+  <div class="card">
+    <h2>🧩 Собери фразу</h2>
+    <p>Нажимай на слова по порядку. Ошибся? Нажми на слово в строке, и оно вернется.</p>
+    <div class="center muted" id="buildRu" style="font-size:20px;margin-bottom:8px"></div>
+    <div class="slots" id="slots"></div>
+    <div class="row" id="pool" style="margin:12px 0"></div>
+    <div class="row">
+      <button class="btn grass" id="buildCheck">✔ Проверить</button>
+      <button class="btn ghost" id="buildReset">↺ Сбросить</button>
+      <button class="btn" id="buildNext">Следующая ➜</button>
+      <b id="buildInfo"></b>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🔐 Шпионский пароль (ролевая игра)</h3>
+    <p>Учитель «стоит у двери секретной базы» и стучит: тук-тук! Чтобы войти, нужно правильно ответить на все вопросы: Hello! What's your name? How are you? How old are you? Потом меняемся ролями: ученик охраняет базу, а учитель отвечает (и иногда нарочно ошибается, пусть ученик поймает!).</p>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 6. BEAT THE CLOCK ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>⏱ Битва на время: 60 секунд</h2>
+    <p>Буквы и фразы вперемешку. Сколько правильных ответов успеешь дать за минуту?</p>
+    <div class="timer"><div id="clockBar"></div></div>
+    <div class="row" style="justify-content:space-between"><b id="clockTime">60</b><b>Очки: <span id="clockScore">0</span></b><b>Рекорд: <span id="clockBest">0</span></b></div>
+    <div class="qbig" id="clockQ" style="font-size:44px">Готов?</div>
+    <div class="opts" id="clockOpts"></div>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sun" id="clockStart">▶ Старт!</button><button class="btn" id="clockRep">🔊 Еще раз</button></div>
+    <div class="teacher">Можно сыграть дважды: ученик против учителя. Учитель отвечает медленнее и «случайно» ошибается.</div>
+  </div>
+  <div class="card center">
+    <div class="mascot" id="bit2" style="display:inline-block"></div>
+    <p style="font-size:22px">Твой уровень: <b>Level <span class="lvlN2">1</span></b>, звезд: <b>⭐ <span class="starCount">0</span></b></p>
+    <button class="btn sun" id="byeBtn">🤖 Goodbye, Bit!</button>
+  </div>
+  <button class="btn next">Домашка ➜</button>
+</section>
+
+<!-- ============ 7. HOMEWORK ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🏠 Миссии до следующего урока</h2>
+    <div id="hw"></div>
+  </div>
+  <div class="card testsheet" id="miniTest">
+    <h2>Мини-тест: Level 1</h2>
+    <p>Имя: <span class="line"></span> &nbsp; Дата: <span class="line" style="min-width:120px"></span></p>
+    <h3>1. Впиши пропущенные буквы (8 баллов)</h3>
+    <p style="font:800 24px Comfortaa;letter-spacing:4px">A <span class="box"></span> C D <span class="box"></span> F G &nbsp; H <span class="box"></span> J K <span class="box"></span> M N</p>
+    <p style="font:800 24px Comfortaa;letter-spacing:4px">O <span class="box"></span> Q R <span class="box"></span> T U &nbsp; V <span class="box"></span> X Y <span class="box"></span></p>
+    <h3>2. Соедини фразу и перевод (5 баллов)</h3>
+    <table>
+      <tr><td>1. Hello!</td><td style="width:60px"></td><td>а) Как дела?</td></tr>
+      <tr><td>2. What's your name?</td><td></td><td>б) Пока!</td></tr>
+      <tr><td>3. How are you?</td><td></td><td>в) Привет!</td></tr>
+      <tr><td>4. Nice to meet you!</td><td></td><td>г) Как тебя зовут?</td></tr>
+      <tr><td>5. Goodbye!</td><td></td><td>д) Приятно познакомиться!</td></tr>
+    </table>
+    <h3>3. Напиши о себе по-английски (2 балла)</h3>
+    <p style="font-size:20px">My name is <span class="line"></span>.</p>
+    <p style="font-size:20px">I'm <span class="line" style="min-width:120px"></span>. <span class="small muted">(сколько тебе лет: seven, eight, nine)</span></p>
+    <p style="margin-top:18px"><b>Итого: ______ из 15</b> &nbsp;&nbsp; Подпись родителя: <span class="line"></span></p>
+  </div>
+  <div class="row noprint"><button class="btn sun" onclick="printBlock('miniTest')">🖨 Распечатать мини-тест</button></div>
+  <div class="card" id="parentCard">
+    <h2>Карточка для родителей</h2>
+    <p>Сегодня мы знакомились, говорили о том, зачем нужен английский, учили алфавит и первые фразы. Английский знать не нужно: в скобках написано, как читать.</p>
+    <table class="words">
+      <tr><th>Фраза</th><th>Как читать</th><th>Что значит</th></tr>
+      <tr><td>Hello! / Hi!</td><td>хэлоу / хай</td><td>Привет!</td></tr>
+      <tr><td>What's your name?</td><td>уотс ё нэйм</td><td>Как тебя зовут?</td></tr>
+      <tr><td>My name is ...</td><td>май нэйм из ...</td><td>Меня зовут ...</td></tr>
+      <tr><td>How are you?</td><td>хау а ю</td><td>Как дела?</td></tr>
+      <tr><td>I'm fine, thank you!</td><td>айм файн, сэнк ю</td><td>Хорошо, спасибо!</td></tr>
+      <tr><td>How old are you?</td><td>хау оулд а ю</td><td>Сколько тебе лет?</td></tr>
+      <tr><td>I'm eight.</td><td>айм эйт</td><td>Мне восемь.</td></tr>
+      <tr><td>Nice to meet you!</td><td>найс ту мит ю</td><td>Приятно познакомиться!</td></tr>
+      <tr><td>Goodbye! / Bye!</td><td>гудбай / бай</td><td>До свидания! / Пока!</td></tr>
+    </table>
+    <h3>Как проверить за 3 минуты</h3>
+    <ol>
+      <li>Спросите: «Уотс ё нэйм?» Правильный ответ: «Май нэйм из ...» и имя.</li>
+      <li>Спросите: «Хау а ю?» Правильный ответ: «Айм файн, сэнк ю!»</li>
+      <li>Попросите спеть песенку про алфавит. Она на мотив «Twinkle, Twinkle, Little Star» («Ты свети, звезда ночная»).</li>
+    </ol>
+    <p>Хвалите за каждую попытку. Ошибки в произношении на первых уроках нормальны, мы их поправим на занятиях.</p>
+  </div>
+  <div class="row noprint"><button class="btn sun" onclick="printBlock('parentCard')">🖨 Распечатать карточку</button></div>
+  <button class="btn next">Учителю ➜</button>
+</section>
+
+<!-- ============ 8. TEACHER ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>📋 Что я узнала об ученике</h2>
+    <div id="summary"></div>
+    <p><textarea class="field" id="notes" placeholder="Что получилось, что было трудно, какие игры понравились, что узнала о семье и увлечениях..."></textarea></p>
+    <button class="btn" id="copyNotes">📋 Скопировать заметки</button>
+  </div>
+</section>
+</main>
+
+<script>
+window.LESSON_KEY = 'bit-lesson-1';
+// ================= CORE =================
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const KEY = (window.LESSON_KEY || 'lesson') + ':';
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(KEY + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} }
+};
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function animate(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+
+// ---------- Speech ----------
+const Speech = {
+  ok: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window,
+  voices: [], voice: null, rate: 0.85,
+  prefs: [/Sonia/i, /Libby/i, /Isabella/i, /George/i, /Ryan/i, /Maisie/i, /Thomas/i, /Google UK English Female/i, /Google UK English Male/i, /Serena/i, /Daniel/i, /Kate/i, /Arthur/i, /Hazel/i],
+  init() {
+    const sel = $('#voiceSel'), rate = $('#rateSel');
+    if (!this.ok) { if (sel) { sel.innerHTML = '<option>Озвучка в этом браузере не работает</option>'; sel.disabled = true; } return; }
+    const load = () => {
+      let en = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+      if (!en.length) return;
+      const score = v => { const i = this.prefs.findIndex(r => r.test(v.name)); let s = i === -1 ? 100 : i; if (!/GB/i.test(v.lang)) s += 50; if (/natural|online|neural/i.test(v.name)) s -= 0.5; return s; };
+      en.sort((a, b) => score(a) - score(b));
+      this.voices = en;
+      const saved = store.get('voiceName', null);
+      this.voice = en.find(v => v.name === saved) || en[0];
+      if (sel) { sel.innerHTML = en.map((v, i) => `<option value="${i}">${esc(v.name)} (${v.lang})</option>`).join(''); sel.value = en.indexOf(this.voice); }
+    };
+    load();
+    try { speechSynthesis.onvoiceschanged = load; } catch (e) {}
+    if (sel) sel.onchange = () => { this.voice = this.voices[+sel.value]; store.set('voiceName', this.voice.name); this.say('Hello! Nice to meet you!'); };
+    if (rate) { rate.value = String(store.get('rate', 0.85)); this.rate = +rate.value; rate.onchange = () => { this.rate = +rate.value; store.set('rate', this.rate); this.say('Hello!'); }; }
+  },
+  say(text, opt = {}) {
+    if (!this.ok || !text) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; } else u.lang = 'en-GB';
+      u.rate = Math.min(2, (opt.rate || 1) * this.rate);
+      u.pitch = opt.pitch || 1;
+      if (opt.onend) u.onend = opt.onend;
+      setTimeout(() => { try { speechSynthesis.speak(u); } catch (e) {} }, 60);
+    } catch (e) {}
+  },
+  stop() { try { if (this.ok) speechSynthesis.cancel(); } catch (e) {} }
+};
+function say(t, o) { Speech.say(t, o); }
+
+// ---------- Sounds ----------
+const Sfx = {
+  ctx: null, live: [],
+  get() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch (e) {} }
+    return this.ctx;
+  },
+  tone(f, t0, dur, type = 'triangle', vol = 0.2) {
+    const c = this.get(); if (!c) return null;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(vol * 0.55, t0 + Math.max(0.05, dur * 0.7));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+    this.live.push(o); o.onended = () => { this.live = this.live.filter(x => x !== o); };
+    return o;
+  },
+  stopAll() { this.live.forEach(o => { try { o.stop(); } catch (e) {} }); this.live = []; },
+  ding() { const c = this.get(); if (!c) return; const t = c.currentTime; this.tone(784, t, .15, 'triangle', .2); this.tone(1047, t + .1, .35, 'triangle', .2); },
+  oops() { const c = this.get(); if (!c) return; const t = c.currentTime; this.tone(330, t, .18, 'sine', .15); this.tone(247, t + .16, .28, 'sine', .15); },
+  pop() {
+    const c = this.get(); if (!c) return; const t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(140, t + .12);
+    g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.0001, t + .15);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + .2);
+  },
+  fanfare() { const c = this.get(); if (!c) return; const t = c.currentTime; [523, 659, 784, 1047].forEach((f, i) => this.tone(f, t + i * .13, i === 3 ? .6 : .2, 'triangle', .2)); }
+};
+
+// ---------- Stars / celebration ----------
+const Stars = {
+  n: 0,
+  init() { this.n = store.get('stars', 0); this.show(); },
+  add(k = 1) { this.n += k; store.set('stars', this.n); this.show(true); if (window.onStars) window.onStars(this.n); },
+  reset() { this.n = 0; store.set('stars', 0); this.show(); if (window.onStars) window.onStars(this.n); },
+  show(b) { $$('.starCount').forEach(el => { el.textContent = this.n; if (b) animate(el.parentElement, 'bounce'); }); }
+};
+function confetti(list = ['⭐', '🎉', '✨', '🌟'], n = 18) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'confetti'; s.textContent = pick(list);
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = (1.4 + Math.random() * 1.2) + 's'; s.style.animationDelay = (Math.random() * .3) + 's';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 3000);
+  }
+}
+let toastTimer;
+function toast(msg) {
+  let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1300);
+}
+function win(msg = 'Super!', stars = 1) { Sfx.ding(); if (stars) Stars.add(stars); toast(msg); confetti(undefined, 10); }
+function bigWin(msg = 'Great job!') { Sfx.fanfare(); toast(msg); confetti(undefined, 30); say(msg); }
+
+// ---------- Karaoke (melody + highlight) ----------
+const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function freq(n) { const m = n.match(/^([A-G])(#?)(\d)$/); if (!m) return 440; const midi = 12 * (+m[3] + 1) + NOTE[m[1]] + (m[2] ? 1 : 0); return 440 * Math.pow(2, (midi - 69) / 12); }
+function parseLine(str) { return str.trim().split(/\s+/).map(tok => { const p = tok.split(':'); return { w: p[0].replace(/_/g, ' '), n: p[1], d: +p[2] }; }); }
+function lineText(ln) { return ln.map(t => t.w.endsWith('~') ? t.w.slice(0, -1) : t.w + ' ').join('').trim(); }
+const Karaokes = [];
+function makeKaraoke(root, opts) {
+  const k = { timers: [], lines: [], spans: [] };
+  root.classList.add('karaoke');
+  root.innerHTML = `
+    <div class="row k-ctrl">
+      <button class="btn sun k-play">▶ Мелодия</button>
+      <button class="btn ghost k-stop">■ Стоп</button>
+      <button class="btn k-read">🔊 Прочитать слова</button>
+      <label class="small">Темп <select class="k-tempo"><option value="${opts.slow || 70}">медленно</option><option value="${opts.bpm || 100}">обычно</option></select></label>
+    </div>
+    <div class="k-lines"></div>
+    <p class="small muted">Нажми на строчку, и голос ее прочитает. Мелодия играет, а петь будем мы сами.</p>`;
+  const box = $('.k-lines', root);
+  k.render = (lines) => {
+    k.stop(); box.innerHTML = ''; k.spans = []; k.lines = lines.map(parseLine);
+    k.lines.forEach((ln) => {
+      const div = document.createElement('div'); div.className = 'k-line';
+      ln.forEach(t => {
+        const joined = t.w.endsWith('~'); const s = document.createElement('span'); s.className = 'syl';
+        s.textContent = joined ? t.w.slice(0, -1) : t.w; div.appendChild(s);
+        if (!joined) div.appendChild(document.createTextNode(' '));
+        k.spans.push({ s, t });
+      });
+      div.onclick = () => say(lineText(ln));
+      box.appendChild(div);
+    });
+  };
+  k.stop = () => { k.timers.forEach(clearTimeout); k.timers = []; Sfx.stopAll(); k.spans.forEach(x => x.s.classList.remove('on', 'done')); root.classList.remove('playing'); };
+  k.play = () => {
+    k.stop(); Speech.stop();
+    const c = Sfx.get(); if (!c) { toast('Звук не работает'); return; }
+    root.classList.add('playing');
+    const beat = 60 / +$('.k-tempo', root).value; let t = c.currentTime + 0.25;
+    for (let i = 0; i < 2; i++) { Sfx.tone(1400, t, .06, 'square', .04); t += beat; }
+    let off = 0; const start = t;
+    k.spans.forEach((sp, i) => {
+      const d = sp.t.d * beat; Sfx.tone(freq(sp.t.n), start + off, Math.max(.18, d * .92), 'triangle', .2);
+      const ms = (start + off - c.currentTime) * 1000;
+      k.timers.push(setTimeout(() => {
+        k.spans.forEach((x, j) => { x.s.classList.toggle('on', j === i); if (j < i) x.s.classList.add('done'); });
+        if (opts.onSyl) opts.onSyl(sp.t, i);
+      }, ms));
+      off += d;
+    });
+    k.timers.push(setTimeout(() => { k.spans.forEach(x => x.s.classList.remove('on', 'done')); root.classList.remove('playing'); if (opts.onEnd) opts.onEnd(); }, (start + off - c.currentTime) * 1000 + 400));
+  };
+  $('.k-play', root).onclick = k.play;
+  $('.k-stop', root).onclick = () => { k.stop(); Speech.stop(); };
+  $('.k-read', root).onclick = () => { k.stop(); say(k.lines.map(lineText).join('. '), { rate: .9 }); };
+  k.render(opts.lines);
+  Karaokes.push(k);
+  return k;
+}
+
+// ---------- Tabs ----------
+function initTabs() {
+  const btns = $$('.tabbtn'), tabs = $$('.tab');
+  const show = (i) => {
+    tabs.forEach((t, j) => t.classList.toggle('active', j === i));
+    btns.forEach((b, j) => b.classList.toggle('active', j === i));
+    Karaokes.forEach(k => k.stop()); Speech.stop();
+    store.set('tab', i); window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (btns[i]) btns[i].scrollIntoView({ block: 'nearest', inline: 'center' });
+  };
+  btns.forEach((b, i) => b.onclick = () => show(i));
+  $$('.next').forEach(b => b.onclick = () => { const cur = tabs.findIndex(t => t.classList.contains('active')); show(Math.min(cur + 1, tabs.length - 1)); });
+  show(Math.min(store.get('tab', 0), tabs.length - 1));
+  window.showTab = show;
+}
+
+// ---------- Print one block ----------
+function printBlock(id) {
+  const el = document.getElementById(id); if (!el) return;
+  document.body.classList.add('printing'); el.classList.add('print-target');
+  const done = () => { document.body.classList.remove('printing'); el.classList.remove('print-target'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print(); setTimeout(done, 1500);
+}
+
+// ---------- Copy text ----------
+function copyText(txt, btn) {
+  const ok = () => { if (btn) { const o = btn.textContent; btn.textContent = 'Скопировано ✔'; setTimeout(() => btn.textContent = o, 1500); } };
+  try { navigator.clipboard.writeText(txt).then(ok, () => fallback()); } catch (e) { fallback(); }
+  function fallback() { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) {} ta.remove(); }
+}
+
+function coreInit() {
+  Speech.init(); Stars.init(); initTabs();
+  const rs = $('#resetStars'); if (rs) rs.onclick = () => Stars.reset();
+  document.addEventListener('pointerdown', () => Sfx.get(), { once: true });
+}
+
+
+// ===== Bit SVG =====
+const BIT = `<svg class="bit" viewBox="0 0 200 224" aria-label="Робот Бит">
+ <line x1="100" y1="40" x2="100" y2="14" stroke="#2E5E8C" stroke-width="5"/>
+ <circle class="ant" cx="100" cy="12" r="9" fill="#FF7F6B"/>
+ <rect x="22" y="70" width="16" height="36" rx="7" fill="#2E5E8C"/><rect x="162" y="70" width="16" height="36" rx="7" fill="#2E5E8C"/>
+ <rect x="36" y="38" width="128" height="96" rx="24" fill="#8FD3F4" stroke="#2E5E8C" stroke-width="5"/>
+ <rect x="52" y="54" width="96" height="64" rx="15" fill="#1F3A5F"/>
+ <ellipse class="eye" cx="80" cy="80" rx="9" ry="11" fill="#7CF5C8"/><ellipse class="eye" cx="120" cy="80" rx="9" ry="11" fill="#7CF5C8"/>
+ <path d="M82 100 q18 14 36 0" stroke="#7CF5C8" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <rect x="86" y="134" width="28" height="10" fill="#2E5E8C"/>
+ <rect x="52" y="142" width="96" height="66" rx="18" fill="#FFD25A" stroke="#2E5E8C" stroke-width="5"/>
+ <circle cx="80" cy="168" r="8" fill="#FF7F6B"/><circle cx="100" cy="168" r="8" fill="#7BC67B"/><circle cx="120" cy="168" r="8" fill="#4A90E2"/>
+ <rect x="74" y="185" width="52" height="8" rx="4" fill="#2E5E8C" opacity=".4"/>
+ <rect x="28" y="150" width="24" height="12" rx="6" fill="#2E5E8C"/><rect x="148" y="150" width="24" height="12" rx="6" fill="#2E5E8C"/>
+</svg>`;
+$('#bit1').innerHTML = BIT; $('#bit2').innerHTML = BIT;
+function bitSay(text, id = '#bit1') { animate($(id + ' svg'), 'talk'); say(text, { pitch: .8 }); if (id === '#bit1') $('#bitSay').textContent = text; }
+$('#bit1').onclick = () => bitSay(pick(["Hello! I'm Bit, a robot!", `Hello, ${kid()}!`, 'Beep beep! Nice to meet you!']));
+$('#bitHello').onclick = () => bitSay("Hello! I'm Bit!");
+const teacher = () => ($('#teacherName').value.trim() || 'Maria');
+$('#teacherName').value = store.get('teacher', 'Maria');
+$('#teacherName').oninput = () => { store.set('teacher', $('#teacherName').value); $$('.tName').forEach(e => e.textContent = teacher()); };
+$$('.tName').forEach(e => e.textContent = teacher());
+$('#tHello').onclick = () => say(`Hello! My name is ${teacher()}.`);
+
+// ===== Levels =====
+window.onStars = (n) => {
+  const lvl = Math.floor(n / 10) + 1; const prev = +$('#lvlN').textContent;
+  $('#lvlN').textContent = lvl; $$('.lvlN2').forEach(e => e.textContent = lvl); $('#lvlBar').style.width = (n % 10) * 10 + '%';
+  if (lvl > prev) { setTimeout(() => { bigWin('Level up!'); }, 500); }
+  renderSummary();
+};
+
+// ===== 1. Player card =====
+const P = store.get('player', { name: '', av: '🦊', age: null, cls: null, likes: [], likesOwn: '', fav: '', pet: null, dream: '', power: null, know: '', school: '' });
+const saveP = () => { store.set('player', P); renderCard(); renderSummary(); };
+const kid = () => (P.name.trim() || 'friend');
+const AV = ['🦊', '🐯', '🐼', '🦖', '🐱', '🐶', '🦁', '🐸', '🚀', '⚽', '🎮', '🦄'];
+const AGES = [['7', 'seven'], ['8', 'eight'], ['9', 'nine'], ['10', 'ten']];
+const LIKES = [['🎮', 'играть в игры', 'games'], ['⚽', 'футбол', 'football'], ['🧱', 'конструктор', 'Lego'], ['🎨', 'рисовать', 'drawing'], ['🚗', 'машинки', 'cars'], ['📺', 'мультики', 'cartoons'], ['📚', 'читать', 'books'], ['🎵', 'музыку', 'music'], ['🚲', 'кататься', 'riding my bike'], ['🏊', 'плавать', 'swimming']];
+const PETS = [['🐱', 'кошка', 'cats'], ['🐶', 'собака', 'dogs'], ['🦁', 'лев', 'lions'], ['🐬', 'дельфин', 'dolphins'], ['🦖', 'динозавр', 'dinosaurs'], ['🐍', 'змея', 'snakes'], ['🐼', 'панда', 'pandas'], ['🦊', 'лиса', 'foxes']];
+const POWERS = [['🦸', 'летать', 'fly'], ['👻', 'быть невидимым', 'be invisible'], ['⚡', 'телепортироваться', 'teleport'], ['🗣', 'говорить на всех языках', 'speak all languages'], ['⏸', 'останавливать время', 'stop time'], ['💪', 'суперсила', 'be super strong']];
+function chips(el, list, getSel, onPick, multi) {
+  const draw = () => { el.innerHTML = list.map((x, i) => `<span class="chip ${(multi ? getSel().includes(i) : getSel() === i) ? 'sel' : ''}" data-i="${i}">${x[0]} ${x[1]}</span>`).join(''); $$('.chip', el).forEach(c => c.onclick = () => { onPick(+c.dataset.i); draw(); }); };
+  draw();
+}
+$('#avatars').innerHTML = AV.map(a => `<span class="chip" style="font-size:30px" data-a="${a}">${a}</span>`).join('');
+$$('#avatars .chip').forEach(c => c.onclick = () => { P.av = c.dataset.a; $$('#avatars .chip').forEach(x => x.classList.toggle('sel', x === c)); saveP(); });
+$$('#avatars .chip').forEach(c => c.classList.toggle('sel', c.dataset.a === P.av));
+chips($('#pAge'), AGES.map(a => ['', `${a[0]} (${a[1]})`]), () => P.age, i => { P.age = i; say(`I'm ${AGES[i][1]}!`); saveP(); });
+chips($('#pClass'), [['', '1'], ['', '2'], ['', '3'], ['', '4']], () => P.cls, i => { P.cls = i; saveP(); });
+chips($('#pLikes'), LIKES, () => P.likes, i => { P.likes = P.likes.includes(i) ? P.likes.filter(x => x !== i) : [...P.likes, i]; if (P.likes.includes(i)) say(`I like ${LIKES[i][2]}!`); saveP(); }, true);
+chips($('#pPet'), PETS, () => P.pet, i => { P.pet = i; say(`I like ${PETS[i][2]}!`); saveP(); });
+chips($('#pPower'), POWERS, () => P.power, i => { P.power = i; say(`I can ${POWERS[i][2]}!`); saveP(); });
+[['pName', 'name'], ['pLikesOwn', 'likesOwn'], ['pFav', 'fav'], ['pDream', 'dream'], ['pKnow', 'know'], ['pSchool', 'school']].forEach(([id, k]) => { const el = $('#' + id); el.value = P[k] || ''; el.oninput = () => { P[k] = el.value; saveP(); }; });
+function renderCard() {
+  const likes = P.likes.map(i => LIKES[i][0]).join(' ');
+  $('#playerCard').innerHTML = `
+    <h3>PLAYER CARD</h3>
+    <div class="av">${P.av}</div>
+    <div class="pl">Name: <b>${esc(P.name || '???')}</b></div>
+    <div class="pl">Age: <b>${P.age === null ? '?' : AGES[P.age][0] + ' (' + AGES[P.age][1] + ')'}</b></div>
+    <div class="pl">Class: <b>${P.cls === null ? '?' : P.cls + 1}</b></div>
+    <div class="pl">I like: <b>${likes || '?'} ${esc(P.likesOwn)}</b></div>
+    <div class="pl">Favourite animal: <b>${P.pet === null ? '?' : PETS[P.pet][0]}</b></div>
+    <div class="pl">Superpower: <b>${P.power === null ? '?' : POWERS[P.power][0] + ' ' + POWERS[P.power][1]}</b></div>
+    <div class="pl">My dream: <b>${esc(P.dream || '?')}</b></div>
+    <div class="pl">My goal: <b>${goalText() || '?'}</b></div>
+    <div class="pl">Level: <b>${Math.floor(Stars.n / 10) + 1}</b></div>`;
+}
+$('#readCard').onclick = () => {
+  const parts = [`Hello! My name is ${kid()}.`];
+  if (P.age !== null) parts.push(`I'm ${AGES[P.age][1]}.`);
+  if (P.likes.length) parts.push(`I like ${P.likes.map(i => LIKES[i][2]).join(' and ')}.`);
+  if (P.pet !== null) parts.push(`I like ${PETS[P.pet][2]}.`);
+  if (P.power !== null) parts.push(`My superpower: I can ${POWERS[P.power][2]}!`);
+  bitSay(parts.join(' ')); if (!store.get('cardStar', false)) { store.set('cardStar', true); win('Cool!', 2); }
+};
+
+// ===== 2. Why English =====
+const KNOW = [['OK', 'хорошо, ладно'], ['Stop', 'стоп, остановись'], ['Start', 'начать'], ['Play', 'играть'], ['Game over', 'игра окончена'], ['Level', 'уровень'], ['Boss', 'босс, главный'], ['Like', 'нравится (лайк!)'], ['Pizza', 'пицца'], ['Football', 'футбол: foot (нога) + ball (мяч)'], ['Robot', 'робот, как Бит'], ['Super', 'супер, отлично']];
+const known = store.get('known', {});
+$('#knowCards').innerHTML = KNOW.map(([en, ru], i) => `<div class="flip" data-i="${i}"><div class="in"><div class="f">${en}</div><div class="b"><div>${ru}</div><div class="yn"><button class="btn small grass" data-k="1">Знал ✔</button><button class="btn small ghost" data-k="0">Не знал</button></div></div></div></div>`).join('');
+function knowCount() { const n = Object.values(known).filter(Boolean).length; $('#knowN').textContent = n; return n; }
+$$('#knowCards .flip').forEach(f => {
+  const i = +f.dataset.i;
+  f.onclick = (e) => {
+    if (e.target.dataset.k !== undefined) {
+      e.stopPropagation(); const was = known[i]; known[i] = e.target.dataset.k === '1'; store.set('known', known); knowCount();
+      if (known[i] && !was) { Stars.add(1); Sfx.ding(); }
+      f.querySelector('.yn').innerHTML = known[i] ? '<b style="color:var(--grass)">✔ Знал!</b>' : '<b>Теперь знаешь!</b>';
+      return;
+    }
+    f.classList.toggle('on'); if (f.classList.contains('on')) say(KNOW[i][0]);
+  };
+});
+knowCount();
+const WHERE = [
+  ['🎮', 'Игры', 'Start, Play, Level up, Game over: кнопки во многих играх на английском. Зная язык, ты поймешь задания и сюжет без перевода.'],
+  ['🎬', 'Мультики и песни', 'Многие мультфильмы и песни сначала выходят на английском. Можно смотреть их в оригинале, с настоящими голосами героев.'],
+  ['✈️', 'Путешествия', 'На английском говорят во многих странах мира. В аэропорту, в отеле, в кафе он выручит почти везде.'],
+  ['🚀', 'Небо и космос', 'Пилоты и диспетчеры по всему миру говорят между собой на английском. А на Международной космической станции рабочие языки английский и русский.'],
+  ['💻', 'Компьютеры', 'Много компьютерных слов пришло из английского: file, click, mouse. Mouse значит «мышь», поэтому компьютерную мышку так и зовут!'],
+  ['🤝', 'Друзья', 'Английский понимают больше миллиарда людей на планете. Это как общий пароль, чтобы подружиться с ребенком из другой страны.']
+];
+$('#whereCards').innerHTML = WHERE.map(([e, t, d]) => `<div class="flip big"><div class="in"><div class="f"><div class="em">${e}</div>${t}</div><div class="b">${d}</div></div></div>`).join('');
+let whereOpened = new Set();
+$$('#whereCards .flip').forEach((f, i) => f.onclick = () => { f.classList.toggle('on'); if (!whereOpened.has(i)) { whereOpened.add(i); if (whereOpened.size === WHERE.length) win('Cool!', 1); } });
+const GOALS = [['🎮', 'понимать игры'], ['🎬', 'смотреть мультики и видео'], ['✈️', 'путешествовать'], ['⭐', 'получать пятерки'], ['🤝', 'дружить с ребятами из других стран'], ['🚀', 'стать пилотом, ученым или программистом'], ['🎵', 'понимать песни'], ['😎', 'просто интересно']];
+P.goals = P.goals || [];
+chips($('#goals'), GOALS, () => P.goals, i => { P.goals = P.goals.includes(i) ? P.goals.filter(x => x !== i) : [...P.goals, i]; saveP(); }, true);
+$('#goalOwn').value = P.goalOwn || ''; $('#goalOwn').oninput = () => { P.goalOwn = $('#goalOwn').value; saveP(); };
+function goalText() { return esc([...(P.goals || []).map(i => GOALS[i][1]), P.goalOwn || ''].filter(Boolean).join(', ')); }
+
+// ===== 3. Alphabet =====
+const ABC = [
+  ['A', 'эй', 'apple', '🍎'], ['B', 'би', 'ball', '⚽'], ['C', 'си', 'cat', '🐱'], ['D', 'ди', 'dog', '🐶'], ['E', 'и', 'egg', '🥚'], ['F', 'эф', 'fish', '🐟'],
+  ['G', 'джи', 'game', '🎮'], ['H', 'эйч', 'hat', '🎩'], ['I', 'ай', 'ice cream', '🍦'], ['J', 'джей', 'juice', '🧃'], ['K', 'кей', 'kite', '🪁'], ['L', 'эл', 'lion', '🦁'],
+  ['M', 'эм', 'monkey', '🐵'], ['N', 'эн', 'nose', '👃'], ['O', 'оу', 'orange', '🍊'], ['P', 'пи', 'pizza', '🍕'], ['Q', 'кью', 'queen', '👑'], ['R', 'а', 'robot', '🤖'],
+  ['S', 'эс', 'sun', '☀️'], ['T', 'ти', 'tiger', '🐯'], ['U', 'ю', 'umbrella', '☂️'], ['V', 'ви', 'van', '🚐'], ['W', 'дабл-ю', 'whale', '🐋'], ['X', 'экс', 'fox', '🦊'],
+  ['Y', 'уай', 'yo-yo', '🪀'], ['Z', 'зэд', 'zebra', '🦓']
+];
+const VOW = 'AEIOU';
+$('#letters').innerHTML = ABC.map(([L, ru]) => `<div class="lt ${VOW.includes(L) ? 'vow' : ''}" data-l="${L}">${L}${L.toLowerCase()}<small>${ru}</small></div>`).join('');
+const seenL = new Set(store.get('seenL', []));
+$$('#letters .lt').forEach(t => t.onclick = () => {
+  const [L, ru, w, em] = ABC.find(x => x[0] === t.dataset.l);
+  $('#lpanel').innerHTML = `<div class="L">${L}${L.toLowerCase()}</div><div><div class="tr" style="font-size:26px">[${ru}]</div><div class="em">${em}</div><div class="w">${L === 'X' ? 'fo<span style="color:var(--coral)">x</span>' : `<span style="color:var(--coral)">${w[0]}</span>${w.slice(1)}`}</div>${L === 'X' ? '<div class="small muted">X любит прятаться в конце слов!</div>' : ''}${L === 'R' ? '<div class="small muted">Британцы говорят «а», почти без «р»</div>' : ''}</div>`;
+  say(`${L}. ${w}.`, { rate: .9 }); animate(t, 'bounce');
+  seenL.add(L); store.set('seenL', [...seenL]);
+  if (seenL.size === 26 && !store.get('allL', false)) { store.set('allL', true); win('All 26!', 3); }
+});
+// ABC song (Twinkle tune)
+const abcLines = [
+  'A:C4:1 B:C4:1 C:G4:1 D:G4:1 E:A4:1 F:A4:1 G:G4:2',
+  'H:F4:1 I:F4:1 J:E4:1 K:E4:1 L:D4:.5 M:D4:.5 N:D4:.5 O:D4:.5 P:C4:2',
+  'Q:G4:1 R:G4:1 S,:F4:2 T:E4:1 U:E4:1 V,:D4:2',
+  'W,:G4:2 X,:F4:2 Y:E4:1 and:E4:1 Z!:D4:2',
+  'Now:C4:1 I:C4:1 know:G4:1 my:G4:1 A~:A4:1 B~:A4:1 C,:G4:2',
+  'next:F4:1 time:F4:1 sing:E4:1 a~:E4:1 long:D4:1 with:D4:1 me!:C4:2'
+];
+makeKaraoke($('#kAbc'), {
+  bpm: 110, slow: 80, lines: abcLines,
+  onSyl: (t) => { const L = t.w.replace(/[^A-Z]/g, ''); $$('#letters .lt').forEach(x => x.classList.toggle('on', L.length === 1 && x.dataset.l === L && /^[A-Z][,!~]?$/.test(t.w))); },
+  onEnd: () => { $$('#letters .lt').forEach(x => x.classList.remove('on')); win('Super!', 2); }
+});
+
+// ===== 4. Letter games =====
+function makeQuiz(o) {
+  // o: {opts, info, start, rep, rounds, next() -> {show(), options:[{label, ok, cls}], speak}}
+  let st = { r: 0, cur: null, on: false, miss: false };
+  const ask = () => {
+    if (st.r >= o.rounds) { st.on = false; $(o.info).textContent = `Готово! ${st.score} из ${o.rounds}`; $(o.opts).innerHTML = ''; bigWin(st.score >= o.rounds - 1 ? 'Excellent!' : 'Well done!'); $(o.start).textContent = '▶ Еще раз'; return; }
+    st.cur = o.next(); st.miss = false; st.on = true;
+    if (st.cur.show) st.cur.show();
+    $(o.opts).innerHTML = st.cur.options.map((x, i) => `<div class="opt ${x.cls || ''}" data-i="${i}">${x.label}</div>`).join('');
+    $$('.opt', $(o.opts)).forEach(el => el.onclick = () => {
+      if (!st.on) return; const x = st.cur.options[+el.dataset.i];
+      if (x.ok) {
+        st.on = false; el.classList.add('right'); st.r++; if (!st.miss) { st.score++; Stars.add(1); }
+        Sfx.ding(); if (st.cur.after) st.cur.after(); $(o.info).textContent = `${st.r} из ${o.rounds}`;
+        setTimeout(ask, 1300);
+      } else { st.miss = true; animate(el, 'shake'); Sfx.oops(); }
+    });
+    if (st.cur.speak) setTimeout(() => say(st.cur.speak, { rate: .9 }), 250);
+  };
+  $(o.start).onclick = () => { st = { r: 0, score: 0, on: false }; $(o.start).textContent = '▶ Заново'; $(o.info).textContent = `0 из ${o.rounds}`; ask(); };
+  if (o.rep) $(o.rep).onclick = () => { if (st.cur && st.cur.speak) say(st.cur.speak, { rate: .9 }); };
+}
+const SPIES = [['A', 'а', 'эй'], ['B', 'вэ', 'би'], ['C', 'эс', 'си'], ['E', 'е', 'и'], ['H', 'эн', 'эйч'], ['K', 'ка', 'кей'], ['M', 'эм', 'эм'], ['O', 'о', 'оу'], ['P', 'эр', 'пи'], ['T', 'тэ', 'ти'], ['X', 'ха', 'экс'], ['Y', 'у', 'уай']];
+let spyBag = [];
+makeQuiz({
+  opts: '#spyOpts', info: '#spyInfo', start: '#spyStart', rounds: 8,
+  next() {
+    if (!spyBag.length) spyBag = shuffle(SPIES.filter(s => s[1] !== s[2]));
+    const [L, ru, en] = spyBag.pop();
+    const wrong = pick(SPIES.filter(s => s[2] !== en && s[2] !== ru))[2];
+    return {
+      show: () => { $('#spyL').textContent = L; },
+      options: shuffle([{ label: ru, ok: false, cls: 'ru' }, { label: en, ok: true, cls: 'ru' }, { label: wrong, ok: false, cls: 'ru' }]),
+      after: () => { say(L); toast(`${L}: ${en}`); }
+    };
+  }
+});
+makeQuiz({
+  opts: '#catchOpts', info: '#catchInfo', start: '#catchStart', rep: '#catchRep', rounds: 10,
+  next() {
+    const set = shuffle(ABC).slice(0, 4); const t = set[0];
+    return { options: shuffle(set.map(x => ({ label: x[0] + x[0].toLowerCase(), ok: x === t }))), speak: `${t[0]}.` };
+  }
+});
+makeQuiz({
+  opts: '#firstOpts', info: '#firstInfo', start: '#firstStart', rep: '#firstRep', rounds: 10,
+  next() {
+    const pool = ABC.filter(x => x[0] !== 'X'); const t = pick(pool);
+    const others = shuffle(pool.filter(x => x !== t)).slice(0, 2);
+    return {
+      show: () => { $('#firstPic').textContent = t[3]; $('#firstWord').textContent = '_' + t[2].slice(1); },
+      options: shuffle([t, ...others].map(x => ({ label: x[0], ok: x === t }))), speak: t[2],
+      after: () => { $('#firstWord').textContent = t[2]; }
+    };
+  }
+});
+
+// ===== 5. Phrases =====
+const PHR = [
+  ['Hello! / Hi!', 'хэлоу / хай', 'Привет!', 'Hello похоже на «алло». Hi короче, так говорят друзьям.', 'Hello! Hi!'],
+  ["What's your name?", 'уотс ё нэйм', 'Как тебя зовут?', 'Name: имя. В играх пишут «Enter your name»: введи свое имя.', "What's your name?"],
+  ['My name is ... / I\'m ...', 'май нэйм из / айм', 'Меня зовут ...', 'My: мой, моя. My name: мое имя.', 'My name is Bit. I\'m Bit.'],
+  ['How are you?', 'хау а ю', 'Как дела?', 'Отвечают почти всегда: fine, хорошо.', 'How are you?'],
+  ["I'm fine, thank you!", 'айм файн, сэнк ю', 'Хорошо, спасибо!', 'В thank кончик языка выглядывает между зубами, как у змейки.', "I'm fine, thank you!"],
+  ['How old are you?', 'хау оулд а ю', 'Сколько тебе лет?', 'Old: старый. Дословно: «Насколько ты старый?»', 'How old are you?'],
+  ["I'm eight.", 'айм эйт', 'Мне восемь.', 'Seven: 7, eight: 8, nine: 9.', "I'm eight."],
+  ['Nice to meet you!', 'найс ту мит ю', 'Приятно познакомиться!', 'Nice: приятный, классный.', 'Nice to meet you!'],
+  ['Goodbye! / Bye!', 'гудбай / бай', 'До свидания! / Пока!', 'Bye похоже на «баю-бай».', 'Goodbye! Bye!']
+];
+$('#phrases').innerHTML = PHR.map((p, i) => `<div class="ph" data-i="${i}"><div class="en">${p[0]}</div><div class="tr">[${p[1]}]</div><div>${p[2]}</div><div class="h">${p[3]}</div></div>`).join('');
+$$('#phrases .ph').forEach(el => el.onclick = () => { say(PHR[+el.dataset.i][4]); animate(el, 'bounce'); });
+
+// chat
+const ageWord = () => P.age === null ? 'eight' : AGES[P.age][1];
+const CHAT = () => [
+  { bot: 'Hello!', ok: 'Hello!', bad: 'Goodbye!' },
+  { bot: "What's your name?", ok: `My name is ${kid()}.`, bad: "I'm fine." },
+  { bot: `Nice to meet you, ${kid()}!`, ok: 'Nice to meet you, Bit!', bad: 'How old are you?' },
+  { bot: 'How are you?', ok: "I'm fine, thank you!", bad: 'My name is Bit.' },
+  { bot: 'How old are you?', ok: `I'm ${ageWord()}.`, bad: 'Hello!' },
+  { bot: `Cool! Goodbye, ${kid()}!`, ok: 'Bye, Bit!', bad: "What's your name?" }
+];
+let chatI = 0, chatSteps = [], chatMiss = false;
+function addMsg(t, who) { const d = document.createElement('div'); d.className = 'msg ' + who; d.textContent = (who === 'bot' ? '🤖 ' : '') + t; $('#chat').appendChild(d); $('#chat').scrollTop = 1e6; }
+function chatStep() {
+  const s = chatSteps[chatI]; if (!s) { $('#replies').innerHTML = ''; bigWin('Great chat!'); return; }
+  chatMiss = false; addMsg(s.bot, 'bot'); say(s.bot, { pitch: .8 });
+  const opts = shuffle([s.ok, s.bad]);
+  $('#replies').innerHTML = opts.map(o => `<button class="btn">${esc(o)}</button>`).join('');
+  $$('#replies .btn').forEach((b, k) => b.onclick = () => {
+    if (opts[k] === s.ok) { addMsg(s.ok, 'me'); say(s.ok); if (!chatMiss) Stars.add(1); Sfx.ding(); chatI++; $('#replies').innerHTML = ''; setTimeout(chatStep, 1600); }
+    else { chatMiss = true; animate(b, 'shake'); Sfx.oops(); addMsg('🤔 Hmm? Beep?', 'bot'); }
+  });
+}
+$('#chatStart').onclick = () => { $('#chat').innerHTML = ''; chatI = 0; chatSteps = CHAT(); $('#chatStart').textContent = '↺ Начать заново'; chatStep(); };
+
+// builder
+const BUILD = () => [
+  { ru: 'Как тебя зовут?', w: ["What's", 'your', 'name?'] },
+  { ru: 'Меня зовут ...', w: ['My', 'name', 'is', kid() + '.'] },
+  { ru: 'Как дела?', w: ['How', 'are', 'you?'] },
+  { ru: 'Хорошо, спасибо!', w: ["I'm", 'fine,', 'thank', 'you!'] },
+  { ru: 'Сколько тебе лет?', w: ['How', 'old', 'are', 'you?'] },
+  { ru: 'Приятно познакомиться!', w: ['Nice', 'to', 'meet', 'you!'] }
+];
+let bIdx = 0, bPicked = [], bItems = [], bDone = new Set();
+function bRender() {
+  const it = bItems[bIdx]; $('#buildRu').textContent = it.ru + `  (${bIdx + 1} из ${bItems.length})`;
+  $('#slots').innerHTML = bPicked.map((k, j) => `<span class="wt" data-j="${j}">${esc(it.order[k])}</span>`).join('') || '<span class="muted">сюда</span>';
+  $('#pool').innerHTML = it.order.map((w, k) => `<span class="wt ${bPicked.includes(k) ? 'used' : ''}" data-k="${k}">${esc(w)}</span>`).join('');
+  $$('#pool .wt').forEach(t => t.onclick = () => { const k = +t.dataset.k; if (bPicked.includes(k)) return; bPicked.push(k); say(it.order[k].replace(/[?!.,]/g, '')); bRender(); });
+  $$('#slots .wt').forEach(t => t.onclick = () => { bPicked.splice(+t.dataset.j, 1); bRender(); });
+  $('#buildInfo').textContent = '';
+}
+function bLoad(i) { bIdx = (i + bItems.length) % bItems.length; const it = bItems[bIdx]; it.order = shuffle(it.w); if (it.order.join() === it.w.join() && it.w.length > 2) it.order = it.order.reverse(); bPicked = []; bRender(); }
+$('#buildCheck').onclick = () => {
+  const it = bItems[bIdx]; const ans = bPicked.map(k => it.order[k]).join(' ');
+  if (bPicked.length < it.w.length) { $('#buildInfo').textContent = 'Еще не все слова'; return; }
+  if (ans === it.w.join(' ')) { $('#buildInfo').textContent = '✔ Правильно!'; say(ans); if (!bDone.has(bIdx)) { bDone.add(bIdx); win('Yes!'); if (bDone.size === bItems.length) setTimeout(() => bigWin('All done!'), 1000); } }
+  else { $('#buildInfo').textContent = 'Почти! Попробуй поменять слова местами'; animate($('#slots'), 'shake'); Sfx.oops(); }
+};
+$('#buildReset').onclick = () => { bPicked = []; bRender(); };
+$('#buildNext').onclick = () => bLoad(bIdx + 1);
+bItems = BUILD(); bLoad(0);
+$('#pName').addEventListener('input', () => { const cur = bIdx; bItems = BUILD(); bLoad(cur); });
+
+// ===== 6. Beat the clock =====
+let clk = { on: false, t: 60, score: 0, timer: null, cur: null };
+$('#clockBest').textContent = store.get('best', 0);
+const RU = PHR.map(p => [p[0].split(' / ')[0], p[2]]);
+function clockQ() {
+  if (Math.random() < .55) {
+    const set = shuffle(ABC).slice(0, 4); const t = set[0];
+    clk.cur = { speak: `${t[0]}.`, opts: shuffle(set.map(x => ({ l: x[0], ok: x === t }))) };
+    $('#clockQ').textContent = '👂 Какая буква?';
+  } else {
+    const set = shuffle(RU).slice(0, 3); const t = set[0];
+    clk.cur = { speak: t[0], opts: shuffle(set.map(x => ({ l: x[1], ok: x === t, ru: 1 }))) };
+    $('#clockQ').textContent = t[0];
+  }
+  $('#clockOpts').innerHTML = clk.cur.opts.map((x, i) => `<div class="opt ${x.ru ? 'ru' : ''}" data-i="${i}">${x.l}</div>`).join('');
+  $$('#clockOpts .opt').forEach(el => el.onclick = () => {
+    if (!clk.on) return; const x = clk.cur.opts[+el.dataset.i];
+    if (x.ok) { clk.score++; $('#clockScore').textContent = clk.score; Sfx.ding(); el.classList.add('right'); setTimeout(clockQ, 350); }
+    else { animate(el, 'shake'); Sfx.oops(); }
+  });
+  say(clk.cur.speak, { rate: .95 });
+}
+function clockEnd() {
+  clearInterval(clk.timer); clk.on = false; $('#clockOpts').innerHTML = '';
+  const best = store.get('best', 0); const rec = clk.score > best;
+  if (rec) { store.set('best', clk.score); $('#clockBest').textContent = clk.score; }
+  $('#clockQ').textContent = rec ? `Новый рекорд: ${clk.score}!` : `Результат: ${clk.score}`;
+  Stars.add(Math.min(5, Math.ceil(clk.score / 3))); bigWin(rec ? 'New record!' : 'Time!');
+  $('#clockStart').textContent = '▶ Еще раз';
+}
+$('#clockStart').onclick = () => {
+  clearInterval(clk.timer); clk = { on: true, t: 60, score: 0, timer: null };
+  $('#clockScore').textContent = 0; $('#clockTime').textContent = 60; $('#clockBar').style.width = '100%';
+  clockQ();
+  clk.timer = setInterval(() => { clk.t--; $('#clockTime').textContent = clk.t; $('#clockBar').style.width = (clk.t / 60 * 100) + '%'; if (clk.t <= 0) clockEnd(); }, 1000);
+};
+$('#clockRep').onclick = () => { if (clk.cur) say(clk.cur.speak); };
+$('#byeBtn').onclick = () => { bitSay(`Goodbye, ${kid()}! See you soon!`, '#bit2'); bigWin('Bye!'); };
+$('#bit2').onclick = () => bitSay(`Bye, ${kid()}!`, '#bit2');
+
+// ===== 7. Homework =====
+const HW = ['🎵 Спеть песенку ABC (можно с этим файлом)', '👋 Сказать маме или папе: «Hello! My name is ...»', '🔍 Найти дома 3 английских слова (на коробках, игрушках, одежде) и показать их на следующем уроке', '👂 Сыграть в «Поймай букву» 2 раза', '📝 Сделать мини-тест'];
+const hwDone = store.get('hw', []);
+$('#hw').innerHTML = HW.map((h, i) => `<label class="check"><input type="checkbox" data-i="${i}" ${hwDone.includes(i) ? 'checked' : ''}> ${h}</label>`).join('');
+$$('#hw input').forEach(c => c.onchange = () => {
+  const i = +c.dataset.i; const arr = store.get('hw', []);
+  const next = c.checked ? [...new Set([...arr, i])] : arr.filter(x => x !== i); store.set('hw', next);
+  if (c.checked) { Sfx.ding(); if (next.length === HW.length) bigWin('Mission complete!'); }
+});
+
+// ===== 8. Teacher =====
+function renderSummary() {
+  const v = (x) => x ? esc(x) : '<span class="muted">не записано</span>';
+  const list = (arr, src) => arr && arr.length ? arr.map(i => src[i][0] + ' ' + src[i][1]).join(', ') : '';
+  $('#summary').innerHTML = `
+    <p class="sumline">Имя: <b>${v(P.name)}</b>, возраст: <b>${P.age === null ? '?' : AGES[P.age][0]}</b>, класс: <b>${P.cls === null ? '?' : P.cls + 1}</b></p>
+    <p class="sumline">Любит: <b>${v([list(P.likes, LIKES), P.likesOwn].filter(Boolean).join(', '))}</b></p>
+    <p class="sumline">Любимый мультик, игра, блогер: <b>${v(P.fav)}</b></p>
+    <p class="sumline">Любимое животное: <b>${P.pet === null ? v('') : PETS[P.pet].slice(0, 2).join(' ')}</b>, суперсила: <b>${P.power === null ? v('') : POWERS[P.power].slice(0, 2).join(' ')}</b></p>
+    <p class="sumline">Кем хочет стать: <b>${v(P.dream)}</b></p>
+    <p class="sumline">Зачем ему английский: <b>${v(goalText())}</b></p>
+    <p class="sumline">Уже знает слова: <b>${v(P.know)}</b>; из карточек узнал: <b>${Object.values(known).filter(Boolean).length} из ${KNOW.length}</b></p>
+    <p class="sumline">Про школьный английский: <b>${v(P.school)}</b></p>
+    <p class="sumline">Звезд: <b>${Stars.n}</b>, уровень: <b>${Math.floor(Stars.n / 10) + 1}</b>, рекорд в битве: <b>${store.get('best', 0)}</b></p>`;
+}
+$('#notes').value = store.get('notes', '');
+$('#notes').oninput = () => store.set('notes', $('#notes').value);
+$('#copyNotes').onclick = (e) => copyText($('#summary').innerText + '\nЗаметки: ' + $('#notes').value, e.target);
+
+coreInit(); renderCard(); window.onStars(Stars.n);
+</script>
+</body>
+</html>

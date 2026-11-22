@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Первый урок английского с Бинго</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF8EC;--sky:#8FD3F4;--grass:#7BC67B;--coral:#FF7F6B;--sun:#FFD25A;--brown:#8B5E3C;--ink:#3b2a1e;--muted:#9b7f66;--shadow:0 5px 0 rgba(139,94,60,.10),0 10px 24px rgba(139,94,60,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Nunito','Trebuchet MS',Arial,sans-serif;background:var(--cream);color:var(--ink);font-size:18px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:'Comfortaa','Nunito',sans-serif;margin:.2em 0 .4em;line-height:1.2}
+h2{font-size:30px}h3{font-size:22px}
+header.top{position:sticky;top:0;z-index:30;background:rgba(255,248,236,.96);border-bottom:3px dashed #f1dcc0;padding:6px 12px}
+.toprow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;max-width:1100px;margin:0 auto}
+.brand{font:800 20px 'Comfortaa',sans-serif}
+.stars{font-size:24px;font-weight:900;background:#fff;border-radius:30px;padding:4px 16px;box-shadow:var(--shadow)}
+details.settings{position:relative}
+details.settings summary{list-style:none;cursor:pointer;font-size:24px;background:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;box-shadow:var(--shadow)}
+details.settings summary::-webkit-details-marker{display:none}
+.setbox{position:absolute;right:0;top:52px;background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);width:min(92vw,360px);font-size:15px;z-index:40}
+.setbox label{display:block;margin:6px 0}
+.setbox select,.setbox input{width:100%;font:inherit;padding:6px;border-radius:10px;border:2px solid #eadcc8}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 4px;max-width:1100px;margin:0 auto;scrollbar-width:thin}
+.tabbtn{flex:0 0 auto;border:none;border-radius:18px;padding:8px 14px;font:800 15px 'Nunito',sans-serif;background:#fff;color:var(--ink);box-shadow:0 3px 0 #ead6bb;cursor:pointer}
+.tabbtn.active{background:var(--sun)}
+main{max-width:1000px;margin:0 auto;padding:12px 14px 60px}
+.tab{display:none}
+.tab.active{display:block;animation:fadein .35s}
+.card{background:#fff;border-radius:28px;padding:20px;margin:16px 0;box-shadow:var(--shadow)}
+.btn{border:none;border-radius:20px;padding:12px 20px;font:800 18px 'Nunito',sans-serif;cursor:pointer;background:var(--sky);color:#16324a;box-shadow:0 4px 0 rgba(0,0,0,.15);transition:transform .08s;touch-action:manipulation}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.btn.sun{background:var(--sun);color:#4a3300}.btn.coral{background:var(--coral);color:#fff}.btn.grass{background:var(--grass);color:#fff}.btn.ghost{background:#f4ece0;color:var(--ink)}
+.btn.small{padding:7px 12px;font-size:15px;border-radius:14px}
+.btn.next{display:block;margin:24px auto 0;font-size:22px;background:var(--grass);color:#fff;padding:14px 34px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.center{text-align:center}.small{font-size:15px}.muted{color:var(--muted)}
+.hint{background:#FFF3D6;border-left:6px solid var(--sun);border-radius:14px;padding:10px 14px;margin:10px 0}
+.teacher{background:#EEF7FB;border-left:6px solid var(--sky);border-radius:14px;padding:10px 14px;margin:10px 0;font-size:16px}
+.teacher::before{content:'Для учителя: ';font-weight:900}
+.tr{color:#b0612e;font-weight:700}
+.bubble{position:relative;background:#fff;border:3px solid var(--ink);border-radius:24px;padding:10px 18px;font:800 22px 'Nunito',sans-serif;display:inline-block}
+.bubble.left::after{content:'';position:absolute;left:-16px;top:24px;border:8px solid transparent;border-right-color:var(--ink)}
+.mascot{cursor:pointer;user-select:none}
+input.field,textarea.field{font:inherit;font-size:20px;padding:10px 14px;border-radius:16px;border:3px solid #eadcc8;background:#fffdf8;width:100%;max-width:360px}
+textarea.field{max-width:100%;min-height:90px;font-size:16px}
+.tile{background:#fff;border:3px solid #f0e2cf;border-radius:22px;padding:12px;text-align:center;cursor:pointer;user-select:none;transition:transform .12s;touch-action:manipulation}
+.tile:hover{transform:translateY(-3px)}
+.tile.sel{border-color:var(--coral);background:#FFF0EC}
+.tile .em{font-size:54px;line-height:1.1}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.grid.sm{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+.shake{animation:shake .45s}.bounce{animation:bounce .6s}.wiggle{animation:wiggle .6s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes bounce{0%,100%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.95)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fall{from{transform:translateY(0) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}
+.confetti{position:fixed;top:-50px;font-size:32px;pointer-events:none;z-index:99;animation:fall 2s linear forwards}
+.toast{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%) scale(.4);font:900 56px 'Comfortaa',sans-serif;color:var(--coral);text-shadow:0 4px 0 #fff,0 0 24px #fff;opacity:0;pointer-events:none;z-index:100;transition:.25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.karaoke .k-lines{margin:14px 0;padding:10px;background:#FFFCF5;border-radius:20px}
+.k-line{font-size:28px;font-weight:800;padding:6px 12px;border-radius:14px;cursor:pointer;line-height:1.6}
+.k-line:hover{background:#FFF3D6}
+.syl{border-radius:8px;transition:background .1s}
+.syl.on{background:var(--sun);box-shadow:0 0 0 4px var(--sun);color:#000}
+.syl.done{color:#b9a18a}
+.k-ctrl select{font:inherit;border-radius:10px;padding:4px}
+.progress{height:14px;background:#f3e6d3;border-radius:10px;overflow:hidden}
+.progress>div{height:100%;background:var(--grass);width:0;transition:width .3s}
+table.words{border-collapse:collapse;width:100%;font-size:17px}
+table.words td,table.words th{border-bottom:2px dashed #eadcc8;padding:7px 8px;text-align:left}
+.check{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:16px;background:#FFFCF5;margin:8px 0;cursor:pointer;font-size:18px}
+.check input{width:28px;height:28px;accent-color:var(--grass)}
+@media(max-width:620px){body{font-size:16px}h2{font-size:24px}.k-line{font-size:21px}.tile .em{font-size:44px}.btn{font-size:16px;padding:10px 16px}.toast{font-size:38px}}
+@media print{
+  body.printing{background:#fff}
+  body.printing header.top,body.printing .noprint{display:none!important}
+  body.printing *{visibility:hidden}
+  body.printing .print-target,body.printing .print-target *{visibility:visible}
+  body.printing .print-target{position:absolute;left:0;top:0;width:100%;box-shadow:none;margin:0;padding:0 6mm}
+  @page{size:A4;margin:12mm}
+}
+
+/* ===== lesson 5 ===== */
+.bingo{width:190px;height:190px}
+.bingo .tail{transform-box:fill-box;transform-origin:0% 100%}
+.bingo.wag .tail{animation:wag .18s 6 alternate ease-in-out}
+.bingo.jump{animation:jump .5s}
+@keyframes wag{from{transform:rotate(-18deg)}to{transform:rotate(22deg)}}
+@keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-30px)}}
+.age{font:900 54px 'Comfortaa',sans-serif}
+.age small{display:block;font:800 16px 'Nunito',sans-serif;color:var(--muted)}
+.tile.done{opacity:.55}
+.tile .ok{color:var(--grass);font-weight:900}
+.blob{width:96px;height:96px;border-radius:46% 54% 50% 50%/55% 45% 55% 45%;margin:6px auto;box-shadow:inset -8px -10px 0 rgba(0,0,0,.12),inset 8px 8px 0 rgba(255,255,255,.35)}
+.word{font:900 30px 'Comfortaa',sans-serif}
+.balArea{position:relative;height:360px;background:linear-gradient(#dff3fc,#fffdf6);border-radius:24px;overflow:hidden;margin-top:12px}
+.balloon{position:absolute;width:88px;height:106px;border-radius:50% 50% 48% 48%/56% 56% 44% 44%;cursor:pointer;animation:bob 3s ease-in-out infinite;box-shadow:inset -10px -12px 0 rgba(0,0,0,.13),inset 10px 10px 0 rgba(255,255,255,.35);touch-action:manipulation}
+.balloon::after{content:'';position:absolute;left:50%;top:104px;width:2px;height:60px;background:#9b8b7a}
+.balloon.popped{animation:popb .3s forwards;pointer-events:none}
+@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-14px}}
+@keyframes popb{to{transform:scale(1.6);opacity:0}}
+.pal{width:70px;height:70px;border-radius:50%;border:5px solid #fff;box-shadow:0 0 0 3px #eadcc8;cursor:pointer}
+.pal.sel{box-shadow:0 0 0 6px var(--ink)}
+#paintPic{width:100%;max-width:520px;display:block;margin:10px auto;background:#f4fbff;border-radius:22px}
+.pp{fill:#fff;stroke:#5b4636;stroke-width:4;cursor:pointer;transition:fill .2s}
+.cmdbox{min-height:250px}
+.cmdEm{font-size:110px;line-height:1.1}
+.cmdText{font:900 44px 'Comfortaa',sans-serif}
+.barn{width:230px;height:220px;position:relative;margin:10px auto}
+.barn .roof{position:absolute;left:-10px;top:0;width:250px;height:80px;background:#8B5E3C;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.barn .wall{position:absolute;left:10px;top:78px;width:210px;height:142px;background:#E4573D;border-radius:0 0 10px 10px}
+.barn .inside{position:absolute;left:55px;top:100px;width:120px;height:120px;background:#3b2a1e;display:grid;place-items:center;font-size:84px;perspective:600px}
+.door{position:absolute;top:0;width:60px;height:120px;background:#fff;transition:transform .5s;background:linear-gradient(45deg,transparent 46%,#E4573D 46% 54%,transparent 54%),linear-gradient(-45deg,transparent 46%,#E4573D 46% 54%,transparent 54%),#fff5e8;border:4px solid #fff}
+.door.l{left:0;transform-origin:left}.door.r{right:0;transform-origin:right}
+.barn.open .door.l{transform:rotateY(-105deg)}.barn.open .door.r{transform:rotateY(105deg)}
+.animalBtn .em{font-size:64px}
+.omdPic{font-size:110px;text-align:center;line-height:1.1}
+.box{font-size:70px}
+.box .content{display:none}
+.tile.opened .gift{display:none}.tile.opened .content{display:block}
+.content .blob{width:74px;height:74px}
+.sumline{margin:4px 0}
+.pcard h2{font-size:24px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="toprow">
+    <div class="brand">🐶 English с Бинго</div>
+    <div class="row">
+      <div class="stars">⭐ <span class="starCount">0</span></div>
+      <details class="settings noprint">
+        <summary title="Настройки">⚙️</summary>
+        <div class="setbox">
+          <label>Голос<select id="voiceSel"></select></label>
+          <label>Скорость речи<select id="rateSel"><option value="0.7">очень медленно</option><option value="0.85">спокойно</option><option value="1">обычно</option></select></label>
+          <label>Имя учителя (по-английски)<input id="teacherName" value="Maria"></label>
+          <button class="btn small ghost" id="resetStars">Обнулить звездочки</button>
+          <p class="small muted">Лучше всего звучат голоса Sonia, Libby, Ryan (Edge) и Google UK English. Голос и скорость запоминаются.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tabbtn">👋 Привет</button>
+    <button class="tabbtn">🎵 Hello</button>
+    <button class="tabbtn">🎨 Цвета</button>
+    <button class="tabbtn">🤸 Разминка</button>
+    <button class="tabbtn">🐮 Животные</button>
+    <button class="tabbtn">🎵 Old MacDonald</button>
+    <button class="tabbtn">🎁 Коробки</button>
+    <button class="tabbtn">👋 Пока!</button>
+    <button class="tabbtn">📋 Учителю</button>
+  </nav>
+</header>
+
+<main>
+<!-- ============ 1. HELLO ============ -->
+<section class="tab">
+  <details class="card noprint">
+    <summary><b>План урока на 30 минут</b> (для учителя, нажми, чтобы открыть)</summary>
+    <ol>
+      <li>Привет и знакомство с Бинго: 5 минут</li>
+      <li>Песенка Hello: 3 минуты</li>
+      <li>Цвета: шарики и раскраска, 6 минут</li>
+      <li>Разминка «Bingo says»: 3 минуты</li>
+      <li>Животные и игра «Кто в домике»: 5 минут</li>
+      <li>Песенка Old MacDonald: 3 минуты</li>
+      <li>Волшебные коробки: 3 минуты</li>
+      <li>Песенка Goodbye и звездочки: 2 минуты</li>
+    </ol>
+    <p>Цель первого урока: чтобы ребенку понравилось и захотелось прийти еще. Новые слова он пока только узнает на слух, говорить сам не обязан. Если ребенок повторяет, хвалим. Если молчит, просто играем дальше. Всего слов: hello, bye-bye, I'm, 4 цвета, 4 животных. Команды разминки только слушаем и показываем.</p>
+  </details>
+
+  <div class="card center">
+    <div class="row" style="justify-content:center">
+      <div class="mascot" id="bingo1"></div>
+      <div class="bubble left" id="bingoSay">Hello! I'm Bingo!</div>
+    </div>
+    <p class="muted">Нажми на щенка Бинго, он хочет познакомиться</p>
+  </div>
+
+  <div class="card">
+    <h3>1. Учитель здоровается</h3>
+    <div class="row">
+      <button class="btn sun" id="tHello">👩‍🏫 Hello! I'm <span class="tName">Maria</span>!</button>
+      <button class="btn" id="phone">📞 Алло? Hello!</button>
+    </div>
+    <div class="hint">Hello <span class="tr">[хэлоу]</span> звучит почти как «алло». Приложи ладошку к ушку, как телефончик, и скажи: «Hello!»</div>
+  </div>
+
+  <div class="card">
+    <h3>2. Как тебя зовут?</h3>
+    <div class="row"><button class="btn" id="askName">🐶 What's your name?</button></div>
+    <p><input class="field" id="kidName" placeholder="Имя ребенка (пишет учитель)"></p>
+    <div class="row">
+      <button class="btn sun" id="sayIm">👦 I'm <span class="kName">...</span>!</button>
+      <button class="btn grass" id="niceMeet">🐶 Nice to meet you!</button>
+    </div>
+    <div class="hint">I'm <span class="tr">[айм]</span> значит «я». Показываем пальчиком на себя и говорим: «I'm <span class="kName">...</span>!»</div>
+  </div>
+
+  <div class="card">
+    <h3>3. Сколько тебе лет?</h3>
+    <p>Покажи на пальчиках и нажми на свою циферку!</p>
+    <div class="grid sm" id="ages"></div>
+  </div>
+
+  <div class="card">
+    <h3>4. Что ты любишь?</h3>
+    <p>Нажимай на то, что тебе нравится. Бинго скажет это по-английски.</p>
+    <div class="grid sm" id="likes"></div>
+    <div class="teacher">Спроси, какой мультик любимый, есть ли дома котик или собачка, с кем он живет, во что любит играть. Выбранные картинки сами попадут во вкладку «Учителю», туда же можно дописать ответы.</div>
+  </div>
+
+  <div class="card">
+    <h3>5. Скажи hello друзьям Бинго</h3>
+    <p>Нажми на друга. Он скажет тебе hello, а ты ответь ему: «Hello!»</p>
+    <div class="grid sm" id="friends"></div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 2. HELLO SONG ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🎵 Песенка Hello</h2>
+    <div class="hint">Мелодия как у песенки «Братец Яков». На каждое hello машем ручкой, на «How are you?» разводим руки, на «I am fine» гладим животик и улыбаемся.</div>
+    <div id="kHello"></div>
+    <div class="teacher">Первый раз спой сама, ребенок только машет. Второй раз вместе. Не страшно, если он поет только «hello».</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 3. COLOURS ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🎨 Цвета</h2>
+    <p>Нажми на краску, послушай и повтори.</p>
+    <div class="grid" id="colorCards"></div>
+  </div>
+  <div class="card">
+    <h3>А какой цвет любишь ты?</h3>
+    <div class="row" id="favColor"></div>
+    <p class="small muted" id="favInfo"></p>
+  </div>
+  <div class="card">
+    <h3>Игра «Лопни шарик»</h3>
+    <p>Бинго говорит цвет. Найди такой шарик и лопни его!</p>
+    <div class="row">
+      <button class="btn sun" id="balStart">▶ Начать</button>
+      <button class="btn" id="balRepeat">🔊 Еще раз</button>
+      <b id="balInfo"></b>
+    </div>
+    <div id="balArea" class="balArea"></div>
+  </div>
+  <div class="card">
+    <h3>Раскраска</h3>
+    <p>Выбери краску (она скажет свое имя) и нажми на картинку.</p>
+    <div class="row" id="palette" style="justify-content:center"></div>
+    <svg id="paintPic" viewBox="0 0 420 300">
+      <rect x="0" y="245" width="420" height="55" fill="#e9f5e0"/>
+      <circle class="pp" cx="355" cy="62" r="36"/>
+      <rect class="pp" x="60" y="142" width="150" height="108"/>
+      <polygon class="pp" points="42,146 135,70 228,146"/>
+      <rect class="pp" x="115" y="186" width="40" height="64"/>
+      <rect class="pp" x="72" y="160" width="30" height="30"/>
+      <rect x="294" y="170" width="18" height="80" fill="#8B5E3C"/>
+      <circle class="pp" cx="303" cy="146" r="48"/>
+      <circle class="pp" cx="245" cy="262" r="20"/>
+    </svg>
+    <div class="row" style="justify-content:center"><button class="btn ghost" id="paintReset">↺ Сбросить</button></div>
+    <div class="teacher">Спрашивай: «What colour is the sun?» и сама же подсказывай: «Yellow!» Пусть ребенок красит как хочет, это его картинка.</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 4. MOVE ============ -->
+<section class="tab">
+  <div class="card center cmdbox">
+    <h2>🤸 Bingo says!</h2>
+    <div class="cmdEm" id="cmdEm">🐶</div>
+    <div class="cmdText" id="cmdText">Bingo says...</div>
+    <div class="muted" id="cmdRu">Слушай Бинго и делай как он!</div>
+  </div>
+  <div class="card">
+    <div class="grid sm" id="cmds"></div>
+    <div class="row" style="margin-top:14px;justify-content:center">
+      <button class="btn sun" id="cmdRandom">🎲 Случайная команда</button>
+      <button class="btn grass" id="cmdAuto">▶ Бинго командует сам</button>
+      <button class="btn ghost" id="cmdStop">■ Стоп</button>
+    </div>
+    <div class="hint">Clap <span class="tr">[клэп]</span> похоже на «хлоп»! Jump <span class="tr">[джамп]</span>: прыгаем, как на батуте.</div>
+    <div class="teacher">Сначала делай команды вместе с ребенком, потом только говори. Можно поменяться: ребенок командует, а учитель прыгает.</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 5. ANIMALS ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🐮 Животные</h2>
+    <p>Нажми на зверька. Послушай, как его зовут и как он говорит.</p>
+    <div class="grid" id="animalCards"></div>
+  </div>
+  <div class="card center">
+    <h3>Кто спрятался в домике?</h3>
+    <p id="barnQ">Нажми «Слушать» и угадай!</p>
+    <div class="barn" id="barn"><div class="roof"></div><div class="wall"></div><div class="inside"><span id="barnAnimal">❓</span><div class="door l"></div><div class="door r"></div></div></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn sun" id="barnStart">▶ Слушать</button>
+      <b id="barnInfo"></b>
+    </div>
+    <div class="grid sm" id="barnBtns" style="margin-top:14px"></div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 6. OLD MACDONALD ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🎵 Old MacDonald</h2>
+    <div class="hint">Старинная английская песенка про фермера и его зверят. Самое веселое: изображать, как говорят животные!</div>
+    <div class="row" id="omdVerses"></div>
+    <div class="omdPic" id="omdPic">🐮</div>
+    <div id="kOmd"></div>
+    <div class="teacher">Пой по одному куплету и после каждого спрашивай: «Who is it?» Ребенок может просто мычать и крякать, это уже победа.</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 7. BOXES ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>🎁 Волшебные коробки</h2>
+    <p>Открой коробку. Что там? Скажи по-английски!</p>
+    <div class="grid sm" id="boxes"></div>
+    <div class="row" style="margin-top:14px;justify-content:center">
+      <button class="btn" id="boxHint">🔊 Подсказка</button>
+      <button class="btn grass" id="boxOk">⭐ Сказал!</button>
+      <button class="btn ghost" id="boxAgain">↺ Еще раз</button>
+    </div>
+    <div class="teacher">Если ребенок не вспомнил, нажми «Подсказка», пусть повторит за голосом, и тоже ставь звездочку.</div>
+  </div>
+  <button class="btn next">Дальше ➜</button>
+</section>
+
+<!-- ============ 8. GOODBYE ============ -->
+<section class="tab">
+  <div class="card center">
+    <h2>👋 Пока-пока!</h2>
+    <div class="mascot" id="bingo2" style="display:inline-block"></div>
+    <p style="font-size:24px">Сегодня ты собрал <b>⭐ <span class="starCount">0</span></b> звездочек!</p>
+    <button class="btn sun" id="byeBtn">🐶 Good job! Bye-bye!</button>
+    <div class="hint" style="text-align:left">Bye-bye <span class="tr">[бай-бай]</span> похоже на «баю-бай», так говорят, когда прощаются.</div>
+  </div>
+  <div class="card">
+    <h3>🎵 Песенка Goodbye</h3>
+    <div id="kBye"></div>
+  </div>
+  <button class="btn next">Учителю ➜</button>
+</section>
+
+<!-- ============ 9. TEACHER ============ -->
+<section class="tab">
+  <div class="card">
+    <h2>📋 Что я узнала о ребенке</h2>
+    <div id="summary"></div>
+    <p><textarea class="field" id="notes" placeholder="Любимый мультик, кто есть дома, что получилось, что не понравилось..."></textarea></p>
+    <button class="btn" id="copyNotes">📋 Скопировать заметки</button>
+  </div>
+  <div class="card pcard" id="parentCard">
+    <h2>Карточка для родителей: первый урок английского</h2>
+    <p>Сегодня мы познакомились с щенком Бинго, пели песенки и играли. Вот слова, которые ребенок сегодня услышал. Английский знать не нужно: в скобках написано, как читать.</p>
+    <table class="words">
+      <tr><th>Слово</th><th>Как читать</th><th>Что значит</th></tr>
+      <tr><td>Hello!</td><td>хэлоу</td><td>Привет!</td></tr>
+      <tr><td>Bye-bye!</td><td>бай-бай</td><td>Пока!</td></tr>
+      <tr><td>I'm ...</td><td>айм</td><td>Я ... (I'm Миша: я Миша)</td></tr>
+      <tr><td>red</td><td>рэд</td><td>красный</td></tr>
+      <tr><td>blue</td><td>блу</td><td>синий</td></tr>
+      <tr><td>yellow</td><td>йелоу</td><td>желтый</td></tr>
+      <tr><td>green</td><td>грин</td><td>зеленый</td></tr>
+      <tr><td>cat</td><td>кэт</td><td>кошка</td></tr>
+      <tr><td>dog</td><td>дог</td><td>собака</td></tr>
+      <tr><td>cow</td><td>кау</td><td>корова</td></tr>
+      <tr><td>duck</td><td>дак</td><td>утка</td></tr>
+    </table>
+    <h3>Поиграйте дома 5 минут</h3>
+    <ol>
+      <li>«Телефончик»: приложите ладонь к уху и скажите ребенку: «Хэлоу!» Пусть ответит вам так же.</li>
+      <li>«Найди цвет»: скажите «рэд!», и ребенок бежит искать красную вещь. Потом «грин», «блу», «йелоу».</li>
+      <li>«Кто так говорит?»: вы мычите, ребенок отвечает «кау!». Крякаете: «дак!», мяукаете: «кэт!», лаете: «дог!»</li>
+      <li>Перед сном можно сказать вместо «спокойной ночи»: «Бай-бай!»</li>
+    </ol>
+    <p>Хвалите за любую попытку. Если ребенок не хочет отвечать, не заставляйте: на первых порах достаточно, что он слышит слова и играет.</p>
+    <p class="small muted">Мелодия нашей песенки Hello: «Братец Яков». Слова: Hello, hello! How are you? I am fine!</p>
+  </div>
+  <div class="row noprint"><button class="btn sun" onclick="printBlock('parentCard')">🖨 Распечатать карточку</button></div>
+</section>
+</main>
+
+<script>
+window.LESSON_KEY = 'bingo-lesson-1';
+// ================= CORE =================
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const KEY = (window.LESSON_KEY || 'lesson') + ':';
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(KEY + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} }
+};
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function animate(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+
+// ---------- Speech ----------
+const Speech = {
+  ok: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window,
+  voices: [], voice: null, rate: 0.85,
+  prefs: [/Sonia/i, /Libby/i, /Isabella/i, /George/i, /Ryan/i, /Maisie/i, /Thomas/i, /Google UK English Female/i, /Google UK English Male/i, /Serena/i, /Daniel/i, /Kate/i, /Arthur/i, /Hazel/i],
+  init() {
+    const sel = $('#voiceSel'), rate = $('#rateSel');
+    if (!this.ok) { if (sel) { sel.innerHTML = '<option>Озвучка в этом браузере не работает</option>'; sel.disabled = true; } return; }
+    const load = () => {
+      let en = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+      if (!en.length) return;
+      const score = v => { const i = this.prefs.findIndex(r => r.test(v.name)); let s = i === -1 ? 100 : i; if (!/GB/i.test(v.lang)) s += 50; if (/natural|online|neural/i.test(v.name)) s -= 0.5; return s; };
+      en.sort((a, b) => score(a) - score(b));
+      this.voices = en;
+      const saved = store.get('voiceName', null);
+      this.voice = en.find(v => v.name === saved) || en[0];
+      if (sel) { sel.innerHTML = en.map((v, i) => `<option value="${i}">${esc(v.name)} (${v.lang})</option>`).join(''); sel.value = en.indexOf(this.voice); }
+    };
+    load();
+    try { speechSynthesis.onvoiceschanged = load; } catch (e) {}
+    if (sel) sel.onchange = () => { this.voice = this.voices[+sel.value]; store.set('voiceName', this.voice.name); this.say('Hello! Nice to meet you!'); };
+    if (rate) { rate.value = String(store.get('rate', 0.85)); this.rate = +rate.value; rate.onchange = () => { this.rate = +rate.value; store.set('rate', this.rate); this.say('Hello!'); }; }
+  },
+  say(text, opt = {}) {
+    if (!this.ok || !text) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (this.voice) { u.voice = this.voice; u.lang = this.voice.lang; } else u.lang = 'en-GB';
+      u.rate = Math.min(2, (opt.rate || 1) * this.rate);
+      u.pitch = opt.pitch || 1;
+      if (opt.onend) u.onend = opt.onend;
+      setTimeout(() => { try { speechSynthesis.speak(u); } catch (e) {} }, 60);
+    } catch (e) {}
+  },
+  stop() { try { if (this.ok) speechSynthesis.cancel(); } catch (e) {} }
+};
+function say(t, o) { Speech.say(t, o); }
+
+// ---------- Sounds ----------
+const Sfx = {
+  ctx: null, live: [],
+  get() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch (e) {} }
+    return this.ctx;
+  },
+  tone(f, t0, dur, type = 'triangle', vol = 0.2) {
+    const c = this.get(); if (!c) return null;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(vol * 0.55, t0 + Math.max(0.05, dur * 0.7));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+    this.live.push(o); o.onended = () => { this.live = this.live.filter(x => x !== o); };
+    return o;
+  },
+  stopAll() { this.live.forEach(o => { try { o.stop(); } catch (e) {} }); this.live = []; },
+  ding() { const c = this.get(); if (!c) return; const t = c.currentTime; this.tone(784, t, .15, 'triangle', .2); this.tone(1047, t + .1, .35, 'triangle', .2); },
+  oops() { const c = this.get(); if (!c) return; const t = c.currentTime; this.tone(330, t, .18, 'sine', .15); this.tone(247, t + .16, .28, 'sine', .15); },
+  pop() {
+    const c = this.get(); if (!c) return; const t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(140, t + .12);
+    g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.0001, t + .15);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + .2);
+  },
+  fanfare() { const c = this.get(); if (!c) return; const t = c.currentTime; [523, 659, 784, 1047].forEach((f, i) => this.tone(f, t + i * .13, i === 3 ? .6 : .2, 'triangle', .2)); }
+};
+
+// ---------- Stars / celebration ----------
+const Stars = {
+  n: 0,
+  init() { this.n = store.get('stars', 0); this.show(); },
+  add(k = 1) { this.n += k; store.set('stars', this.n); this.show(true); if (window.onStars) window.onStars(this.n); },
+  reset() { this.n = 0; store.set('stars', 0); this.show(); if (window.onStars) window.onStars(this.n); },
+  show(b) { $$('.starCount').forEach(el => { el.textContent = this.n; if (b) animate(el.parentElement, 'bounce'); }); }
+};
+function confetti(list = ['⭐', '🎉', '✨', '🌟'], n = 18) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'confetti'; s.textContent = pick(list);
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = (1.4 + Math.random() * 1.2) + 's'; s.style.animationDelay = (Math.random() * .3) + 's';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 3000);
+  }
+}
+let toastTimer;
+function toast(msg) {
+  let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1300);
+}
+function win(msg = 'Super!', stars = 1) { Sfx.ding(); if (stars) Stars.add(stars); toast(msg); confetti(undefined, 10); }
+function bigWin(msg = 'Great job!') { Sfx.fanfare(); toast(msg); confetti(undefined, 30); say(msg); }
+
+// ---------- Karaoke (melody + highlight) ----------
+const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function freq(n) { const m = n.match(/^([A-G])(#?)(\d)$/); if (!m) return 440; const midi = 12 * (+m[3] + 1) + NOTE[m[1]] + (m[2] ? 1 : 0); return 440 * Math.pow(2, (midi - 69) / 12); }
+function parseLine(str) { return str.trim().split(/\s+/).map(tok => { const p = tok.split(':'); return { w: p[0].replace(/_/g, ' '), n: p[1], d: +p[2] }; }); }
+function lineText(ln) { return ln.map(t => t.w.endsWith('~') ? t.w.slice(0, -1) : t.w + ' ').join('').trim(); }
+const Karaokes = [];
+function makeKaraoke(root, opts) {
+  const k = { timers: [], lines: [], spans: [] };
+  root.classList.add('karaoke');
+  root.innerHTML = `
+    <div class="row k-ctrl">
+      <button class="btn sun k-play">▶ Мелодия</button>
+      <button class="btn ghost k-stop">■ Стоп</button>
+      <button class="btn k-read">🔊 Прочитать слова</button>
+      <label class="small">Темп <select class="k-tempo"><option value="${opts.slow || 70}">медленно</option><option value="${opts.bpm || 100}">обычно</option></select></label>
+    </div>
+    <div class="k-lines"></div>
+    <p class="small muted">Нажми на строчку, и голос ее прочитает. Мелодия играет, а петь будем мы сами.</p>`;
+  const box = $('.k-lines', root);
+  k.render = (lines) => {
+    k.stop(); box.innerHTML = ''; k.spans = []; k.lines = lines.map(parseLine);
+    k.lines.forEach((ln) => {
+      const div = document.createElement('div'); div.className = 'k-line';
+      ln.forEach(t => {
+        const joined = t.w.endsWith('~'); const s = document.createElement('span'); s.className = 'syl';
+        s.textContent = joined ? t.w.slice(0, -1) : t.w; div.appendChild(s);
+        if (!joined) div.appendChild(document.createTextNode(' '));
+        k.spans.push({ s, t });
+      });
+      div.onclick = () => say(lineText(ln));
+      box.appendChild(div);
+    });
+  };
+  k.stop = () => { k.timers.forEach(clearTimeout); k.timers = []; Sfx.stopAll(); k.spans.forEach(x => x.s.classList.remove('on', 'done')); root.classList.remove('playing'); };
+  k.play = () => {
+    k.stop(); Speech.stop();
+    const c = Sfx.get(); if (!c) { toast('Звук не работает'); return; }
+    root.classList.add('playing');
+    const beat = 60 / +$('.k-tempo', root).value; let t = c.currentTime + 0.25;
+    for (let i = 0; i < 2; i++) { Sfx.tone(1400, t, .06, 'square', .04); t += beat; }
+    let off = 0; const start = t;
+    k.spans.forEach((sp, i) => {
+      const d = sp.t.d * beat; Sfx.tone(freq(sp.t.n), start + off, Math.max(.18, d * .92), 'triangle', .2);
+      const ms = (start + off - c.currentTime) * 1000;
+      k.timers.push(setTimeout(() => {
+        k.spans.forEach((x, j) => { x.s.classList.toggle('on', j === i); if (j < i) x.s.classList.add('done'); });
+        if (opts.onSyl) opts.onSyl(sp.t, i);
+      }, ms));
+      off += d;
+    });
+    k.timers.push(setTimeout(() => { k.spans.forEach(x => x.s.classList.remove('on', 'done')); root.classList.remove('playing'); if (opts.onEnd) opts.onEnd(); }, (start + off - c.currentTime) * 1000 + 400));
+  };
+  $('.k-play', root).onclick = k.play;
+  $('.k-stop', root).onclick = () => { k.stop(); Speech.stop(); };
+  $('.k-read', root).onclick = () => { k.stop(); say(k.lines.map(lineText).join('. '), { rate: .9 }); };
+  k.render(opts.lines);
+  Karaokes.push(k);
+  return k;
+}
+
+// ---------- Tabs ----------
+function initTabs() {
+  const btns = $$('.tabbtn'), tabs = $$('.tab');
+  const show = (i) => {
+    tabs.forEach((t, j) => t.classList.toggle('active', j === i));
+    btns.forEach((b, j) => b.classList.toggle('active', j === i));
+    Karaokes.forEach(k => k.stop()); Speech.stop();
+    store.set('tab', i); window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (btns[i]) btns[i].scrollIntoView({ block: 'nearest', inline: 'center' });
+  };
+  btns.forEach((b, i) => b.onclick = () => show(i));
+  $$('.next').forEach(b => b.onclick = () => { const cur = tabs.findIndex(t => t.classList.contains('active')); show(Math.min(cur + 1, tabs.length - 1)); });
+  show(Math.min(store.get('tab', 0), tabs.length - 1));
+  window.showTab = show;
+}
+
+// ---------- Print one block ----------
+function printBlock(id) {
+  const el = document.getElementById(id); if (!el) return;
+  document.body.classList.add('printing'); el.classList.add('print-target');
+  const done = () => { document.body.classList.remove('printing'); el.classList.remove('print-target'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print(); setTimeout(done, 1500);
+}
+
+// ---------- Copy text ----------
+function copyText(txt, btn) {
+  const ok = () => { if (btn) { const o = btn.textContent; btn.textContent = 'Скопировано ✔'; setTimeout(() => btn.textContent = o, 1500); } };
+  try { navigator.clipboard.writeText(txt).then(ok, () => fallback()); } catch (e) { fallback(); }
+  function fallback() { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) {} ta.remove(); }
+}
+
+function coreInit() {
+  Speech.init(); Stars.init(); initTabs();
+  const rs = $('#resetStars'); if (rs) rs.onclick = () => Stars.reset();
+  document.addEventListener('pointerdown', () => Sfx.get(), { once: true });
+}
+
+
+// ===== Bingo SVG =====
+const BINGO = `<svg class="bingo" viewBox="0 0 200 200" aria-label="Щенок Бинго">
+ <g class="tail"><path d="M148 150 q32 -6 30 -44" stroke="#8B5E3C" stroke-width="13" fill="none" stroke-linecap="round"/></g>
+ <ellipse cx="100" cy="155" rx="56" ry="38" fill="#C8925A"/>
+ <ellipse cx="100" cy="166" rx="30" ry="20" fill="#F3D9B1"/>
+ <ellipse cx="70" cy="190" rx="16" ry="9" fill="#C8925A"/><ellipse cx="130" cy="190" rx="16" ry="9" fill="#C8925A"/>
+ <ellipse cx="50" cy="84" rx="18" ry="35" fill="#8B5E3C" transform="rotate(22 50 84)"/>
+ <ellipse cx="150" cy="84" rx="18" ry="35" fill="#8B5E3C" transform="rotate(-22 150 84)"/>
+ <circle cx="100" cy="86" r="52" fill="#D9A066"/>
+ <circle cx="124" cy="62" r="13" fill="#8B5E3C" opacity=".45"/>
+ <ellipse cx="100" cy="108" rx="29" ry="21" fill="#F3D9B1"/>
+ <circle cx="80" cy="80" r="8.5" fill="#2b1d12"/><circle cx="120" cy="80" r="8.5" fill="#2b1d12"/>
+ <circle cx="83" cy="77" r="3" fill="#fff"/><circle cx="123" cy="77" r="3" fill="#fff"/>
+ <ellipse cx="100" cy="99" rx="9.5" ry="6.5" fill="#2b1d12"/>
+ <path d="M89 110 q11 11 22 0" stroke="#2b1d12" stroke-width="3" fill="none" stroke-linecap="round"/>
+ <path d="M96 114 q4 12 8 0z" fill="#FF7F8B"/>
+ <rect x="68" y="131" width="64" height="10" rx="5" fill="#FF7F6B"/><circle cx="100" cy="145" r="6" fill="#FFD25A"/>
+</svg>`;
+$('#bingo1').innerHTML = BINGO; $('#bingo2').innerHTML = BINGO;
+function bingoAct(id, text, ru) {
+  const s = $(id + ' svg'); animate(s, 'wag'); animate(s, 'jump');
+  if (text) { say(text); if (id === '#bingo1') $('#bingoSay').textContent = text; }
+}
+const kid = () => ($('#kidName').value.trim() || 'friend');
+const teacher = () => ($('#teacherName').value.trim() || 'Maria');
+
+// ===== 1. Hello =====
+let bingoStep = 0;
+$('#bingo1').onclick = () => { const lines = ['Hello! I\'m Bingo!', 'Woof! Woof! Hello!', `Hello, ${kid()}!`]; bingoAct('#bingo1', lines[bingoStep++ % lines.length]); };
+$('#tHello').onclick = () => say(`Hello! I'm ${teacher()}!`);
+$('#phone').onclick = () => say('Hello? Hello!', { rate: .9 });
+$('#askName').onclick = () => { bingoAct('#bingo1', "What's your name?"); };
+$('#teacherName').value = store.get('teacher', 'Maria');
+$('#teacherName').oninput = () => { store.set('teacher', $('#teacherName').value); $$('.tName').forEach(e => e.textContent = teacher()); };
+$$('.tName').forEach(e => e.textContent = teacher());
+$('#kidName').value = store.get('kid', '');
+function syncName() { store.set('kid', $('#kidName').value); $$('.kName').forEach(e => e.textContent = $('#kidName').value.trim() || '...'); renderSummary(); }
+$('#kidName').oninput = syncName;
+$('#sayIm').onclick = () => say(`I'm ${kid()}!`);
+$('#niceMeet').onclick = () => { bingoAct('#bingo1', `Nice to meet you, ${kid()}!`); win('Super!'); };
+
+const AGES = [['3', 'three'], ['4', 'four'], ['5', 'five'], ['6', 'six'], ['7', 'seven']];
+$('#ages').innerHTML = AGES.map(([n, w]) => `<div class="tile age" data-n="${n}" data-w="${w}">${n}<small>${w}</small></div>`).join('');
+$$('#ages .tile').forEach(t => t.onclick = () => {
+  $$('#ages .tile').forEach(x => x.classList.remove('sel')); t.classList.add('sel');
+  say(`I'm ${t.dataset.w}!`); store.set('age', t.dataset.n); animate(t, 'bounce'); renderSummary();
+});
+const savedAge = store.get('age', null); if (savedAge) { const t = $(`#ages .tile[data-n="${savedAge}"]`); if (t) t.classList.add('sel'); }
+
+const LIKES = [['🐱', 'котики', 'cats'], ['🐶', 'собачки', 'dogs'], ['🚗', 'машинки', 'cars'], ['🦖', 'динозавры', 'dinosaurs'], ['🎨', 'рисовать', 'drawing'], ['⚽', 'футбол', 'football'], ['🧸', 'мишки', 'teddy bears'], ['🍦', 'мороженое', 'ice cream'], ['📺', 'мультики', 'cartoons'], ['🎵', 'песенки', 'songs'], ['🚀', 'ракеты', 'rockets'], ['🧱', 'конструктор', 'building blocks']];
+let likes = store.get('likes', []);
+$('#likes').innerHTML = LIKES.map(([e, ru, en], i) => `<div class="tile ${likes.includes(i) ? 'sel' : ''}" data-i="${i}"><div class="em">${e}</div>${ru}</div>`).join('');
+$$('#likes .tile').forEach(t => t.onclick = () => {
+  const i = +t.dataset.i; const on = !likes.includes(i);
+  likes = on ? [...likes, i] : likes.filter(x => x !== i); t.classList.toggle('sel', on); store.set('likes', likes);
+  if (on) { say(`I like ${LIKES[i][2]}!`); animate(t, 'bounce'); }
+  renderSummary();
+});
+
+const FRIENDS = [['🐱', 'Kitty', 1.4], ['🦉', 'Olly the owl', .9], ['🐻', 'Teddy', .7], ['🐰', 'Bunny', 1.6]];
+let greeted = new Set();
+$('#friends').innerHTML = FRIENDS.map(([e, n], i) => `<div class="tile" data-i="${i}"><div class="em">${e}</div><span class="ok"></span></div>`).join('');
+$$('#friends .tile').forEach(t => t.onclick = () => {
+  const [e, n, p] = FRIENDS[+t.dataset.i];
+  animate(t, 'bounce'); say(`Hello, ${kid()}! I'm ${n}!`, { pitch: p });
+  if (!greeted.has(t.dataset.i)) {
+    greeted.add(t.dataset.i); $('.ok', t).textContent = '✔ Hello!';
+    if (greeted.size === FRIENDS.length) setTimeout(() => bigWin('Super!'), 1800), Stars.add(1);
+  }
+});
+
+// ===== 2. Hello song =====
+makeKaraoke($('#kHello'), { bpm: 100, slow: 72, lines: [
+  'Hel~:C4:1 lo,:D4:1 hel~:E4:1 lo,:C4:1',
+  'Hel~:C4:1 lo,:D4:1 hel~:E4:1 lo!:C4:1',
+  'How:E4:1 are:F4:1 you?:G4:2',
+  'How:E4:1 are:F4:1 you?:G4:2',
+  'I:G4:.5 am:A4:.5 fine,:G4:.5 I:F4:.5 am:E4:1 fine!:C4:1',
+  'I:G4:.5 am:A4:.5 fine,:G4:.5 I:F4:.5 am:E4:1 fine!:C4:1',
+  'Hel~:C4:1 lo,:G3:1 friend!:C4:2',
+  'Hel~:C4:1 lo,:G3:1 friend!:C4:2'
+], onEnd: () => win('Super!') });
+
+// ===== 3. Colours =====
+const COLORS = [
+  { en: 'red', ru: 'красный', tr: 'рэд', hex: '#F0504A', hook: 'Как РЕДиска! Редиска красная: red!' },
+  { en: 'blue', ru: 'синий', tr: 'блу', hex: '#4A90E2', hook: 'Синий кит пускает фонтан: блу-у-у!' },
+  { en: 'yellow', ru: 'желтый', tr: 'йелоу', hex: '#FFD23F', hook: 'Желтый цыпленок пищит: йе-лоу!' },
+  { en: 'green', ru: 'зеленый', tr: 'грин', hex: '#5CC45C', hook: 'Зеленый лягушонок Гриня прыгает: грин, грин!' }
+];
+$('#colorCards').innerHTML = COLORS.map((c, i) => `<div class="tile" data-i="${i}"><div class="blob" style="background:${c.hex}"></div><div class="word">${c.en}</div><div class="tr">[${c.tr}]</div><div>${c.ru}</div><div class="small muted">${c.hook}</div></div>`).join('');
+$$('#colorCards .tile').forEach(t => t.onclick = () => { const c = COLORS[+t.dataset.i]; say(`${c.en}!`); animate(t, 'bounce'); });
+
+$('#favColor').innerHTML = COLORS.map((c, i) => `<button class="btn" data-i="${i}" style="background:${c.hex};color:${c.en === 'yellow' ? '#4a3300' : '#fff'}">${c.en}</button>`).join('') + '<button class="btn ghost" data-i="-1">другой</button>';
+$$('#favColor button').forEach(b => b.onclick = () => {
+  const i = +b.dataset.i; store.set('fav', i);
+  if (i >= 0) { say(`I like ${COLORS[i].en}!`); $('#favInfo').textContent = `Любимый цвет: ${COLORS[i].ru} (${COLORS[i].en})`; }
+  else { $('#favInfo').textContent = 'Любимый цвет другой, впиши его в заметки учителя.'; }
+  renderSummary();
+});
+
+// balloons
+let bal = { round: 0, target: null, on: false };
+const BAL_ROUNDS = 8;
+function balRound() {
+  const area = $('#balArea'); area.innerHTML = '';
+  if (bal.round >= BAL_ROUNDS) { bal.on = false; $('#balInfo').textContent = 'Все шарики лопнули!'; bigWin('Great job!'); return; }
+  bal.target = pick(COLORS);
+  let list = [bal.target]; while (list.length < 6) list.push(pick(COLORS));
+  list = shuffle(list);
+  const w = area.clientWidth || 600;
+  list.forEach((c, i) => {
+    const b = document.createElement('div'); b.className = 'balloon'; b.style.background = c.hex;
+    const col = i % 3, row = Math.floor(i / 3);
+    b.style.left = Math.max(4, ((col + .5) / 3) * w - 44 + (Math.random() * 40 - 20)) + 'px';
+    b.style.top = (20 + row * 165 + Math.random() * 20) + 'px';
+    b.style.animationDelay = (Math.random() * 2) + 's';
+    b.onclick = () => {
+      if (!bal.on) return;
+      if (c === bal.target) {
+        b.classList.add('popped'); Sfx.pop(); bal.on = false; bal.round++;
+        $('#balInfo').textContent = `${bal.round} из ${BAL_ROUNDS}`;
+        Stars.add(1); toast(`${c.en}!`); say(`Yes! ${c.en}!`);
+        setTimeout(() => { bal.on = true; balRound(); }, 1300);
+      } else { animate(b, 'shake'); Sfx.oops(); say(`No. ${bal.target.en}!`); }
+    };
+    area.appendChild(b);
+  });
+  setTimeout(() => say(`${bal.target.en}!`), 300);
+}
+$('#balStart').onclick = () => { bal.round = 0; bal.on = true; $('#balInfo').textContent = `0 из ${BAL_ROUNDS}`; balRound(); };
+$('#balRepeat').onclick = () => { if (bal.target) say(`${bal.target.en}!`); };
+
+// painting
+let paint = COLORS[0];
+$('#palette').innerHTML = COLORS.map((c, i) => `<div class="pal ${i === 0 ? 'sel' : ''}" data-i="${i}" style="background:${c.hex}" title="${c.en}"></div>`).join('');
+$$('#palette .pal').forEach(p => p.onclick = () => { paint = COLORS[+p.dataset.i]; $$('#palette .pal').forEach(x => x.classList.toggle('sel', x === p)); say(`${paint.en}!`); });
+let painted = new Set();
+$$('#paintPic .pp').forEach((r, i) => r.addEventListener('click', () => {
+  r.style.fill = paint.hex; say(`${paint.en}!`); painted.add(i);
+  if (painted.size === $$('#paintPic .pp').length && !paintDone) { paintDone = true; setTimeout(() => bigWin('Beautiful!'), 600); Stars.add(2); }
+}));
+let paintDone = false;
+$('#paintReset').onclick = () => { $$('#paintPic .pp').forEach(r => r.style.fill = '#fff'); painted.clear(); paintDone = false; };
+
+// ===== 4. Commands =====
+const CMDS = [
+  { en: 'Stand up!', ru: 'Встаем!', em: '🧍', tr: 'стэнд ап' },
+  { en: 'Sit down!', ru: 'Садимся!', em: '🪑', tr: 'сит даун' },
+  { en: 'Jump!', ru: 'Прыгаем!', em: '🐸', tr: 'джамп' },
+  { en: 'Clap!', ru: 'Хлопаем!', em: '👏', tr: 'клэп' },
+  { en: 'Wave!', ru: 'Машем ручкой!', em: '👋', tr: 'уэйв' }
+];
+$('#cmds').innerHTML = CMDS.map((c, i) => `<div class="tile" data-i="${i}"><div class="em">${c.em}</div><b>${c.en}</b><div class="tr">[${c.tr}]</div><div class="small">${c.ru}</div></div>`).join('');
+function showCmd(c, ru = true) {
+  $('#cmdEm').textContent = c.em; $('#cmdText').textContent = c.en; $('#cmdRu').textContent = ru ? c.ru : 'Что надо сделать?';
+  animate($('#cmdEm'), 'bounce'); say(c.en);
+}
+$$('#cmds .tile').forEach(t => t.onclick = () => showCmd(CMDS[+t.dataset.i]));
+let lastCmd = null;
+function randCmd() { let c; do { c = pick(CMDS); } while (c === lastCmd); lastCmd = c; return c; }
+$('#cmdRandom').onclick = () => showCmd(randCmd(), false);
+let autoTimer = null, autoN = 0;
+$('#cmdAuto').onclick = () => {
+  clearInterval(autoTimer); autoN = 0; showCmd(randCmd(), false);
+  autoTimer = setInterval(() => { autoN++; if (autoN >= 8) { clearInterval(autoTimer); bigWin('Well done!'); Stars.add(1); return; } showCmd(randCmd(), false); }, 4500);
+};
+$('#cmdStop').onclick = () => clearInterval(autoTimer);
+
+// ===== 5. Animals =====
+const ANIMALS = [
+  { en: 'cat', ru: 'кошка', tr: 'кэт', em: '🐱', snd: 'Meow', hook: 'Кэт и кот: оба начинаются на «к»!' },
+  { en: 'dog', ru: 'собака', tr: 'дог', em: '🐶', snd: 'Woof', hook: 'Есть такая большая собака, дог! Бинго тоже dog.' },
+  { en: 'cow', ru: 'корова', tr: 'кау', em: '🐮', snd: 'Moo', hook: 'Корова удивляется: ка-а-ау!' },
+  { en: 'duck', ru: 'утка', tr: 'дак', em: '🦆', snd: 'Quack', hook: 'Утка во всем согласна: да-да, дак-дак!' }
+];
+$('#animalCards').innerHTML = ANIMALS.map((a, i) => `<div class="tile" data-i="${i}"><div class="em" style="font-size:70px">${a.em}</div><div class="word">${a.en}</div><div class="tr">[${a.tr}]</div><div>${a.ru}</div><div class="small muted">${a.hook}</div></div>`).join('');
+$$('#animalCards .tile').forEach(t => t.onclick = () => { const a = ANIMALS[+t.dataset.i]; say(`A ${a.en}! ${a.snd}! ${a.snd}!`); animate(t, 'wiggle'); });
+
+let barn = { round: 0, target: null, on: false, mode: 'sound' };
+const BARN_ROUNDS = 6;
+$('#barnBtns').innerHTML = ANIMALS.map((a, i) => `<div class="tile animalBtn" data-i="${i}"><div class="em">${a.em}</div>${a.en}</div>`).join('');
+function barnAsk() {
+  const b = barn.target;
+  if (barn.mode === 'sound') { $('#barnQ').textContent = 'Кто так говорит?'; say(`${b.snd}! ${b.snd}!`, { rate: .9 }); }
+  else { $('#barnQ').textContent = 'Кого позвали?'; say(`${b.en}!`); }
+}
+function barnNext() {
+  $('#barn').classList.remove('open'); $('#barnAnimal').textContent = '❓';
+  if (barn.round >= BARN_ROUNDS) { barn.on = false; $('#barnStart').textContent = '▶ Играть еще'; bigWin('Super!'); return; }
+  let t; do { t = pick(ANIMALS); } while (t === barn.target); barn.target = t;
+  barn.mode = barn.round % 2 === 0 ? 'sound' : 'word'; barn.on = true;
+  $('#barnStart').textContent = '🔊 Еще раз'; setTimeout(barnAsk, 400);
+}
+$('#barnStart').onclick = () => { if (!barn.on) { barn.round = 0; barn.target = null; $('#barnInfo').textContent = ''; barnNext(); } else barnAsk(); };
+$$('#barnBtns .tile').forEach(t => t.onclick = () => {
+  const a = ANIMALS[+t.dataset.i];
+  if (!barn.on) { say(`A ${a.en}!`); return; }
+  if (a === barn.target) {
+    barn.on = false; barn.round++; $('#barnAnimal').textContent = a.em; $('#barn').classList.add('open');
+    Stars.add(1); Sfx.ding(); say(`Yes! A ${a.en}!`); $('#barnInfo').textContent = `${barn.round} из ${BARN_ROUNDS}`;
+    setTimeout(barnNext, 2200);
+  } else { animate(t, 'shake'); Sfx.oops(); say('Try again!'); }
+});
+
+// ===== 6. Old MacDonald =====
+function omdVerse(an, snd) {
+  const s = snd.toLowerCase();
+  return [
+    'Old:C4:1 Mac~:C4:1 Don~:C4:1 ald:G3:1 had:A3:1 a:A3:1 farm,:G3:2',
+    'E-~:E4:1 I-~:E4:1 E-~:D4:1 I-~:D4:1 O!:C4:4',
+    `And:G3:1 on:C4:1 his:C4:1 farm:C4:1 he:G3:1 had:A3:1 a:A3:1 ${an},:G3:2`,
+    'E-~:E4:1 I-~:E4:1 E-~:D4:1 I-~:D4:1 O!:C4:4',
+    `With:G3:.5 a:G3:.5 ${s}~:C4:1 -${s}:C4:1 here,:C4:2`,
+    `and:G3:.5 a:G3:.5 ${s}~:C4:1 -${s}:C4:1 there,:C4:2`,
+    `Here:C4:.5 a:C4:.5 ${s},:C4:1 there:C4:.5 a:C4:.5 ${s},:C4:1`,
+    `ev~:C4:.5 ery~:C4:.5 where:C4:.5 a:C4:.5 ${s}~:C4:1 -${s}!:C4:1`,
+    'Old:C4:1 Mac~:C4:1 Don~:C4:1 ald:G3:1 had:A3:1 a:A3:1 farm,:G3:2',
+    'E-~:E4:1 I-~:E4:1 E-~:D4:1 I-~:D4:1 O!:C4:4'
+  ];
+}
+const OMD = [ANIMALS[2], ANIMALS[3], ANIMALS[1], ANIMALS[0]];
+let omdIdx = 0, omdAll = false;
+const kOmd = makeKaraoke($('#kOmd'), {
+  bpm: 112, slow: 80, lines: omdVerse('cow', 'Moo'),
+  onSyl: (t) => { if (t.w.toLowerCase().includes(OMD[omdIdx].snd.toLowerCase())) animate($('#omdPic'), 'bounce'); },
+  onEnd: () => { if (omdAll && omdIdx < OMD.length - 1) { setVerse(omdIdx + 1); setTimeout(() => kOmd.play(), 700); } else { omdAll = false; win('Super!'); } }
+});
+function setVerse(i) {
+  omdIdx = i; const a = OMD[i]; $('#omdPic').textContent = a.em; kOmd.render(omdVerse(a.en, a.snd));
+  $$('#omdVerses .btn').forEach((b, j) => b.classList.toggle('sun', j === i));
+}
+$('#omdVerses').innerHTML = OMD.map((a, i) => `<button class="btn small ${i === 0 ? 'sun' : 'ghost'}" data-i="${i}">${a.em} ${a.en}</button>`).join('') + '<button class="btn small grass" id="omdAllBtn">▶ Все куплеты подряд</button>';
+$$('#omdVerses .btn[data-i]').forEach(b => b.onclick = () => { omdAll = false; setVerse(+b.dataset.i); say(`A ${OMD[+b.dataset.i].en}!`); });
+$('#omdAllBtn').onclick = () => { omdAll = true; setVerse(0); kOmd.play(); };
+$('.k-play', $('#kOmd')).addEventListener('click', () => { if (!omdAll) omdAll = false; });
+
+// ===== 7. Boxes =====
+let boxCur = null;
+function buildBoxes() {
+  const items = shuffle([...COLORS.map(c => ({ t: 'c', c })), ...ANIMALS.map(a => ({ t: 'a', a }))]);
+  boxCur = null;
+  $('#boxes').innerHTML = items.map((it, i) => `<div class="tile box" data-i="${i}"><div class="gift">🎁</div><div class="content">${it.t === 'c' ? `<div class="blob" style="background:${it.c.hex}"></div>` : it.a.em}</div></div>`).join('');
+  $$('#boxes .tile').forEach((t, i) => t.onclick = () => {
+    if (t.classList.contains('done')) return;
+    $$('#boxes .tile').forEach(x => { if (!x.classList.contains('done')) x.classList.remove('sel'); });
+    t.classList.add('opened', 'sel'); animate(t, 'bounce'); Sfx.pop();
+    boxCur = { t, it: items[i] };
+  });
+}
+buildBoxes();
+$('#boxHint').onclick = () => { if (!boxCur) { toast('Открой коробку!'); return; } const it = boxCur.it; say(it.t === 'c' ? `${it.c.en}!` : `A ${it.a.en}!`); };
+$('#boxOk').onclick = () => {
+  if (!boxCur) { toast('Открой коробку!'); return; }
+  const it = boxCur.it; boxCur.t.classList.add('done'); boxCur.t.classList.remove('sel'); boxCur = null;
+  win('Yes!');
+  if ($$('#boxes .tile.done').length === $$('#boxes .tile').length) setTimeout(() => bigWin('Fantastic!'), 900);
+};
+$('#boxAgain').onclick = buildBoxes;
+
+// ===== 8. Goodbye =====
+$('#bingo2').onclick = () => bingoAct('#bingo2', `Bye-bye, ${kid()}!`);
+$('#byeBtn').onclick = () => { bingoAct('#bingo2'); bigWin('Good job!'); setTimeout(() => say(`Good job, ${kid()}! Bye-bye! See you soon!`), 900); };
+makeKaraoke($('#kBye'), { bpm: 100, slow: 72, lines: [
+  'Good~:C4:1 bye,:D4:1 good~:E4:1 bye,:C4:1',
+  'Good~:C4:1 bye,:D4:1 good~:E4:1 bye!:C4:1',
+  'See:E4:1 you:F4:1 soon!:G4:2',
+  'See:E4:1 you:F4:1 soon!:G4:2',
+  'Wave:G4:.5 your:A4:.5 hand,:G4:.5 bye-~:F4:.5 bye-~:E4:1 bye!:C4:1',
+  'Wave:G4:.5 your:A4:.5 hand,:G4:.5 bye-~:F4:.5 bye-~:E4:1 bye!:C4:1',
+  'Bye-~:C4:1 bye-~:G3:1 bye!:C4:2',
+  'Bye-~:C4:1 bye-~:G3:1 bye!:C4:2'
+], onEnd: () => win('Bye-bye!') });
+
+// ===== 9. Teacher =====
+function renderSummary() {
+  const age = store.get('age', null), fav = store.get('fav', null);
+  const lk = likes.map(i => `${LIKES[i][0]} ${LIKES[i][1]}`).join(', ');
+  $('#summary').innerHTML = `
+    <p class="sumline">Имя: <b>${esc($('#kidName').value.trim() || 'не записано')}</b></p>
+    <p class="sumline">Возраст: <b>${age || 'не отмечен'}</b></p>
+    <p class="sumline">Любит: <b>${lk || 'пока ничего не выбрано'}</b></p>
+    <p class="sumline">Любимый цвет: <b>${fav === null ? 'не выбран' : fav < 0 ? 'другой' : COLORS[fav].ru}</b></p>
+    <p class="sumline">Звездочек за урок: <b>${Stars.n}</b></p>`;
+}
+window.onStars = renderSummary;
+$('#notes').value = store.get('notes', '');
+$('#notes').oninput = () => store.set('notes', $('#notes').value);
+$('#copyNotes').onclick = (e) => copyText($('#summary').innerText + '\nЗаметки: ' + $('#notes').value, e.target);
+
+coreInit(); syncName(); renderSummary();
+</script>
+</body>
+</html>
